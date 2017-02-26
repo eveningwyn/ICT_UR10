@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     serialportwidget.cpp \
     communicationdialog.cpp \
     scannerthread.cpp \
-    robotthread.cpp
+    robotthread.cpp \
+    logindialog.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -40,12 +41,14 @@ HEADERS  += ict_ur10.h \
     serialportwidget.h \
     communicationdialog.h \
     scannerthread.h \
-    robotthread.h
+    robotthread.h \
+    logindialog.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \
     robotdialog.ui \
-    communicationdialog.ui
+    communicationdialog.ui \
+    logindialog.ui
 
 RESOURCES += \
     resource.qrc

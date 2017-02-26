@@ -2,6 +2,7 @@
 #define COMMUNICATIONDIALOG_H
 
 #include <QDialog>
+#include <QCloseEvent>
 
 namespace Ui {
 class CommunicationDialog;
@@ -14,6 +15,9 @@ class CommunicationDialog : public QDialog
 public:
     explicit CommunicationDialog(QWidget *parent = 0);
     ~CommunicationDialog();
+    void disEnable();
+    void Enable();
+
 
 private slots:
     void on_pushButtonSend_clicked();
@@ -22,6 +26,7 @@ private slots:
 
 private:
     Ui::CommunicationDialog *ui;
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // COMMUNICATIONDIALOG_H

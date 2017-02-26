@@ -1,6 +1,7 @@
 #include "communicationdialog.h"
 #include "ui_communicationdialog.h"
 #include "ict_ur10.h"
+#include <QMessageBox>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -47,4 +48,28 @@ void CommunicationDialog::forShowInfo(QString msg)
     ui->textBrowserCommunication->moveCursor(QTextCursor::End);
     ui->textBrowserCommunication->insertPlainText(msg);
     ui->textBrowserCommunication->moveCursor(QTextCursor::End);
+}
+
+void CommunicationDialog::closeEvent(QCloseEvent *event)
+{
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    ptr->commDlgIsShow = false;
+//        close();
+    event->accept();  //accept
+}
+
+void CommunicationDialog::disEnable()
+{
+    ui->pushButtonSend->setDisabled(true);
+    ui->comboBoxSuffix->setDisabled(true);
+    ui->lineEditSendData->setDisabled(true);
+    ui->comboBoxReceiver->setDisabled(true);
+}
+
+void CommunicationDialog::Enable()
+{
+    ui->pushButtonSend->setDisabled(false);
+    ui->comboBoxSuffix->setDisabled(false);
+    ui->lineEditSendData->setDisabled(false);
+    ui->comboBoxReceiver->setDisabled(false);
 }

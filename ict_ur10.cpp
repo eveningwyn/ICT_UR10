@@ -18,7 +18,10 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     initialize();
 
     commDlg = new CommunicationDialog(this);
-    isShow = false;
+    commDlgIsShow = false;
+    loginDlg = new LoginDialog(this);
+    loginDlgIsShow = false;
+    disEnable();
 
     connect(robot_thread,SIGNAL(startScan()),scan_thread,SLOT(scannerScanSN()));
     connect(this,SIGNAL(manualScan()),scan_thread,SLOT(scannerScanSN()));
@@ -58,15 +61,15 @@ void ICT_UR10::on_actionRobot_triggered()
 
 void ICT_UR10::on_actionCommunication_triggered()
 {
-    if(false == isShow)
+    if(false == commDlgIsShow)
     {
         commDlg->show();
-        isShow = true;
+        commDlgIsShow = true;
     }
     else
     {
         commDlg->hide();
-        isShow = false;
+        commDlgIsShow = false;
     }
 }
 
@@ -106,4 +109,50 @@ void ICT_UR10::manualStartScan()
 void ICT_UR10::errorMessage(QString errorMsg)
 {
     QMessageBox::warning(this,tr("Error"),QString("%1").arg(errorMsg),QMessageBox::Ok);
+}
+
+void ICT_UR10::on_actionLogin_triggered()
+{
+    if(false == loginDlgIsShow)
+    {
+        loginDlg->show();
+        loginDlgIsShow = true;
+    }
+    else
+    {
+        loginDlg->close();
+        loginDlgIsShow = false;
+        disEnable();
+    }
+}
+
+void ICT_UR10::disEnable()
+{
+    ui->actionLogin->setText("LogIn");
+    ui->actionScanner->setDisabled(true);
+    ui->actionRobot->setDisabled(true);
+    commDlg->disEnable();
+}
+
+void ICT_UR10::Enable()
+{
+    ui->actionLogin->setText("LogOut");
+    ui->actionScanner->setDisabled(false);
+    ui->actionRobot->setDisabled(false);
+    commDlg->Enable();
+}
+
+void ICT_UR10::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::StandardButton button;
+    button = QMessageBox::warning(this,tr("Warning"),tr("Are you sure to exit!"),QMessageBox::Yes|QMessageBox::No);
+
+    if (button == QMessageBox::No)
+    {
+        event->ignore();  //ignore
+    }
+    else if (button == QMessageBox::Yes)
+    {
+        event->accept();  //accept
+    }
 }

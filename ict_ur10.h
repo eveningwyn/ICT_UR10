@@ -6,6 +6,8 @@
 #include "communicationdialog.h"
 #include "scannerthread.h"
 #include "robotthread.h"
+#include "logindialog.h"
+#include <QCloseEvent>
 
 namespace Ui {
 class ICT_UR10;
@@ -22,6 +24,10 @@ public:
     ScannerThread *scan_thread;
     RobotThread *robot_thread;
     void manualStartScan();
+    void disEnable();
+    void Enable();
+    bool commDlgIsShow;
+    bool loginDlgIsShow;
 
 signals:
     void sig();
@@ -38,11 +44,14 @@ private slots:
 
     void errorMessage(QString errorMsg);
 
+    void on_actionLogin_triggered();
+
 private:
     Ui::ICT_UR10 *ui;
     CommunicationDialog *commDlg;
-    bool isShow;
+    LoginDialog *loginDlg;
     void initialize();
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // ICT_UR10_H

@@ -176,8 +176,8 @@
     <addaction name="actionScanner"/>
     <addaction name="actionRobot"/>
     <addaction name="separator"/>
-    <addaction name="actionAbout"/>
     <addaction name="actionCommunication"/>
+    <addaction name="actionLogin"/>
    </widget>
    <addaction name="menuParameter"/>
   </widget>
@@ -195,6 +195,7 @@
    <addaction name="actionScanner"/>
    <addaction name="actionRobot"/>
    <addaction name="actionCommunication"/>
+   <addaction name="actionLogin"/>
   </widget>
   <action name="actionScanner">
    <property name="icon">
@@ -214,13 +215,16 @@
     <string>Robot</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="actionLogin">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/res/help_about_32px.png</normaloff>:/res/help_about_32px.png</iconset>
+     <normaloff>:/res/Login_32px.png</normaloff>:/res/Login_32px.png</iconset>
    </property>
    <property name="text">
-    <string>About</string>
+    <string>LogIn</string>
+   </property>
+   <property name="toolTip">
+    <string>LogIn</string>
    </property>
   </action>
   <action name="actionCommunication">
