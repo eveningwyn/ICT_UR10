@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/Industrial_robot_32px.png</file>
+        <file>res/scanner_barcode_32px.png</file>
+        <file>res/config_configuration_32px.png</file>
+        <file>res/help_about_32px.png</file>
+        <file>res/gtk-refresh.png</file>
+        <file>res/send_text_message_32px.png</file>
+        <file>res/communication_chat_32px.png</file>
+    </qresource>
+</RCC>

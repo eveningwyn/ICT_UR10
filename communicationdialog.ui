@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CommunicationDialog</class>
+ <widget class="QDialog" name="CommunicationDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>363</width>
+    <height>248</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Communication</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/res/communication_chat_32px.png</normaloff>:/res/communication_chat_32px.png</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0" colspan="4">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QComboBox" name="comboBoxReceiver">
+     <item>
+      <property name="text">
+       <string>Scanner</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Robot</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButtonSend">
+     <property name="text">
+      <string>Send</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="4">
+    <widget class="QTextBrowser" name="textBrowserCommunication"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEditSendData"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QComboBox" name="comboBoxSuffix">
+     <item>
+      <property name="text">
+       <string>\r\n</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>\n\r</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>\r</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>\n</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
