@@ -1,4 +1,4 @@
-#ifndef ROBOTTHREAD_H
+﻿#ifndef ROBOTTHREAD_H
 #define ROBOTTHREAD_H
 
 #include <QThread>
@@ -11,9 +11,15 @@ public:
     explicit RobotThread(QObject *parent = 0);
     void run();
     void stop();
+    void robotManualSendMsg(QString sendMsg);
 
 signals:
     void startScan();
+    void forShow(QString msg);
+
+private slots:
+    void robotReadData(QString IP,int Port,QString readMsg);
+    void robotSendMsg(QString sendMsg);
 
 private:
     volatile bool stopped;

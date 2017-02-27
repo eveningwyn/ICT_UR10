@@ -1,4 +1,4 @@
-#ifndef SCANNERDIALOG_H
+﻿#ifndef SCANNERDIALOG_H
 #define SCANNERDIALOG_H
 
 #include <QDialog>
@@ -21,9 +21,11 @@ private slots:
 
     void on_pushButtonRefresh_clicked();
 
+    void on_pushButtonOpen_clicked();
+
 private:
     Ui::ScannerDialog *ui;
-    void initialize();
+    void initializeInfo();
     void getPortName();
 };
 

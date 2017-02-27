@@ -1,8 +1,9 @@
-#ifndef ICT_UR10_H
+﻿#ifndef ICT_UR10_H
 #define ICT_UR10_H
 
 #include <QMainWindow>
 #include "serialportwidget.h"
+#include "tcpipserver.h"
 #include "communicationdialog.h"
 #include "scannerthread.h"
 #include "robotthread.h"
@@ -21,17 +22,21 @@ public:
     explicit ICT_UR10(QWidget *parent = 0);
     ~ICT_UR10();
     SerialPortWidget *scanner;
+    TcpIpServer *robotServer;
     ScannerThread *scan_thread;
     RobotThread *robot_thread;
     void manualStartScan();
-    void disEnable();
+    void disEnableUI();
     void Enable();
     bool commDlgIsShow;
     bool loginDlgIsShow;
+    void updateScannerStatue(QString portName, bool connected);
+    void updateTestResult(QString sn,QString result);
+    int testCount;
 
 signals:
-    void sig();
     void manualScan();
+    void forShow(QString msg);
 
 private slots:
     void on_actionScanner_triggered();
@@ -46,12 +51,17 @@ private slots:
 
     void on_actionLogin_triggered();
 
+    void robotConnected(QString IP,int Port);
+
+    void robotDisconnected(QString IP,int Port);
+
 private:
     Ui::ICT_UR10 *ui;
     CommunicationDialog *commDlg;
     LoginDialog *loginDlg;
-    void initialize();
+    void init_Scanner_Robot();
     void closeEvent(QCloseEvent *event);
+    QString forShowString(QString str);
 };
 
 #endif // ICT_UR10_H

@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     communicationdialog.cpp \
     scannerthread.cpp \
     robotthread.cpp \
-    logindialog.cpp
+    logindialog.cpp \
+    tcpipclient.cpp \
+    tcpipserver.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -42,7 +44,9 @@ HEADERS  += ict_ur10.h \
     communicationdialog.h \
     scannerthread.h \
     robotthread.h \
-    logindialog.h
+    logindialog.h \
+    tcpipclient.h \
+    tcpipserver.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

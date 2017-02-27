@@ -1,16 +1,16 @@
-#include "scannerdialog.h"
+﻿#include "scannerdialog.h"
 #include "ui_scannerdialog.h"
 #include <QMessageBox>
 #include <QSerialPortInfo>
 #include <QSettings>
+#include "ict_ur10.h"
 
 ScannerDialog::ScannerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ScannerDialog)
 {
     ui->setupUi(this);
-    initialize();
-
+    initializeInfo();
 }
 
 ScannerDialog::~ScannerDialog()
@@ -38,7 +38,7 @@ void ScannerDialog::on_pushButtonSetting_clicked()
     }
 }
 
-void ScannerDialog::initialize()
+void ScannerDialog::initializeInfo()
 {
     QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
     QString portName   = configRead->value("/ScannerParameter/PortName").toString();
@@ -81,4 +81,20 @@ void ScannerDialog::getPortName()
             ui->comboBoxPortNum->addItem(info.portName());
         }
     }
+}
+
+void ScannerDialog::on_pushButtonOpen_clicked()
+{
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    QString portName = ui->comboBoxPortNum->currentText();
+    int baudRate = ui->comboBoxBaudBits->currentText().toInt();
+    int dataBits = ui->comboBoxDataBits->currentText().toInt();
+    QString parityBits = ui->comboBoxParityBits->currentText();
+    QString stopBits = ui->comboBoxStopBits->currentText();
+    if(!(ptr->scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
+    {
+        QMessageBox::warning(this,tr("Error"),tr("Scanner open failed!"),QMessageBox::Ok);
+        return;
+    }
+    ptr->updateScannerStatue(portName,true);
 }

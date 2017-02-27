@@ -1,4 +1,4 @@
-#ifndef SCANNERTHREAD_H
+﻿#ifndef SCANNERTHREAD_H
 #define SCANNERTHREAD_H
 
 #include <QThread>
@@ -29,6 +29,7 @@ private:
     QTimer *timer;
     int scanCount;//Scan count
     bool isScan;
+    bool canRead;
     volatile bool stopped;
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);

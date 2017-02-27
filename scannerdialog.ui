@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>193</width>
-    <height>176</height>
+    <height>205</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,10 +18,45 @@
     <normaloff>:/res/scanner_barcode_32px.png</normaloff>:/res/scanner_barcode_32px.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="labelPortNum">
+   <item row="3" column="0">
+    <widget class="QLabel" name="labelParityBits">
      <property name="text">
-      <string>PortNum:</string>
+      <string>ParityBits:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="labelDataBits">
+     <property name="text">
+      <string>DataBits:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="comboBoxBaudBits">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="labelBaudRate">
+     <property name="text">
+      <string>BaudRate:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="comboBoxDataBits">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QComboBox" name="comboBoxParityBits">
+     <property name="editable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -43,45 +78,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="labelBaudRate">
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelPortNum">
      <property name="text">
-      <string>BaudRate:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="comboBoxBaudBits">
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="labelDataBits">
-     <property name="text">
-      <string>DataBits:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QComboBox" name="comboBoxDataBits">
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="labelParityBits">
-     <property name="text">
-      <string>ParityBits:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QComboBox" name="comboBoxParityBits">
-     <property name="editable">
-      <bool>true</bool>
+      <string>PortNum:</string>
      </property>
     </widget>
    </item>
@@ -99,7 +99,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="3">
+   <item row="6" column="0" colspan="3">
     <widget class="QPushButton" name="pushButtonSetting">
      <property name="text">
       <string>Setting</string>
@@ -107,6 +107,13 @@
      <property name="icon">
       <iconset resource="resource.qrc">
        <normaloff>:/res/config_configuration_32px.png</normaloff>:/res/config_configuration_32px.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="3">
+    <widget class="QPushButton" name="pushButtonOpen">
+     <property name="text">
+      <string>Open</string>
      </property>
     </widget>
    </item>

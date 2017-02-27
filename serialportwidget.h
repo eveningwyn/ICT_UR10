@@ -19,6 +19,7 @@ public:
     void setDTR_RTS(bool setDTR,bool setRTS);
     void serialPortRead(QString &readString,QString prefix,QString suffix);
     void serialPortWrite(QString writeString);
+    void clearBuffer();
 
 signals:
     void serialReadReady();

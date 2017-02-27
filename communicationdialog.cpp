@@ -1,4 +1,4 @@
-#include "communicationdialog.h"
+﻿#include "communicationdialog.h"
 #include "ui_communicationdialog.h"
 #include "ict_ur10.h"
 #include <QMessageBox>
@@ -8,8 +8,6 @@ CommunicationDialog::CommunicationDialog(QWidget *parent) :
     ui(new Ui::CommunicationDialog)
 {
     ui->setupUi(this);
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    connect(ptr->scan_thread,SIGNAL(forShow(QString)),this,SLOT(forShowInfo(QString)));
 }
 
 CommunicationDialog::~CommunicationDialog()
@@ -39,12 +37,16 @@ void CommunicationDialog::on_pushButtonSend_clicked()
             suffix.replace("\\r","\r");
             suffix.replace("\\n","\n");
             str += suffix;
-//            ptr->scanner->serialPortWrite(str);
+            ptr->robot_thread->robotManualSendMsg(str);
         }
 }
 
 void CommunicationDialog::forShowInfo(QString msg)
 {
+    if(!(ui->checkBoxShowInfo->isChecked()))
+    {
+        ui->textBrowserCommunication->clear();
+    }
     ui->textBrowserCommunication->moveCursor(QTextCursor::End);
     ui->textBrowserCommunication->insertPlainText(msg);
     ui->textBrowserCommunication->moveCursor(QTextCursor::End);
@@ -61,15 +63,15 @@ void CommunicationDialog::closeEvent(QCloseEvent *event)
 void CommunicationDialog::disEnable()
 {
     ui->pushButtonSend->setDisabled(true);
-    ui->comboBoxSuffix->setDisabled(true);
-    ui->lineEditSendData->setDisabled(true);
-    ui->comboBoxReceiver->setDisabled(true);
+//    ui->comboBoxSuffix->setDisabled(true);
+//    ui->lineEditSendData->setDisabled(true);
+//    ui->comboBoxReceiver->setDisabled(true);
 }
 
 void CommunicationDialog::Enable()
 {
     ui->pushButtonSend->setDisabled(false);
-    ui->comboBoxSuffix->setDisabled(false);
-    ui->lineEditSendData->setDisabled(false);
-    ui->comboBoxReceiver->setDisabled(false);
+//    ui->comboBoxSuffix->setDisabled(false);
+//    ui->lineEditSendData->setDisabled(false);
+//    ui->comboBoxReceiver->setDisabled(false);
 }

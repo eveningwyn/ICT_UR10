@@ -1,4 +1,4 @@
-#include "scannerthread.h"
+﻿#include "scannerthread.h"
 #include "ict_ur10.h"
 #include <QMessageBox>
 #include <QDateTime>
@@ -14,6 +14,7 @@ ScannerThread::ScannerThread(QObject *parent) :
 
     scanCount = 0;
     isScan = false;
+    canRead = false;
     stopped = false;
 }
 
@@ -22,7 +23,10 @@ void ScannerThread::run()
     while (!stopped)
     {
 //        qDebug()<<"ScannerThread is running";
-//        msleep(10);
+//        char *ch = "BCBE25C0";
+//        char *buf;
+//        int i = strtoll(ch,&buf,16);
+        msleep(10);
     }
     stopped = false;
 }
@@ -34,8 +38,13 @@ void ScannerThread::stop()
 
 void ScannerThread::scannerReadSN()
 {
+    ICT_UR10 *ptr = (ICT_UR10*)this->parent();
+    if(false == canRead)
+    {
+        ptr->scanner->clearBuffer();
+        return;
+    }
    QString sn;
-   ICT_UR10 *ptr = (ICT_UR10*)this->parent();
    ptr->scanner->serialPortRead(sn,prefix,suffix);
    if(sn.isEmpty())
        return;
@@ -45,7 +54,11 @@ void ScannerThread::scannerReadSN()
    }
    emit scanResult(sn);
    emit forShow(forShowReceiveString(sn));
+
+   ptr->scanner->clearBuffer();
    timer->stop();
+   isScan = false;
+   canRead = false;
    scanCount = 0;
 }
 
@@ -53,7 +66,9 @@ void ScannerThread::scannerScanSN()
 {
     if(false == isScan)
     {
+        canRead = true;
         ICT_UR10 *ptr = (ICT_UR10*)this->parent();
+        ptr->scanner->clearBuffer();
         ptr->scanner->serialPortWrite(prefix+"<T>"+suffix);
         emit forShow(forShowSendString(prefix+"<T>"+suffix));
         isScan = true;
@@ -70,11 +85,11 @@ void ScannerThread::timerTimeOut()
         isScan = false;
     }
 
-    //for debug
-    QString sn = "sn1234567890\r\n";
-    emit scanResult(sn);
-    emit forShow(forShowReceiveString(sn));
-    return;
+//    //for debug
+//    QString sn = "sn1234567890\r\n";
+//    emit scanResult(sn);
+//    emit forShow(forShowReceiveString(sn));
+//    return;
 
 
 
@@ -83,7 +98,9 @@ void ScannerThread::timerTimeOut()
         scannerScanSN();
         return;
     }
+
     scanCount = 0;
+
     QString errorMsg = "Scan barcode timeout!\r\n";
     emit scanError(errorMsg);
     emit forShow(forShowReceiveString(errorMsg));

@@ -1,4 +1,4 @@
-#include "ict_ur10.h"
+﻿#include "ict_ur10.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

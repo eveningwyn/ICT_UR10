@@ -1,8 +1,7 @@
-#ifndef LOGINDIALOG_H
+﻿#ifndef LOGINDIALOG_H
 #define LOGINDIALOG_H
 
 #include <QDialog>
-#include <QAbstractButton>
 #include <QCloseEvent>
 
 namespace Ui {

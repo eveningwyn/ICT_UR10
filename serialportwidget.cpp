@@ -172,7 +172,7 @@ void SerialPortWidget::serialPortRead(QString &readString,QString prefix,QString
     {//如果无前缀无后缀，直接读取返回
         byteRead = serial->readAll();
         readString = QString(byteRead);
-        byteRead = "";
+        clearBuffer();
         return;
     }
     QByteArray pre = prefix.toLatin1();     //获得前缀
@@ -187,7 +187,7 @@ void SerialPortWidget::serialPortRead(QString &readString,QString prefix,QString
         if(byteRead.contains(pre))
         {
             readString = QString(byteRead);
-            byteRead = "";
+            clearBuffer();
             return;
         }
     }
@@ -197,7 +197,7 @@ void SerialPortWidget::serialPortRead(QString &readString,QString prefix,QString
             if(byteRead.contains(suf))
             {
                 readString = QString(byteRead);
-                byteRead = "";
+                clearBuffer();
                 return;
             }
         }
@@ -207,7 +207,7 @@ void SerialPortWidget::serialPortRead(QString &readString,QString prefix,QString
                 if(byteRead.contains(pre) && byteRead.contains(suf))
                 {
                     readString = QString(byteRead);
-                    byteRead = "";
+                    clearBuffer();
                     return;
                 }
             }
@@ -221,4 +221,10 @@ void SerialPortWidget::serialPortWrite(QString writeString)
         return;
     QByteArray byteWrite = writeString.toLatin1();
     serial->write(byteWrite);
+}
+
+void SerialPortWidget::clearBuffer()
+{
+    serial->clear(QSerialPort::AllDirections);
+    byteRead = "";
 }
