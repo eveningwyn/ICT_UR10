@@ -1,6 +1,5 @@
 ﻿#include "tcpipserver.h"
 #include <QMessageBox>
-#include <QDebug>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)

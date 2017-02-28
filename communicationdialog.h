@@ -1,4 +1,4 @@
-#ifndef COMMUNICATIONDIALOG_H
+﻿#ifndef COMMUNICATIONDIALOG_H
 #define COMMUNICATIONDIALOG_H
 
 #include <QDialog>
@@ -23,6 +23,8 @@ private slots:
     void on_pushButtonSend_clicked();
 
     void forShowInfo(QString msg);
+
+    void on_comboBoxReceiver_currentTextChanged(const QString &arg1);
 
 private:
     Ui::CommunicationDialog *ui;

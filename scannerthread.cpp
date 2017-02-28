@@ -2,7 +2,6 @@
 #include "ict_ur10.h"
 #include <QMessageBox>
 #include <QDateTime>
-#include <QDebug>
 
 ScannerThread::ScannerThread(QObject *parent) :
     QThread(parent)
@@ -22,11 +21,7 @@ void ScannerThread::run()
 {
     while (!stopped)
     {
-//        qDebug()<<"ScannerThread is running";
-//        char *ch = "BCBE25C0";
-//        char *buf;
-//        int i = strtoll(ch,&buf,16);
-        msleep(10);
+//        msleep(10);
     }
     stopped = false;
 }

@@ -1,6 +1,5 @@
 ﻿#include "logindialog.h"
 #include "ui_logindialog.h"
-//#include <QPushButton>
 #include "ict_ur10.h"
 #include <QMessageBox>
 

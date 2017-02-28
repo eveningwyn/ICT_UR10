@@ -21,6 +21,7 @@ class ICT_UR10 : public QMainWindow
 public:
     explicit ICT_UR10(QWidget *parent = 0);
     ~ICT_UR10();
+
     SerialPortWidget *scanner;
     TcpIpServer *robotServer;
     ScannerThread *scan_thread;

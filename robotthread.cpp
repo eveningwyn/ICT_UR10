@@ -2,7 +2,6 @@
 #include <QDateTime>
 #include <QSettings>
 #include "ict_ur10.h"
-#include <QDebug>
 
 RobotThread::RobotThread(QObject *parent) :
     QThread(parent)
@@ -14,8 +13,7 @@ void RobotThread::run()
 {
     while (!stopped)
     {
-//        qDebug()<<"RobotThread is running";
-        msleep(10);
+//        msleep(10);
     }
     stopped = false;
 }

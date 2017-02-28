@@ -63,15 +63,24 @@ void CommunicationDialog::closeEvent(QCloseEvent *event)
 void CommunicationDialog::disEnable()
 {
     ui->pushButtonSend->setDisabled(true);
-//    ui->comboBoxSuffix->setDisabled(true);
-//    ui->lineEditSendData->setDisabled(true);
-//    ui->comboBoxReceiver->setDisabled(true);
 }
 
 void CommunicationDialog::Enable()
 {
     ui->pushButtonSend->setDisabled(false);
-//    ui->comboBoxSuffix->setDisabled(false);
-//    ui->lineEditSendData->setDisabled(false);
-//    ui->comboBoxReceiver->setDisabled(false);
+}
+
+void CommunicationDialog::on_comboBoxReceiver_currentTextChanged(const QString &arg1)
+{
+    if("Scanner" == arg1)
+    {
+        ui->lineEditSendData->setText("<T>");
+        ui->lineEditSendData->setDisabled(true);
+        ui->comboBoxSuffix->setCurrentIndex(0);
+    }
+    else
+    {
+        ui->lineEditSendData->clear();
+        ui->lineEditSendData->setDisabled(false);
+    }
 }
