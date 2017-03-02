@@ -10,13 +10,17 @@ class TcpIpClient : public QTcpSocket
 public:
     explicit TcpIpClient(QObject *parent = 0);
     int clientID;//客户端序号，由服务器端调配
+    QString prefix;
+    QString suffix;
+
+
     void clientSendData(QString msg);//客户端发送数据
     void newConnect(const QString address, quint16 port);//连接服务器
     void closeConnect();
     bool bindClient(const QString address, quint16 port=0);//绑定客户端对象到一个固定的IP和Port
 
 private:
-    QString readStrMsg;//接收的字符串信息
+    QByteArray readByteMsg;//接收的字符串信息
 
 signals:
     void readData(int clientID,QString IP,int Port,QString msg);//客户端接收数据之后，发送信号给上层调用，根据客户端信息解析

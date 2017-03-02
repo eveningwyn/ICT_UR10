@@ -22,6 +22,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     scanner = new SerialPortWidget(this);
     robotServer = new TcpIpServer(this);
+    robotServer->set_prefix_suffix("","\r\n");
 
     commDlg = new CommunicationDialog(this);
     commDlgIsShow = false;
@@ -137,12 +138,12 @@ void ICT_UR10::init_Scanner_Robot()
 
 void ICT_UR10::getSn(QString sn)
 {
-    if(ui->lineEditSN->text().isEmpty())
-    {
+//    if(ui->lineEditSN->text().isEmpty())
+//    {
         sn.replace("\r","");
         sn.replace("\n","");
         ui->lineEditSN->setText(sn);
-    }
+//    }
 }
 
 void ICT_UR10::manualStartScan()
@@ -203,19 +204,30 @@ void ICT_UR10::closeEvent(QCloseEvent *event)
 
 void ICT_UR10::robotConnected(QString IP, int Port)
 {
-    QSettings *configWrite = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    configWrite->setValue("/RobotParameter/RobotIPaddress", IP);
-    configWrite->setValue("RobotParameter/RobotPort", QString("%1").arg(Port));
-    delete configWrite;
-
-    ui->labelRobotStatus->setText(QString("Robot:%1 %2 Connected").arg(IP).arg(Port));
     emit forShow(forShowString(QString("Robot:%1 %2 Connected").arg(IP).arg(Port)));
+
+    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
+    QString robotIP = configRead->value("/RobotParameter/RobotIP").toString();
+    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    delete configRead;
+    if(robotIP==IP && robotPort==QString("%1").arg(Port))
+    {
+        ui->labelRobotStatus->setText(QString("Robot:%1 %2 Connected").arg(IP).arg(Port));
+    }
 }
 
 void ICT_UR10::robotDisconnected(QString IP, int Port)
 {
-    ui->labelRobotStatus->setText(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
     emit forShow(forShowString(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port)));
+
+    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
+    QString robotIP = configRead->value("/RobotParameter/RobotIP").toString();
+    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    delete configRead;
+    if(robotIP==IP && robotPort==QString("%1").arg(Port))
+    {
+        ui->labelRobotStatus->setText(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
+    }
 }
 
 QString ICT_UR10::forShowString(QString str)

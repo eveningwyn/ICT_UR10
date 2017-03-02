@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>223</width>
-    <height>93</height>
+    <height>146</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,6 +21,19 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="lineEditRobotPort"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labelRobotPort">
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="text">
+      <string>Robot Port:</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="labelIPAddress">
      <property name="layoutDirection">
@@ -30,9 +43,6 @@
       <string>IP Address:</string>
      </property>
     </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEditIPAddress"/>
    </item>
    <item row="1" column="0">
     <widget class="QLabel" name="labelPort">
@@ -47,7 +57,10 @@
    <item row="1" column="1">
     <widget class="QLineEdit" name="lineEditPort"/>
    </item>
-   <item row="2" column="0" colspan="2">
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEditIPAddress"/>
+   </item>
+   <item row="5" column="0" colspan="2">
     <widget class="QPushButton" name="Setting">
      <property name="text">
       <string>Setting</string>
@@ -55,6 +68,19 @@
      <property name="icon">
       <iconset resource="resource.qrc">
        <normaloff>:/res/config_configuration_32px.png</normaloff>:/res/config_configuration_32px.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="lineEditRobotPAddress"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="labelRobotIPAddress">
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="text">
+      <string>Robot IP:</string>
      </property>
     </widget>
    </item>

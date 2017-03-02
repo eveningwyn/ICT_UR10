@@ -25,6 +25,7 @@ private:
     volatile bool stopped;
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);
+    void informationCheck(QString msg);
 };
 
 #endif // ROBOTTHREAD_H

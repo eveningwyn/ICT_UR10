@@ -6,6 +6,8 @@ TcpIpServer::TcpIpServer(QObject *parent):
 {
     clientSocketList.clear();//清空客户端对象集合
     clientSocketID.clear();//清空客户端序号集合
+    prefix = "";
+    suffix = "";
 }
 
 void TcpIpServer::incomingConnection(qintptr socketDescriptor)
@@ -17,6 +19,8 @@ void TcpIpServer::incomingConnection(qintptr socketDescriptor)
         return;
     }
     clientSocket->clientID = socketDescriptor;//配置客户端对象ID
+    clientSocket->prefix = this->prefix;
+    clientSocket->suffix = this->suffix;
 
     connect(clientSocket,SIGNAL(readData(int,QString,int,QString)),this,SLOT(serverReadMsg(int,QString,int,QString)));
     connect(clientSocket,SIGNAL(clientDisConnect(int,QString,int)),this,SLOT(disConnect(int,QString,int)));
@@ -97,4 +101,10 @@ int TcpIpServer::getClientID(QString IP, int Port)
         }
     }
     return -1;
+}
+
+void TcpIpServer::set_prefix_suffix(QString prefix, QString suffix)
+{
+    this->prefix = prefix;
+    this->suffix = suffix;
 }

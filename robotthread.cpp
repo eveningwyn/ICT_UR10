@@ -43,20 +43,26 @@ QString RobotThread::forShowSendString(QString str)
 
 void RobotThread::robotReadData(QString IP, int Port, QString readMsg)
 {
-    /*/////////////////////////////////////*/
-
-
     emit forShow(forShowReceiveString(QString("%1 %2:%3").arg(IP).arg(Port).arg(readMsg)));
+
+    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
+    QString robotIP = configRead->value("/RobotParameter/RobotIP").toString();
+    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    delete configRead;
+    if(robotIP ==IP && robotPort==QString("%1").arg(Port))
+    {
+        informationCheck(readMsg);
+    }
 }
 
 void RobotThread::robotSendMsg(QString sendMsg)
 {
     QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    quint16 port =(quint16) configRead->value("/RobotParameter/RobotPort").toString().toInt();
+    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
     delete configRead;
 
     ICT_UR10 *ptr = (ICT_UR10*)this->parent();
-    ptr->robotServer->sendData(port,sendMsg);
+    ptr->robotServer->sendData(robotPort.toInt(),sendMsg);
 
     emit forShow(forShowSendString(sendMsg));
 }
@@ -64,4 +70,12 @@ void RobotThread::robotSendMsg(QString sendMsg)
 void RobotThread::robotManualSendMsg(QString sendMsg)
 {
     robotSendMsg(sendMsg);
+}
+
+void RobotThread::informationCheck(QString msg)
+{
+    if(""==msg)
+    {
+        return;
+    }
 }

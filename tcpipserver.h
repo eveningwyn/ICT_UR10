@@ -14,6 +14,9 @@ public:
     void closeServerListen();
     void sendData(quint16 port,QString sendMsg);    //发送数据
     int getClientID(QString IP,int Port);
+    QString prefix;
+    QString suffix;
+    void set_prefix_suffix(QString prefix,QString suffix);
 
 private:
     QList<TcpIpClient *> clientSocketList;  //保存客户端对象集合
