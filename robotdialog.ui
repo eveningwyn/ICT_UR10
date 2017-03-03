@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>223</width>
-    <height>146</height>
+    <width>572</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,19 +21,6 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="lineEditRobotPort"/>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="labelRobotPort">
-     <property name="layoutDirection">
-      <enum>Qt::RightToLeft</enum>
-     </property>
-     <property name="text">
-      <string>Robot Port:</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="labelIPAddress">
      <property name="layoutDirection">
@@ -44,7 +31,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="0" column="1" colspan="2">
+    <widget class="QLineEdit" name="lineEditIPAddress"/>
+   </item>
+   <item row="0" column="3">
     <widget class="QLabel" name="labelPort">
      <property name="layoutDirection">
       <enum>Qt::RightToLeft</enum>
@@ -54,13 +44,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="0" column="4" colspan="2">
     <widget class="QLineEdit" name="lineEditPort"/>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEditIPAddress"/>
-   </item>
-   <item row="5" column="0" colspan="2">
+   <item row="0" column="6" rowspan="2">
     <widget class="QPushButton" name="Setting">
      <property name="text">
       <string>Setting</string>
@@ -71,10 +58,20 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="lineEditRobotPAddress"/>
+   <item row="0" column="7" rowspan="2">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>48</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
-   <item row="3" column="0">
+   <item row="1" column="0">
     <widget class="QLabel" name="labelRobotIPAddress">
      <property name="layoutDirection">
       <enum>Qt::RightToLeft</enum>
@@ -84,8 +81,139 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="1" colspan="2">
+    <widget class="QLineEdit" name="lineEditRobotPAddress"/>
+   </item>
+   <item row="1" column="3">
+    <widget class="QLabel" name="labelRobotPort">
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="text">
+      <string>Robot Port:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4" colspan="2">
+    <widget class="QLineEdit" name="lineEditRobotPort"/>
+   </item>
+   <item row="2" column="0" colspan="8">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QPushButton" name="pushButtonAddType">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>122</width>
+       <height>23</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Add Product Type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" colspan="2">
+    <widget class="QPushButton" name="pushButtonSaveType">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>122</width>
+       <height>23</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Save Product Type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QPushButton" name="pushButtonDelType">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Delete Product Type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="5" colspan="2">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>83</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="7">
+    <spacer name="horizontalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>48</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="0" colspan="8">
+    <widget class="QTableWidget" name="tableWidgetRobotType">
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>270</number>
+     </attribute>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Product Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Robot Program No.</string>
+      </property>
+     </column>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEditIPAddress</tabstop>
+  <tabstop>lineEditPort</tabstop>
+  <tabstop>lineEditRobotPAddress</tabstop>
+  <tabstop>lineEditRobotPort</tabstop>
+  <tabstop>Setting</tabstop>
+  <tabstop>pushButtonAddType</tabstop>
+  <tabstop>tableWidgetRobotType</tabstop>
+  <tabstop>pushButtonSaveType</tabstop>
+  <tabstop>pushButtonDelType</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

@@ -46,7 +46,8 @@ HEADERS  += ict_ur10.h \
     robotthread.h \
     logindialog.h \
     tcpipclient.h \
-    tcpipserver.h
+    tcpipserver.h \
+    staticname.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

@@ -56,6 +56,8 @@ private slots:
 
     void robotDisconnected(QString IP,int Port);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::ICT_UR10 *ui;
     CommunicationDialog *commDlg;
@@ -63,6 +65,7 @@ private:
     void init_Scanner_Robot();
     void closeEvent(QCloseEvent *event);
     QString forShowString(QString str);
+    void newFile();
 };
 
 #endif // ICT_UR10_H

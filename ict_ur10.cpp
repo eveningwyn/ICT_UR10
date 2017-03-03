@@ -7,8 +7,11 @@
 #include <QDateTime>
 #include <QFile>
 #include <QDataStream>
+#include <QDir>
+#include "staticname.h"
 
 #include <QDebug>
+
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
     QMainWindow(parent),
@@ -53,6 +56,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     init_Scanner_Robot();
     disEnableUI();
+    newFile();
 
     scan_thread->start();
     robot_thread->start();
@@ -98,14 +102,14 @@ void ICT_UR10::on_actionCommunication_triggered()
 
 void ICT_UR10::init_Scanner_Robot()
 {
-    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
 
     //Scanner
-    QString portName = configRead->value("/ScannerParameter/PortName").toString();
-    int baudRate = configRead->value("/ScannerParameter/BaudRate").toString().toInt();
-    int dataBits = configRead->value("/ScannerParameter/DataBits").toString().toInt();
-    QString parityBits = configRead->value("/ScannerParameter/ParityBits").toString();
-    QString stopBits = configRead->value("/ScannerParameter/StopBits").toString();
+    QString portName = configRead->value(SCANNER_PORT_NAME).toString();
+    int baudRate = configRead->value(SCANNER_BAUD_RATE).toString().toInt();
+    int dataBits = configRead->value(SCANNER_DATA_BITS).toString().toInt();
+    QString parityBits = configRead->value(SCANNER_PARITY_BITS).toString();
+    QString stopBits = configRead->value(SCANNER_STOP_BITS).toString();
     if(!(scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
     {
         QMessageBox::warning(this,tr("Error"),tr("Scanner initialize failed!"),QMessageBox::Ok);
@@ -119,8 +123,8 @@ void ICT_UR10::init_Scanner_Robot()
     }
 
     //Robot
-    QString address =configRead->value("/RobotParameter/IPaddress").toString();
-    quint16 port =(quint16) configRead->value("/RobotParameter/Port").toString().toInt();
+    QString address =configRead->value(SERVER_IP_ADDRESS).toString();
+    quint16 port =(quint16) configRead->value(SERVER_PORT).toString().toInt();
     if(!robotServer->stratListen(address,port))
     {
         QMessageBox::warning(this,tr("Error"),tr("Robot initialize failed!"),QMessageBox::Ok);
@@ -206,9 +210,9 @@ void ICT_UR10::robotConnected(QString IP, int Port)
 {
     emit forShow(forShowString(QString("Robot:%1 %2 Connected").arg(IP).arg(Port)));
 
-    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    QString robotIP = configRead->value("/RobotParameter/RobotIP").toString();
-    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotIP = configRead->value(ROBOT_IP).toString();
+    QString robotPort = configRead->value(ROBOT_PORT).toString();
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
@@ -220,9 +224,9 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
 {
     emit forShow(forShowString(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port)));
 
-    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    QString robotIP = configRead->value("/RobotParameter/RobotIP").toString();
-    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotIP = configRead->value(ROBOT_IP).toString();
+    QString robotPort = configRead->value(ROBOT_PORT).toString();
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
@@ -284,7 +288,8 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
 
     QString datalist = QString("%1,%2,%3,%4\n").arg(time.toString("yyyyMMdd"))
             .arg(time.toString("hh:mm:ss")).arg(sn).arg(result);
-    QFile csvFile(QString("C:\ICT\\ICT_UR10_test_result_%1.csv").arg(time.toString("yyyyMMdd")));
+    newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹
+    QFile csvFile(QString(LOCAL_DATA_FILE_NAME).arg(time.toString("yyyyMMdd")));
     if (csvFile.open(QIODevice::ReadWrite))
     {
         if(0 == csvFile.size())
@@ -294,5 +299,20 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         csvFile.seek(csvFile.size());
         csvFile.write(datalist.toLatin1());
         csvFile.close();
+    }
+}
+
+void ICT_UR10::on_pushButton_clicked()
+{
+    updateTestResult("SN1234567890","PASS");
+}
+
+void ICT_UR10::newFile()
+{
+    QDir *temp = new QDir;
+    bool fileExist = temp->exists(LOCAL_DATA_FOLDER_NAME);
+    if(!fileExist)
+    {
+        temp->mkdir(LOCAL_DATA_FOLDER_NAME);
     }
 }

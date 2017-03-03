@@ -2,6 +2,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include "ict_ur10.h"
+#include "staticname.h"
 
 RobotThread::RobotThread(QObject *parent) :
     QThread(parent)
@@ -45,9 +46,9 @@ void RobotThread::robotReadData(QString IP, int Port, QString readMsg)
 {
     emit forShow(forShowReceiveString(QString("%1 %2:%3").arg(IP).arg(Port).arg(readMsg)));
 
-    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    QString robotIP = configRead->value("/RobotParameter/RobotIP").toString();
-    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotIP = configRead->value(ROBOT_IP).toString();
+    QString robotPort = configRead->value(ROBOT_PORT).toString();
     delete configRead;
     if(robotIP ==IP && robotPort==QString("%1").arg(Port))
     {
@@ -57,8 +58,8 @@ void RobotThread::robotReadData(QString IP, int Port, QString readMsg)
 
 void RobotThread::robotSendMsg(QString sendMsg)
 {
-    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    QString robotPort = configRead->value("/RobotParameter/RobotPort").toString();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotPort = configRead->value(ROBOT_PORT).toString();
     delete configRead;
 
     ICT_UR10 *ptr = (ICT_UR10*)this->parent();

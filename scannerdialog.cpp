@@ -4,6 +4,7 @@
 #include <QSerialPortInfo>
 #include <QSettings>
 #include "ict_ur10.h"
+#include "staticname.h"
 
 ScannerDialog::ScannerDialog(QWidget *parent) :
     QDialog(parent),
@@ -28,24 +29,24 @@ void ScannerDialog::on_pushButtonSetting_clicked()
         QString parityBits = ui->comboBoxParityBits->currentText();
         QString stopBits = ui->comboBoxStopBits->currentText();
 
-        QSettings *configWrite = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-        configWrite->setValue("/ScannerParameter/PortName", portName);
-        configWrite->setValue("ScannerParameter/BaudRate", baudRate);
-        configWrite->setValue("ScannerParameter/DataBits", dataBits);
-        configWrite->setValue("ScannerParameter/ParityBits", parityBits);
-        configWrite->setValue("ScannerParameter/StopBits", stopBits);
+        QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        configWrite->setValue(SCANNER_PORT_NAME, portName);
+        configWrite->setValue(SCANNER_BAUD_RATE, baudRate);
+        configWrite->setValue(SCANNER_DATA_BITS, dataBits);
+        configWrite->setValue(SCANNER_PARITY_BITS, parityBits);
+        configWrite->setValue(SCANNER_STOP_BITS, stopBits);
         delete configWrite;
     }
 }
 
 void ScannerDialog::initializeInfo()
 {
-    QSettings *configRead = new QSettings("..\\path/Config.ini", QSettings::IniFormat);
-    QString portName   = configRead->value("/ScannerParameter/PortName").toString();
-    QString baudRate   = configRead->value("/ScannerParameter/BaudRate").toString();
-    QString dataBits   = configRead->value("/ScannerParameter/DataBits").toString();
-    QString parityBits = configRead->value("/ScannerParameter/ParityBits").toString();
-    QString stopBits   = configRead->value("/ScannerParameter/StopBits").toString();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString portName   = configRead->value(SCANNER_PORT_NAME).toString();
+    QString baudRate   = configRead->value(SCANNER_BAUD_RATE).toString();
+    QString dataBits   = configRead->value(SCANNER_DATA_BITS).toString();
+    QString parityBits = configRead->value(SCANNER_PARITY_BITS).toString();
+    QString stopBits   = configRead->value(SCANNER_STOP_BITS).toString();
     delete configRead;
 
     ui->comboBoxPortNum->addItem(portName);
