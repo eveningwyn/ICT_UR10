@@ -10,6 +10,12 @@
     <height>205</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>193</width>
+    <height>250</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Scanner</string>
   </property>

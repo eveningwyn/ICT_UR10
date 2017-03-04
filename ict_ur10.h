@@ -56,8 +56,6 @@ private slots:
 
     void robotDisconnected(QString IP,int Port);
 
-    void on_pushButton_clicked();
-
 private:
     Ui::ICT_UR10 *ui;
     CommunicationDialog *commDlg;

@@ -84,6 +84,19 @@ void ICT_UR10::on_actionRobot_triggered()
 {
     RobotDialog robotDlg(this);
     robotDlg.exec();
+
+    ui->comboBoxTypeSelect->clear();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString strTypeTemp = "";
+    for(int i=0; i<COUNT; i++)
+    {
+        strTypeTemp = configRead->value(QString(MAIN_UI_TYPE).arg(i)).toString();
+        if(""!=strTypeTemp)
+        {
+            ui->comboBoxTypeSelect->insertItem(i,strTypeTemp);
+        }
+    }
+    delete configRead;
 }
 
 void ICT_UR10::on_actionCommunication_triggered()
@@ -137,17 +150,28 @@ void ICT_UR10::init_Scanner_Robot()
         emit forShow(forShowString("Robot:Listening..."));
     }
 
+    ui->comboBoxTypeSelect->clear();
+    QString strTypeTemp = "";
+    for(int i=0; i<COUNT; i++)
+    {
+        strTypeTemp = configRead->value(QString(MAIN_UI_TYPE).arg(i)).toString();
+        if(""!=strTypeTemp)
+        {
+            ui->comboBoxTypeSelect->insertItem(i,strTypeTemp);
+        }
+    }
+
     delete configRead;
 }
 
 void ICT_UR10::getSn(QString sn)
 {
-//    if(ui->lineEditSN->text().isEmpty())
-//    {
+    if(ui->lineEditSN->text().isEmpty())
+    {
         sn.replace("\r","");
         sn.replace("\n","");
         ui->lineEditSN->setText(sn);
-//    }
+    }
 }
 
 void ICT_UR10::manualStartScan()
@@ -300,11 +324,6 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         csvFile.write(datalist.toLatin1());
         csvFile.close();
     }
-}
-
-void ICT_UR10::on_pushButton_clicked()
-{
-    updateTestResult("SN1234567890","PASS");
 }
 
 void ICT_UR10::newFile()
