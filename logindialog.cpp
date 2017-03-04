@@ -2,6 +2,7 @@
 #include "ui_logindialog.h"
 #include "ict_ur10.h"
 #include <QMessageBox>
+#include "staticname.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -17,8 +18,7 @@ LoginDialog::~LoginDialog()
 
 void LoginDialog::on_pushButtonLogin_clicked()
 {
-//    if("admin"==ui->lineEditUserID->text().trimmed() && "admin"==ui->lineEditPassword->text())
-    if(""==ui->lineEditUserID->text().trimmed() && ""==ui->lineEditPassword->text())
+    if(USER_ID==ui->lineEditUserID->text().trimmed() && PASSWORD==ui->lineEditPassword->text())
     {
         ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
         ptr->Enable();

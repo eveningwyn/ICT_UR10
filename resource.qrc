@@ -8,5 +8,6 @@
         <file>res/send_text_message_32px.png</file>
         <file>res/communication_chat_32px.png</file>
         <file>res/Login_32px.png</file>
+        <file>res/dialog_error_32px.png</file>
     </qresource>
 </RCC>

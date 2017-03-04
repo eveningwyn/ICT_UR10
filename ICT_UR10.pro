@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     robotthread.cpp \
     logindialog.cpp \
     tcpipclient.cpp \
-    tcpipserver.cpp
+    tcpipserver.cpp \
+    errorlistdialog.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -47,13 +48,15 @@ HEADERS  += ict_ur10.h \
     logindialog.h \
     tcpipclient.h \
     tcpipserver.h \
-    staticname.h
+    staticname.h \
+    errorlistdialog.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \
     robotdialog.ui \
     communicationdialog.ui \
-    logindialog.ui
+    logindialog.ui \
+    errorlistdialog.ui
 
 RESOURCES += \
     resource.qrc

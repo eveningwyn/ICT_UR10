@@ -21,6 +21,7 @@ void RobotDialog::initGetInfo()
 {
     isSave = true;
     ui->pushButtonDelType->setDisabled(false);
+
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
 
     QString ipAddress   = configRead->value(SERVER_IP_ADDRESS).toString();
@@ -35,7 +36,7 @@ void RobotDialog::initGetInfo()
     QString typeTemp = "";
     QString pro_numTemp = "";
     int rowCount = 0;
-    for(int i=0; i<COUNT; i++)
+    for(int i=0; i<TYPE_TOTAL; i++)
     {
         typeTemp = configRead->value(QString(ROBOT_TYPE).arg(ui->comboBoxType->itemText(i))).toString();
         pro_numTemp = configRead->value(QString(ROBOT_PRO_NUM).arg(ui->comboBoxType->itemText(i))).toString();
@@ -75,9 +76,9 @@ void RobotDialog::on_Setting_clicked()
 void RobotDialog::on_pushButtonAddType_clicked()
 {
     int rowCount = ui->tableWidgetRobotType->rowCount();//获取当前总行数
-    if(rowCount > COUNT)
+    if(rowCount > TYPE_TOTAL-1)
     {
-        QMessageBox::warning(this,"Error",QString("Allow only add %1 set of parameters!").arg(COUNT),QMessageBox::Ok);
+        QMessageBox::warning(this,"Error",QString("Add error!\nOnly allow to add %1 sets of parameters!").arg(TYPE_TOTAL),QMessageBox::Ok);
         return;
     }
     QString typeSet = ui->comboBoxType->currentText();
@@ -129,7 +130,7 @@ void RobotDialog::on_pushButtonDelType_clicked()
         {
             return;
         }
-        if(QMessageBox::Yes == QMessageBox::warning(this,"Delete","Are you sure to Delete this product type?",
+        if(QMessageBox::Yes == QMessageBox::warning(this,"Delete","Are you sure to delete this product type?",
                                                     QMessageBox::Yes|QMessageBox::No))
         {
             /**************删除本地配置文件的存储内容***************/
@@ -172,7 +173,7 @@ void RobotDialog::saveConfig()
     QString pro_numTemp = "";
 
     QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    for(int j=0;j<COUNT;j++)
+    for(int j=0;j<TYPE_TOTAL;j++)
     {
         configWrite->remove(QString(MAIN_UI_TYPE).arg(j));
     }

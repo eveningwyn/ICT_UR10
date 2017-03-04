@@ -20,6 +20,11 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     ui->setupUi(this);
 //    ui->toolBar->setHidden(true);
 
+    totalQty = 0;
+    passQty = 0;
+    failQty = 0;
+    yield = 0.00;
+
     scan_thread = new ScannerThread(this);//实例scan线程对象
     robot_thread = new RobotThread(this);//实例robot线程对象
 
@@ -31,30 +36,37 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     commDlgIsShow = false;
     loginDlg = new LoginDialog(this);
     loginDlgIsShow = false;
+    errorDlg = new ErrorListDialog(this);
+    errorDlgIsShow = false;
 
     testCount = 0;
 
-    ui->tableWidgetResultList->setColumnWidth(2,200);
     ui->tableWidgetResultList->setColumnWidth(3,200);
 
     connect(robot_thread,SIGNAL(startScan()),scan_thread,SLOT(scannerScanSN()));
     connect(robot_thread,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
+    connect(robot_thread,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
+    connect(robot_thread,SIGNAL(errorMessage(QString)),errorDlg,SLOT(errorMessage(QString)));
 
     connect(this,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
     connect(this,SIGNAL(manualScan()),scan_thread,SLOT(scannerScanSN()));
+    connect(this,SIGNAL(sendErrorMsg(QString)),errorDlg,SLOT(errorMessage(QString)));
 
     connect(scanner,SIGNAL(serialReadReady()),scan_thread,SLOT(scannerReadSN()));
 
     connect(scan_thread,SIGNAL(scanResult(QString)),this,SLOT(getSn(QString)));
     connect(scan_thread,SIGNAL(scanError(QString)),this,SLOT(errorMessage(QString)));
     connect(scan_thread,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
+    connect(scan_thread,SIGNAL(scanError(QString)),errorDlg,SLOT(errorMessage(QString)));
 
     connect(robotServer,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
     connect(robotServer,SIGNAL(clientConnect(QString,int)),this,SLOT(robotConnected(QString,int)));
     connect(robotServer,SIGNAL(clientDisconnected(QString,int)),this,SLOT(robotDisconnected(QString,int)));
     connect(robotServer,SIGNAL(serverReadData(QString,int,QString)),robot_thread,SLOT(robotReadData(QString,int,QString)));
+    connect(robotServer,SIGNAL(errorMessage(QString)),errorDlg,SLOT(errorMessage(QString)));
 
     init_Scanner_Robot();
+    update_UI_show();
     disEnableUI();
     newFile();
 
@@ -88,7 +100,7 @@ void ICT_UR10::on_actionRobot_triggered()
     ui->comboBoxTypeSelect->clear();
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString strTypeTemp = "";
-    for(int i=0; i<COUNT; i++)
+    for(int i=0; i<TYPE_TOTAL; i++)
     {
         strTypeTemp = configRead->value(QString(MAIN_UI_TYPE).arg(i)).toString();
         if(""!=strTypeTemp)
@@ -115,6 +127,16 @@ void ICT_UR10::on_actionCommunication_triggered()
 
 void ICT_UR10::init_Scanner_Robot()
 {
+    //设置状态栏
+    statusBarLabel_Scanner = new QLabel(this);
+    statusBarLabel_Robot = new QLabel(this);
+    statusBarLabel_Scanner->setFrameStyle(QFrame::StyledPanel);
+    statusBarLabel_Scanner->setTextFormat(Qt::RichText);
+    statusBarLabel_Robot->setFrameStyle(QFrame::StyledPanel);
+    statusBarLabel_Robot->setTextFormat(Qt::RichText);
+    ui->statusBar->addPermanentWidget(statusBarLabel_Scanner);
+    ui->statusBar->addPermanentWidget(statusBarLabel_Robot);
+
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
 
     //Scanner
@@ -126,12 +148,13 @@ void ICT_UR10::init_Scanner_Robot()
     if(!(scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
     {
         QMessageBox::warning(this,tr("Error"),tr("Scanner initialize failed!"),QMessageBox::Ok);
-        ui->labelScanStatus->setText("Scanner:Disconnected!");
-        emit forShow(forShowString("Scanner:Disconnected!"));
+        statusBarLabel_Scanner->setText("Scanner:Disconnected!");
+        emit forShow(forShowString("Scanner initialize failed!"));
+        emit sendErrorMsg("Scanner initialize failed!");
     }
     else
     {
-        ui->labelScanStatus->setText(QString("Scanner:%1 Connected").arg(portName));
+        statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
         emit forShow(forShowString(QString("Scanner:%1 Connected").arg(portName)));
     }
 
@@ -141,18 +164,19 @@ void ICT_UR10::init_Scanner_Robot()
     if(!robotServer->stratListen(address,port))
     {
         QMessageBox::warning(this,tr("Error"),tr("Robot initialize failed!"),QMessageBox::Ok);
-        ui->labelRobotStatus->setText("Robot:Disconnected!");
-        emit forShow(forShowString("Robot:Disconnected!"));
+        statusBarLabel_Robot->setText("Robot:Disconnected!");
+        emit forShow(forShowString("Robot initialize failed!"));
+        emit sendErrorMsg("Robot initialize failed!");
     }
     else
     {
-        ui->labelRobotStatus->setText("Robot:Listening...");
+        statusBarLabel_Robot->setText("Robot:Listening...");
         emit forShow(forShowString("Robot:Listening..."));
     }
 
     ui->comboBoxTypeSelect->clear();
     QString strTypeTemp = "";
-    for(int i=0; i<COUNT; i++)
+    for(int i=0; i<TYPE_TOTAL; i++)
     {
         strTypeTemp = configRead->value(QString(MAIN_UI_TYPE).arg(i)).toString();
         if(""!=strTypeTemp)
@@ -162,6 +186,14 @@ void ICT_UR10::init_Scanner_Robot()
     }
 
     delete configRead;
+}
+
+void ICT_UR10::update_UI_show()
+{
+    ui->labelTotalQty->setText(QString("%1").arg(totalQty));
+    ui->labelPassQty->setText(QString("%1").arg(passQty));
+    ui->labelFailQty->setText(QString("%1").arg(failQty));
+    ui->labelYield->setText(QString("%1%").arg(yield*100));
 }
 
 void ICT_UR10::getSn(QString sn)
@@ -205,6 +237,7 @@ void ICT_UR10::disEnableUI()
     ui->actionScanner->setDisabled(true);
     ui->actionRobot->setDisabled(true);
     commDlg->disEnable();
+    errorDlg->disEnable();
 }
 
 void ICT_UR10::Enable()
@@ -213,6 +246,7 @@ void ICT_UR10::Enable()
     ui->actionScanner->setDisabled(false);
     ui->actionRobot->setDisabled(false);
     commDlg->Enable();
+    errorDlg->Enable();
 }
 
 void ICT_UR10::closeEvent(QCloseEvent *event)
@@ -240,7 +274,7 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-        ui->labelRobotStatus->setText(QString("Robot:%1 %2 Connected").arg(IP).arg(Port));
+        statusBarLabel_Robot->setText(QString("Robot:%1 %2 Connected").arg(IP).arg(Port));
     }
 }
 
@@ -254,7 +288,9 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-        ui->labelRobotStatus->setText(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
+        statusBarLabel_Robot->setText(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
+        QMessageBox::warning(this,"Warning",QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port),QMessageBox::Ok);
+        emit sendErrorMsg(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
     }
 }
 
@@ -269,7 +305,7 @@ void ICT_UR10::updateScannerStatue(QString portName,bool connected)
 {
     if(true == connected)
     {
-        ui->labelScanStatus->setText(QString("Scanner:%1 Connected").arg(portName));
+        statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
         emit forShow(forShowString(QString("Scanner:%1 Connected").arg(portName)));
         return;
     }
@@ -287,32 +323,40 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     ui->tableWidgetResultList->setRowCount(ui->tableWidgetResultList->rowCount() + 1);
     QDateTime time = QDateTime::currentDateTime();
     int row = ui->tableWidgetResultList->rowCount() - 1;
-    ui->tableWidgetResultList->setItem(row,0,new QTableWidgetItem(time.toString("yyyyMMdd")));
-    ui->tableWidgetResultList->setItem(row,1,new QTableWidgetItem(time.toString("hh:mm:ss")));
-    ui->tableWidgetResultList->setItem(row,2,new QTableWidgetItem(sn));
-    ui->tableWidgetResultList->setItem(row,3,new QTableWidgetItem(result));
+    ui->tableWidgetResultList->setItem(row,0,new QTableWidgetItem(ui->comboBoxTypeSelect->currentText()));
+    ui->tableWidgetResultList->setItem(row,1,new QTableWidgetItem(time.toString("yyyyMMdd")));
+    ui->tableWidgetResultList->setItem(row,2,new QTableWidgetItem(time.toString("hh:mm:ss")));
+    ui->tableWidgetResultList->setItem(row,3,new QTableWidgetItem(sn));
+    ui->tableWidgetResultList->setItem(row,4,new QTableWidgetItem(result));
     ui->tableWidgetResultList->item(row, 0)->setTextAlignment(Qt::AlignCenter);
     ui->tableWidgetResultList->item(row, 1)->setTextAlignment(Qt::AlignCenter);
     ui->tableWidgetResultList->item(row, 2)->setTextAlignment(Qt::AlignCenter);
     ui->tableWidgetResultList->item(row, 3)->setTextAlignment(Qt::AlignCenter);
+    ui->tableWidgetResultList->item(row, 4)->setTextAlignment(Qt::AlignCenter);
 
+    totalQty++;//总数量加1
     if("PASS"==result.toUpper())
     {
-        ui->tableWidgetResultList->item(row, 3)->setBackgroundColor(QColor(0, 255, 0));
+        ui->tableWidgetResultList->item(row, 4)->setBackgroundColor(QColor(0, 255, 0));
+        passQty++;//pass数量加1
     }
     else
     {
         if("FAIL"==result.toUpper())
         {
-            ui->tableWidgetResultList->item(row, 3)->setBackgroundColor(QColor(255, 0, 0));
+            ui->tableWidgetResultList->item(row, 4)->setBackgroundColor(QColor(255, 0, 0));
+            failQty++;//fail数量加1
         }
     }
-
+    yield = ((float)passQty)/((float)totalQty);//计算良率
     ui->tableWidgetResultList->scrollToBottom();
 
+    //保存测试结果到csv文件
     QString datalist = QString("%1,%2,%3,%4\n").arg(time.toString("yyyyMMdd"))
             .arg(time.toString("hh:mm:ss")).arg(sn).arg(result);
+
     newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹
+
     QFile csvFile(QString(LOCAL_DATA_FILE_NAME).arg(time.toString("yyyyMMdd")));
     if (csvFile.open(QIODevice::ReadWrite))
     {
@@ -324,6 +368,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         csvFile.write(datalist.toLatin1());
         csvFile.close();
     }
+    update_UI_show();
 }
 
 void ICT_UR10::newFile()
@@ -333,5 +378,29 @@ void ICT_UR10::newFile()
     if(!fileExist)
     {
         temp->mkdir(LOCAL_DATA_FOLDER_NAME);
+    }
+}
+
+void ICT_UR10::on_pushButton_clicked()
+{
+    updateTestResult("SN1234567890","PASS");
+}
+
+void ICT_UR10::on_pushButton_2_clicked()
+{
+    updateTestResult("SN0987654321","FAIL");
+}
+
+void ICT_UR10::on_actionError_list_triggered()
+{
+    if(false == errorDlgIsShow)
+    {
+        errorDlg->show();
+        errorDlgIsShow = true;
+    }
+    else
+    {
+        errorDlg->hide();
+        errorDlgIsShow = false;
     }
 }

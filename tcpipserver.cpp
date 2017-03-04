@@ -24,6 +24,7 @@ void TcpIpServer::incomingConnection(qintptr socketDescriptor)
 
     connect(clientSocket,SIGNAL(readData(int,QString,int,QString)),this,SLOT(serverReadMsg(int,QString,int,QString)));
     connect(clientSocket,SIGNAL(clientDisConnect(int,QString,int)),this,SLOT(disConnect(int,QString,int)));
+    connect(clientSocket,SIGNAL(cliendErrorMsg(QString)),this,SIGNAL(errorMessage(QString)));
 
     emit clientConnect(clientSocket->peerAddress().toString(),clientSocket->peerPort());//发送已连接的客户端信息
 

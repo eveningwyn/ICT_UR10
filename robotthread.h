@@ -16,6 +16,7 @@ public:
 signals:
     void startScan();
     void forShow(QString msg);
+    void errorMessage(QString errorMsg);
 
 private slots:
     void robotReadData(QString IP,int Port,QString readMsg);

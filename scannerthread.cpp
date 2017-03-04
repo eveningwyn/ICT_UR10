@@ -86,8 +86,6 @@ void ScannerThread::timerTimeOut()
 //    emit forShow(forShowReceiveString(sn));
 //    return;
 
-
-
     if(3 > scanCount)//3 times scanning
     {
         scannerScanSN();
@@ -96,9 +94,8 @@ void ScannerThread::timerTimeOut()
 
     scanCount = 0;
 
-    QString errorMsg = "Scan barcode timeout!\r\n";
-    emit scanError(errorMsg);
-    emit forShow(forShowReceiveString(errorMsg));
+    emit scanError("Scan barcode timeout!\r\n");
+//    emit forShow(forShowReceiveString(errorMsg));
 }
 
 QString ScannerThread::forShowReceiveString(QString str)
