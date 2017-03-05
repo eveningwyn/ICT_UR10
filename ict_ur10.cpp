@@ -82,7 +82,7 @@ ICT_UR10::~ICT_UR10()
         scan_thread->stop();
     if(robot_thread->isRunning())
         robot_thread->stop();
-    QThread::msleep(100);
+//    QThread::msleep(100);
     delete scan_thread;
     delete robot_thread;
     delete ui;

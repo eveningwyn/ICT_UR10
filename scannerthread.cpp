@@ -23,7 +23,7 @@ void ScannerThread::run()
     {
 //        msleep(10);
     }
-    stopped = false;
+//    stopped = false;
 }
 
 void ScannerThread::stop()

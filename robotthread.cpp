@@ -16,7 +16,7 @@ void RobotThread::run()
     {
 //        msleep(10);
     }
-    stopped = false;
+//    stopped = false;
 }
 
 void RobotThread::stop()
