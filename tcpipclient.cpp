@@ -75,14 +75,14 @@ void TcpIpClient::newConnect(const QString address, quint16 port)
 //    this->abort();//关闭已有连接
     this->connectToHost(QHostAddress(address),port);
     if (!this->waitForConnected(3000))
-        emit cliendErrorMsg(this->errorString());
+        emit cliendErrorMsg(this->errorString()+"\n");
 }
 
 void TcpIpClient::closeConnect()
 {
     this->disconnectFromHost();
 //    if(!(this->state() == QAbstractSocket::UnconnectedState || this->waitForDisconnected(1000)))
-//        emit cliendErrorMsg(this->errorString());
+//        emit cliendErrorMsg(this->errorString()+"\n");
 }
 
 bool TcpIpClient::bindClient(const QString address, quint16 port)

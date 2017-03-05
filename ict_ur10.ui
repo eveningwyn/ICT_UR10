@@ -430,7 +430,7 @@
    </property>
    <widget class="QMenu" name="menuConfig">
     <property name="title">
-     <string>&amp;Config</string>
+     <string>&amp;Parameter configuration</string>
     </property>
     <addaction name="actionScanner"/>
     <addaction name="actionRobot"/>

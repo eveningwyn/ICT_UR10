@@ -17,10 +17,12 @@ signals:
     void startScan();
     void forShow(QString msg);
     void errorMessage(QString errorMsg);
+    void checkSnPass(QString sn);
 
 private slots:
     void robotReadData(QString IP,int Port,QString readMsg);
     void robotSendMsg(QString sendMsg);
+    void checkSn(QString sn);
 
 private:
     volatile bool stopped;

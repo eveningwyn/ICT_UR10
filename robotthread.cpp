@@ -52,7 +52,7 @@ void RobotThread::robotReadData(QString IP, int Port, QString readMsg)
     delete configRead;
     if(robotIP ==IP && robotPort==QString("%1").arg(Port))
     {
-        informationCheck(readMsg);
+        informationCheck(readMsg);//根据协议处理接收的数据
     }
 }
 
@@ -73,10 +73,22 @@ void RobotThread::robotManualSendMsg(QString sendMsg)
     robotSendMsg(sendMsg);
 }
 
-void RobotThread::informationCheck(QString msg)
+void RobotThread::informationCheck(QString msg)//根据协议处理接收的数据
 {
     if(""==msg)
     {
         return;
+    }
+}
+
+void RobotThread::checkSn(QString sn)
+{
+    if(true)
+    {
+        emit checkSnPass(sn);
+    }
+    else
+    {
+        emit errorMessage("Please check this products test station information!\n");
     }
 }

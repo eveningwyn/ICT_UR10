@@ -15,7 +15,7 @@ void TcpIpServer::incomingConnection(qintptr socketDescriptor)
     TcpIpClient *clientSocket=new TcpIpClient(this);
     if (!clientSocket->setSocketDescriptor(socketDescriptor))
     {
-        emit errorMessage(clientSocket->errorString());
+        emit errorMessage(clientSocket->errorString()+"\n");
         return;
     }
     clientSocket->clientID = socketDescriptor;//配置客户端对象ID
@@ -78,7 +78,7 @@ bool TcpIpServer::stratListen(QString address,quint16 port)
         QHostAddress addr(address);
         if(!this->listen(addr,port))
         {
-            emit errorMessage(this->errorString());
+            emit errorMessage(this->errorString()+"\n");
             this->close();
             return false;
         }

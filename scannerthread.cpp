@@ -82,6 +82,7 @@ void ScannerThread::timerTimeOut()
 
 //    //for debug
 //    QString sn = "sn1234567890\r\n";
+//    scanCount = 0;
 //    emit scanResult(sn);
 //    emit forShow(forShowReceiveString(sn));
 //    return;
@@ -95,7 +96,6 @@ void ScannerThread::timerTimeOut()
     scanCount = 0;
 
     emit scanError("Scan barcode timeout!\r\n");
-//    emit forShow(forShowReceiveString(errorMsg));
 }
 
 QString ScannerThread::forShowReceiveString(QString str)

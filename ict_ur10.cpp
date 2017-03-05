@@ -47,6 +47,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_thread,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
     connect(robot_thread,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
     connect(robot_thread,SIGNAL(errorMessage(QString)),errorDlg,SLOT(errorMessage(QString)));
+    connect(robot_thread,SIGNAL(checkSnPass(QString)),this,SLOT(getSn(QString)));
 
     connect(this,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
     connect(this,SIGNAL(manualScan()),scan_thread,SLOT(scannerScanSN()));
@@ -54,7 +55,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     connect(scanner,SIGNAL(serialReadReady()),scan_thread,SLOT(scannerReadSN()));
 
-    connect(scan_thread,SIGNAL(scanResult(QString)),this,SLOT(getSn(QString)));
+//    connect(scan_thread,SIGNAL(scanResult(QString)),this,SLOT(getSn(QString)));
+    connect(scan_thread,SIGNAL(scanResult(QString)),robot_thread,SLOT(checkSn(QString)));
     connect(scan_thread,SIGNAL(scanError(QString)),this,SLOT(errorMessage(QString)));
     connect(scan_thread,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
     connect(scan_thread,SIGNAL(scanError(QString)),errorDlg,SLOT(errorMessage(QString)));
@@ -147,15 +149,15 @@ void ICT_UR10::init_Scanner_Robot()
     QString stopBits = configRead->value(SCANNER_STOP_BITS).toString();
     if(!(scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
     {
-        QMessageBox::warning(this,tr("Error"),tr("Scanner initialize failed!"),QMessageBox::Ok);
+        QMessageBox::warning(this,tr("Error"),tr("Scanner initialize failed!\n"),QMessageBox::Ok);
         statusBarLabel_Scanner->setText("Scanner:Disconnected!");
-        emit forShow(forShowString("Scanner initialize failed!"));
-        emit sendErrorMsg("Scanner initialize failed!");
+        emit forShow(forShowString("Scanner initialize failed!\n"));
+        emit sendErrorMsg("Scanner initialize failed!\n");
     }
     else
     {
         statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
-        emit forShow(forShowString(QString("Scanner:%1 Connected").arg(portName)));
+        emit forShow(forShowString(QString("Scanner:%1 Connected\n").arg(portName)));
     }
 
     //Robot
@@ -163,15 +165,15 @@ void ICT_UR10::init_Scanner_Robot()
     quint16 port =(quint16) configRead->value(SERVER_PORT).toString().toInt();
     if(!robotServer->stratListen(address,port))
     {
-        QMessageBox::warning(this,tr("Error"),tr("Robot initialize failed!"),QMessageBox::Ok);
+        QMessageBox::warning(this,tr("Error"),tr("Robot initialize failed!\n"),QMessageBox::Ok);
         statusBarLabel_Robot->setText("Robot:Disconnected!");
-        emit forShow(forShowString("Robot initialize failed!"));
-        emit sendErrorMsg("Robot initialize failed!");
+        emit forShow(forShowString("Robot initialize failed!\n"));
+        emit sendErrorMsg("Robot initialize failed!\n");
     }
     else
     {
         statusBarLabel_Robot->setText("Robot:Listening...");
-        emit forShow(forShowString("Robot:Listening..."));
+        emit forShow(forShowString("Robot:Listening...\n"));
     }
 
     ui->comboBoxTypeSelect->clear();
@@ -266,7 +268,7 @@ void ICT_UR10::closeEvent(QCloseEvent *event)
 
 void ICT_UR10::robotConnected(QString IP, int Port)
 {
-    emit forShow(forShowString(QString("Robot:%1 %2 Connected").arg(IP).arg(Port)));
+    emit forShow(forShowString(QString("Robot:%1 %2 Connected\n").arg(IP).arg(Port)));
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotIP = configRead->value(ROBOT_IP).toString();
@@ -280,7 +282,7 @@ void ICT_UR10::robotConnected(QString IP, int Port)
 
 void ICT_UR10::robotDisconnected(QString IP, int Port)
 {
-    emit forShow(forShowString(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port)));
+    emit forShow(forShowString(QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port)));
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotIP = configRead->value(ROBOT_IP).toString();
@@ -288,9 +290,9 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-        statusBarLabel_Robot->setText(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
-        QMessageBox::warning(this,"Warning",QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port),QMessageBox::Ok);
-        emit sendErrorMsg(QString("Robot:%1 %2 Disconnected!").arg(IP).arg(Port));
+        statusBarLabel_Robot->setText(QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port));
+        QMessageBox::warning(this,"Warning",QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port),QMessageBox::Ok);
+        emit sendErrorMsg(QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port));
     }
 }
 
@@ -306,7 +308,7 @@ void ICT_UR10::updateScannerStatue(QString portName,bool connected)
     if(true == connected)
     {
         statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
-        emit forShow(forShowString(QString("Scanner:%1 Connected").arg(portName)));
+        emit forShow(forShowString(QString("Scanner:%1 Connected\n").arg(portName)));
         return;
     }
 }
@@ -352,7 +354,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     ui->tableWidgetResultList->scrollToBottom();
 
     //保存测试结果到csv文件
-    QString datalist = QString("%1,%2,%3,%4\n").arg(time.toString("yyyyMMdd"))
+    QString datalist = QString("%1,%2,%3,%4,%5\n").arg(ui->comboBoxTypeSelect->currentText()).arg(time.toString("yyyyMMdd"))
             .arg(time.toString("hh:mm:ss")).arg(sn).arg(result);
 
     newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹
@@ -362,12 +364,13 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     {
         if(0 == csvFile.size())
         {
-            csvFile.write(QString("Date,Time,SN,TestResult\n").toLatin1());
+            csvFile.write(QString("Product Type,Date,Time,SN,TestResult\n").toLatin1());
         }
         csvFile.seek(csvFile.size());
         csvFile.write(datalist.toLatin1());
         csvFile.close();
     }
+    ui->lineEditSN->clear();
     update_UI_show();
 }
 
