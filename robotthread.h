@@ -9,9 +9,17 @@ class RobotThread : public QThread
 
 public:
     explicit RobotThread(QObject *parent = 0);
-    void run();
     void stop();
     void robotManualSendMsg(QString sendMsg);
+
+private:
+    volatile bool stopped;
+    QString forShowReceiveString(QString str);
+    QString forShowSendString(QString str);
+    void informationCheck(QString msg);
+
+protected:
+    void run();
 
 signals:
     void startScan();
@@ -23,12 +31,6 @@ private slots:
     void robotReadData(QString IP,int Port,QString readMsg);
     void robotSendMsg(QString sendMsg);
     void checkSn(QString sn);
-
-private:
-    volatile bool stopped;
-    QString forShowReceiveString(QString str);
-    QString forShowSendString(QString str);
-    void informationCheck(QString msg);
 };
 
 #endif // ROBOTTHREAD_H

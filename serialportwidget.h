@@ -9,6 +9,7 @@
 class SerialPortWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit SerialPortWidget(QWidget *parent = 0);
     ~SerialPortWidget();
