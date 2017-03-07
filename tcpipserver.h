@@ -11,9 +11,9 @@ class TcpIpServer : public QTcpServer
 public:
     explicit TcpIpServer(QObject *parent = 0);
     bool stratListen(QString address,quint16 port); //监听连接
-    void closeServerListen();
+    void closeServerListen();//关闭监听
     void sendData(quint16 port,QString sendMsg);    //发送数据
-    int getClientID(QString IP,int Port);
+    int getClientID(QString IP,int Port);//获取分配给client的ID
     QString prefix;
     QString suffix;
     void set_prefix_suffix(QString prefix,QString suffix);

@@ -3,7 +3,6 @@
 #include <QMessageBox>
 #include <QSerialPortInfo>
 #include <QSettings>
-#include "ict_ur10.h"
 #include "staticname.h"
 
 ScannerDialog::ScannerDialog(QWidget *parent) :
@@ -84,18 +83,3 @@ void ScannerDialog::getPortName()
     }
 }
 
-void ScannerDialog::on_pushButtonOpen_clicked()
-{
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    QString portName = ui->comboBoxPortNum->currentText();
-    int baudRate = ui->comboBoxBaudBits->currentText().toInt();
-    int dataBits = ui->comboBoxDataBits->currentText().toInt();
-    QString parityBits = ui->comboBoxParityBits->currentText();
-    QString stopBits = ui->comboBoxStopBits->currentText();
-    if(!(ptr->scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
-    {
-        QMessageBox::warning(this,tr("Error"),tr("Scanner open failed!"),QMessageBox::Ok);
-        return;
-    }
-    ptr->updateScannerStatue(portName,true);
-}

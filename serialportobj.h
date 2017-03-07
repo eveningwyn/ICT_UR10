@@ -1,18 +1,18 @@
-﻿#ifndef SERIALPORTWIDGET_H
-#define SERIALPORTWIDGET_H
+﻿#ifndef SERIALPORTOBJ_H
+#define SERIALPORTOBJ_H
 
 /*需要在.pro文件添加QT += serialport*/
-#include <QWidget>
+#include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
-class SerialPortWidget : public QWidget
+class SerialPortObj : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit SerialPortWidget(QWidget *parent = 0);
-    ~SerialPortWidget();
+    explicit SerialPortObj(QObject *parent = 0);
+    ~SerialPortObj();
 
     bool openSerialPort(const QString portName,int baudRate,
                         int dataBit,QString parityBit,QString stopBit,bool setDTR,bool setRTS);//参数：端口号、波特率、数据位、校验位、停止位、DTR和RTS
@@ -40,4 +40,4 @@ private:
     void setStopBits(QString stopBit);
 };
 
-#endif // SERIALPORTWIDGET_H
+#endif // SERIALPORTOBJ_H

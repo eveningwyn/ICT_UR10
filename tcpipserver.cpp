@@ -1,5 +1,4 @@
 ﻿#include "tcpipserver.h"
-#include <QMessageBox>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)
@@ -12,7 +11,7 @@ TcpIpServer::TcpIpServer(QObject *parent):
 
 void TcpIpServer::incomingConnection(qintptr socketDescriptor)
 {
-    TcpIpClient *clientSocket=new TcpIpClient(this);
+    TcpIpClient *clientSocket=new TcpIpClient;
     if (!clientSocket->setSocketDescriptor(socketDescriptor))
     {
         emit errorMessage(clientSocket->errorString()+"\n");
@@ -65,8 +64,8 @@ void TcpIpServer::sendData(quint16 port, QString sendMsg)
     {
         if (clientSocketList[i]->peerPort()==port)
         {
-            clientSocketList[i]->write(sendByte);
-            break;
+            clientSocketList[i]->write(sendByte);//造成线程阻塞
+            return;
         }
     }
 }

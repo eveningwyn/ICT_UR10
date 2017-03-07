@@ -1,7 +1,6 @@
 ﻿#include "communicationdialog.h"
 #include "ui_communicationdialog.h"
 #include "ict_ur10.h"
-#include <QMessageBox>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -27,7 +26,6 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 
     if("scanner" == ui->comboBoxReceiver->currentText().toLower())
     {
-//        ptr->scanner->serialPortWrite(str);
         ptr->manualStartScan();
     }
     else
@@ -37,7 +35,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
             suffix.replace("\\r","\r");
             suffix.replace("\\n","\n");
             str += suffix;
-            ptr->robot_thread->robotManualSendMsg(str);
+            ptr->manualSendMsg_robot(str);
         }
 }
 

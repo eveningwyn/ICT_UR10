@@ -6,7 +6,6 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QFile>
-#include <QDataStream>
 #include <QDir>
 #include "staticname.h"
 
@@ -25,13 +24,20 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     failQty = 0;
     yield = 0.00;
 
-    scan_thread = new ScannerThread(this);//实例scan线程对象
-    robot_thread = new RobotThread(this);//实例robot线程对象
+    /*实例化scanner类，并移入子线程scanThread中*/
+    scanThread = new QThread;//实例化scan线程对象
+    scan_on_thread = new ScannerOnThread;//实例化scanner处理类对象
+    scan_on_thread->moveToThread(scanThread);//将scanner处理类对象放在线程中
+    scantimer = new QTimer(this);
+    scanCount = 0;
+    connect(scantimer,&QTimer::timeout,this,&ICT_UR10::timerTimeOut);
 
-    scanner = new SerialPortWidget(this);
-    robotServer = new TcpIpServer(this);
-    robotServer->set_prefix_suffix("","\r\n");
+    /*实例化robot类，并移入子线程robotThread中*/
+    robotThread = new QThread;//实例化robot线程对象
+    robot_on_thread = new RobotOnThread;//实例化scanner处理类对象
+    robot_on_thread->moveToThread(robotThread);//将scanner处理类对象放在线程中
 
+    /*实例化对话框类对象*/
     commDlg = new CommunicationDialog(this);
     commDlgIsShow = false;
     loginDlg = new LoginDialog(this);
@@ -43,48 +49,46 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     ui->tableWidgetResultList->setColumnWidth(3,200);
 
-    connect(robot_thread,SIGNAL(startScan()),scan_thread,SLOT(scannerScanSN()));
-    connect(robot_thread,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
-    connect(robot_thread,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
-    connect(robot_thread,SIGNAL(errorMessage(QString)),errorDlg,SLOT(errorMessage(QString)));
-    connect(robot_thread,SIGNAL(checkSnPass(QString)),this,SLOT(getSn(QString)));
+    connect(scan_on_thread,&ScannerOnThread::scanner_Status,this,&ICT_UR10::update_Scanner_Status);
+    connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,this,&ICT_UR10::errorMessage);
+    connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
+    connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
+    connect(scan_on_thread,&ScannerOnThread::scanResult,robot_on_thread,&RobotOnThread::checkSn);
+    connect(scan_on_thread,&ScannerOnThread::start_timer,this,&ICT_UR10::start_scanner_timer);
+    connect(scan_on_thread,&ScannerOnThread::stop_timer,this,&ICT_UR10::stop_scanner_timer);
 
-    connect(this,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
-    connect(this,SIGNAL(manualScan()),scan_thread,SLOT(scannerScanSN()));
-    connect(this,SIGNAL(sendErrorMsg(QString)),errorDlg,SLOT(errorMessage(QString)));
+    connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
+    connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::errorMessage);
+    connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
+    connect(robot_on_thread,&RobotOnThread::startScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
+    connect(robot_on_thread,&RobotOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
+    connect(robot_on_thread,&RobotOnThread::checkSnPass,this,&ICT_UR10::getSn);
+    connect(robot_on_thread,&RobotOnThread::robotConnected,this,&ICT_UR10::robotConnected);
+    connect(robot_on_thread,&RobotOnThread::robotDisconnected,this,&ICT_UR10::robotDisconnected);
 
-    connect(scanner,SIGNAL(serialReadReady()),scan_thread,SLOT(scannerReadSN()));
+    connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
+    connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
+    connect(this,&ICT_UR10::manualScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
+    connect(this,&ICT_UR10::sendErrorMsg,errorDlg,&ErrorListDialog::errorMessage);
+    connect(this,&ICT_UR10::setCanScan,scan_on_thread,&ScannerOnThread::setCanScan);
+    connect(this,&ICT_UR10::init_scanner_robot,scan_on_thread,&ScannerOnThread::init_Scanner);
+    connect(this,&ICT_UR10::init_scanner_robot,robot_on_thread,&RobotOnThread::init_Robot);
 
-//    connect(scan_thread,SIGNAL(scanResult(QString)),this,SLOT(getSn(QString)));
-    connect(scan_thread,SIGNAL(scanResult(QString)),robot_thread,SLOT(checkSn(QString)));
-    connect(scan_thread,SIGNAL(scanError(QString)),this,SLOT(errorMessage(QString)));
-    connect(scan_thread,SIGNAL(forShow(QString)),commDlg,SLOT(forShowInfo(QString)));
-    connect(scan_thread,SIGNAL(scanError(QString)),errorDlg,SLOT(errorMessage(QString)));
+    scanThread->start();//开启scanner的子线程
+    robotThread->start();//开启robot的子线程
 
-    connect(robotServer,SIGNAL(errorMessage(QString)),this,SLOT(errorMessage(QString)));
-    connect(robotServer,SIGNAL(clientConnect(QString,int)),this,SLOT(robotConnected(QString,int)));
-    connect(robotServer,SIGNAL(clientDisconnected(QString,int)),this,SLOT(robotDisconnected(QString,int)));
-    connect(robotServer,SIGNAL(serverReadData(QString,int,QString)),robot_thread,SLOT(robotReadData(QString,int,QString)));
-    connect(robotServer,SIGNAL(errorMessage(QString)),errorDlg,SLOT(errorMessage(QString)));
-
-    init_Scanner_Robot();
+    init_UI();
     update_UI_show();
     disEnableUI();
     newFile();
-
-    scan_thread->start();
-    robot_thread->start();
 }
 
 ICT_UR10::~ICT_UR10()
 {
-    if(scan_thread->isRunning())
-        scan_thread->stop();
-    if(robot_thread->isRunning())
-        robot_thread->stop();
-//    QThread::msleep(100);
-    delete scan_thread;
-    delete robot_thread;
+    if(scanThread->isRunning())
+        scanThread->quit();
+    if(robotThread->isRunning())
+        robotThread->quit();
     delete ui;
 }
 
@@ -127,7 +131,36 @@ void ICT_UR10::on_actionCommunication_triggered()
     }
 }
 
-void ICT_UR10::init_Scanner_Robot()
+void ICT_UR10::on_actionLogin_triggered()
+{
+    if(false == loginDlgIsShow)
+    {
+        loginDlg->show();
+        loginDlgIsShow = true;
+    }
+    else
+    {
+        loginDlg->close();
+        loginDlgIsShow = false;
+        disEnableUI();
+    }
+}
+
+void ICT_UR10::on_actionError_list_triggered()
+{
+    if(false == errorDlgIsShow)
+    {
+        errorDlg->show();
+        errorDlgIsShow = true;
+    }
+    else
+    {
+        errorDlg->hide();
+        errorDlgIsShow = false;
+    }
+}
+
+void ICT_UR10::init_UI()
 {
     //设置状态栏
     statusBarLabel_Scanner = new QLabel(this);
@@ -140,42 +173,6 @@ void ICT_UR10::init_Scanner_Robot()
     ui->statusBar->addPermanentWidget(statusBarLabel_Robot);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-
-    //Scanner
-    QString portName = configRead->value(SCANNER_PORT_NAME).toString();
-    int baudRate = configRead->value(SCANNER_BAUD_RATE).toString().toInt();
-    int dataBits = configRead->value(SCANNER_DATA_BITS).toString().toInt();
-    QString parityBits = configRead->value(SCANNER_PARITY_BITS).toString();
-    QString stopBits = configRead->value(SCANNER_STOP_BITS).toString();
-    if(!(scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
-    {
-        QMessageBox::warning(this,tr("Error"),tr("Scanner initialize failed!\n"),QMessageBox::Ok);
-        statusBarLabel_Scanner->setText("Scanner:Disconnected!");
-        emit forShow(forShowString("Scanner initialize failed!\n"));
-        emit sendErrorMsg("Scanner initialize failed!\n");
-    }
-    else
-    {
-        statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
-        emit forShow(forShowString(QString("Scanner:%1 Connected\n").arg(portName)));
-    }
-
-    //Robot
-    QString address =configRead->value(SERVER_IP_ADDRESS).toString();
-    quint16 port =(quint16) configRead->value(SERVER_PORT).toString().toInt();
-    if(!robotServer->stratListen(address,port))
-    {
-        QMessageBox::warning(this,tr("Error"),tr("Robot initialize failed!\n"),QMessageBox::Ok);
-        statusBarLabel_Robot->setText("Robot:Disconnected!");
-        emit forShow(forShowString("Robot initialize failed!\n"));
-        emit sendErrorMsg("Robot initialize failed!\n");
-    }
-    else
-    {
-        statusBarLabel_Robot->setText("Robot:Listening...");
-        emit forShow(forShowString("Robot:Listening...\n"));
-    }
-
     ui->comboBoxTypeSelect->clear();
     QString strTypeTemp = "";
     for(int i=0; i<TYPE_TOTAL; i++)
@@ -187,6 +184,7 @@ void ICT_UR10::init_Scanner_Robot()
         }
     }
 
+    emit init_scanner_robot();
     delete configRead;
 }
 
@@ -213,24 +211,14 @@ void ICT_UR10::manualStartScan()
     emit manualScan();
 }
 
+void ICT_UR10::manualSendMsg_robot(QString sendMsg)
+{
+    emit manualSendMsg(sendMsg);
+}
+
 void ICT_UR10::errorMessage(QString errorMsg)
 {
     QMessageBox::warning(this,tr("Error"),QString("%1").arg(errorMsg),QMessageBox::Ok);
-}
-
-void ICT_UR10::on_actionLogin_triggered()
-{
-    if(false == loginDlgIsShow)
-    {
-        loginDlg->show();
-        loginDlgIsShow = true;
-    }
-    else
-    {
-        loginDlg->close();
-        loginDlgIsShow = false;
-        disEnableUI();
-    }
 }
 
 void ICT_UR10::disEnableUI()
@@ -303,15 +291,15 @@ QString ICT_UR10::forShowString(QString str)
     return str;
 }
 
-void ICT_UR10::updateScannerStatue(QString portName,bool connected)
-{
-    if(true == connected)
-    {
-        statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
-        emit forShow(forShowString(QString("Scanner:%1 Connected\n").arg(portName)));
-        return;
-    }
-}
+//void ICT_UR10::updateScannerStatue(QString portName,bool connected)
+//{
+//    if(true == connected)
+//    {
+//        statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
+//        emit forShow(forShowString(QString("Scanner:%1 Connected\n").arg(portName)));
+//        return;
+//    }
+//}
 
 void ICT_UR10::updateTestResult(QString sn, QString result)
 {
@@ -394,16 +382,46 @@ void ICT_UR10::on_pushButton_2_clicked()
     updateTestResult("SN0987654321","FAIL");
 }
 
-void ICT_UR10::on_actionError_list_triggered()
+void ICT_UR10::update_Scanner_Status(QString status)
 {
-    if(false == errorDlgIsShow)
-    {
-        errorDlg->show();
-        errorDlgIsShow = true;
-    }
-    else
-    {
-        errorDlg->hide();
-        errorDlgIsShow = false;
-    }
+    this->statusBarLabel_Scanner->setText(status);
 }
+
+void ICT_UR10::update_Robot_Status(QString status)
+{
+    this->statusBarLabel_Robot->setText(status);
+}
+
+void ICT_UR10::timerTimeOut()
+{
+    if(scantimer->isActive())
+        scantimer->stop();
+
+    if(3 > scanCount)//3次扫描机会
+    {
+        emit setCanScan();
+        manualStartScan();
+        return;
+    }
+
+    //三次扫描失败
+    scanCount = 0;
+    QString errorMsg = "Scan barcode timeout!\n";
+    errorMessage(errorMsg);
+    emit setCanScan();
+    emit sendErrorMsg(errorMsg);
+}
+
+void ICT_UR10::start_scanner_timer()
+{
+    scantimer->start(2200);
+    scanCount++;
+}
+
+void ICT_UR10::stop_scanner_timer()
+{
+    if(scantimer->isActive())
+        scantimer->stop();
+    scanCount = 0;
+}
+

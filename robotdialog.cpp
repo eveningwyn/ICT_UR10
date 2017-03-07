@@ -160,8 +160,8 @@ void RobotDialog::on_pushButtonSaveType_clicked()
                                                 QMessageBox::Yes|QMessageBox::No))
     {
         /**************保存配置到本地配置文件***************/
-        saveConfig();//保存配置
 
+        saveConfig();//保存配置
         QMessageBox::warning(this,"Successed","Save successed!",QMessageBox::Ok);
     }
 }

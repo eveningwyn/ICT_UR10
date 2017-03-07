@@ -56,7 +56,7 @@ void ErrorListDialog::on_pushButtonSaveErrorList_clicked()
 
 void ErrorListDialog::on_pushButtonClearErrorList_clicked()
 {
-    if(QMessageBox::Yes==QMessageBox::warning(this,"Warning","Are you sure you don't need to save error records?",QMessageBox::Yes|QMessageBox::No))
+    if(QMessageBox::Yes==QMessageBox::warning(this,"Warning","Are you sure don't need to save error records?",QMessageBox::Yes|QMessageBox::No))
         ui->textBrowserErrorList->clear();
 }
 

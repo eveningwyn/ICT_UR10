@@ -16,7 +16,7 @@ public:
 
     void clientSendData(QString msg);//客户端发送数据
     void newConnect(const QString address, quint16 port);//连接服务器
-    void closeConnect();
+    void closeConnect();//断开连接
     bool bindClient(const QString address, quint16 port=0);//绑定客户端对象到一个固定的IP和Port
 
 private:

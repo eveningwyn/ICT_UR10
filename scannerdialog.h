@@ -21,8 +21,6 @@ private slots:
 
     void on_pushButtonRefresh_clicked();
 
-    void on_pushButtonOpen_clicked();
-
 private:
     Ui::ScannerDialog *ui;
     void initializeInfo();

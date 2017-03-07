@@ -18,13 +18,12 @@ public:
     void disEnable();
     void Enable();
 
+public slots:
+    void forShowInfo(QString msg);//显示信息到界面
+    void on_comboBoxReceiver_currentTextChanged(const QString &arg1);
 
 private slots:
     void on_pushButtonSend_clicked();
-
-    void forShowInfo(QString msg);
-
-    void on_comboBoxReceiver_currentTextChanged(const QString &arg1);
 
 private:
     Ui::CommunicationDialog *ui;

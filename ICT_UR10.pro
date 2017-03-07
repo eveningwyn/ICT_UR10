@@ -29,27 +29,27 @@ SOURCES += main.cpp\
         ict_ur10.cpp \
     scannerdialog.cpp \
     robotdialog.cpp \
-    serialportwidget.cpp \
     communicationdialog.cpp \
-    scannerthread.cpp \
-    robotthread.cpp \
     logindialog.cpp \
     tcpipclient.cpp \
     tcpipserver.cpp \
-    errorlistdialog.cpp
+    errorlistdialog.cpp \
+    scanneronthread.cpp \
+    robotonthread.cpp \
+    serialportobj.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
     robotdialog.h \
-    serialportwidget.h \
     communicationdialog.h \
-    scannerthread.h \
-    robotthread.h \
     logindialog.h \
     tcpipclient.h \
     tcpipserver.h \
     staticname.h \
-    errorlistdialog.h
+    errorlistdialog.h \
+    scanneronthread.h \
+    robotonthread.h \
+    serialportobj.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

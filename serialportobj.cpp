@@ -1,25 +1,24 @@
-﻿#include "serialportwidget.h"
+﻿#include "serialportobj.h"
 #include <QString>
-#include <QMessageBox>
 
-SerialPortWidget::SerialPortWidget(QWidget *parent) : QWidget(parent)
+SerialPortObj::SerialPortObj(QObject *parent) : QObject(parent)
 {
     serial = new QSerialPort(this);
     byteRead = "";
     connect(serial,SIGNAL(readyRead()),this,SIGNAL(serialReadReady()));
 }
 
-SerialPortWidget::~SerialPortWidget()
+SerialPortObj::~SerialPortObj()
 {
     serial->close();
 }
 
-void SerialPortWidget::setPortName(const QString &portName)      //配置端口号
+void SerialPortObj::setPortName(const QString &portName)      //配置端口号
 {
     const QString name = portName.toUpper();
     serial->setPortName(name);
 }
-void SerialPortWidget::setBaudRate(int baudRate)      //配置波特率
+void SerialPortObj::setBaudRate(int baudRate)      //配置波特率
 {
     switch (baudRate) {
     case 115200:
@@ -47,11 +46,10 @@ void SerialPortWidget::setBaudRate(int baudRate)      //配置波特率
         serial->setBaudRate(QSerialPort::Baud1200,QSerialPort::AllDirections);
         break;
     default:
-        QMessageBox::warning(this,tr("SerialPort"),tr("BaudRate Error!"),QMessageBox::Ok);
         break;
     }
 }
-void SerialPortWidget::setDataBits(int dataBit)       //配置数据位
+void SerialPortObj::setDataBits(int dataBit)       //配置数据位
 {
     switch (dataBit) {
     case 5:
@@ -67,11 +65,10 @@ void SerialPortWidget::setDataBits(int dataBit)       //配置数据位
         serial->setDataBits(QSerialPort::Data8);
         break;
     default:
-        QMessageBox::warning(this,tr("SerialPort"),tr("DataBit Error!"),QMessageBox::Ok);
         break;
     }
 }
-void SerialPortWidget::setParity(QString parityBit)         //配置校验位
+void SerialPortObj::setParity(QString parityBit)         //配置校验位
 {
     if(parityBit.isEmpty())
     {
@@ -95,14 +92,14 @@ void SerialPortWidget::setParity(QString parityBit)         //配置校验位
                     if(0<= str.indexOf("space",0))
                         serial->setParity(QSerialPort::SpaceParity);
                     else {
-                        QMessageBox::warning(this,tr("SerialPort"),tr("ParityBit Error!"),QMessageBox::Ok);
+
                     }
                 }
             }
         }
     }
 }
-void SerialPortWidget::setStopBits(QString stopBit)       //配置停止位
+void SerialPortObj::setStopBits(QString stopBit)       //配置停止位
 {
     if(stopBit.isEmpty())
     {
@@ -123,12 +120,12 @@ void SerialPortWidget::setStopBits(QString stopBit)       //配置停止位
                 serial->setStopBits(QSerialPort::TwoStop);
             else
             {
-                QMessageBox::warning(this,tr("SerialPort"),tr("StopBit Error!"),QMessageBox::Ok);
+
             }
         }
     }
 }
-void SerialPortWidget::setDTR_RTS(bool setDTR,bool setRTS)
+void SerialPortObj::setDTR_RTS(bool setDTR,bool setRTS)
 {
     serial->setFlowControl(QSerialPort::NoFlowControl);
     serial->setDataTerminalReady(setDTR);
@@ -136,7 +133,7 @@ void SerialPortWidget::setDTR_RTS(bool setDTR,bool setRTS)
 }
 
 /*参数：端口号、波特率、数据位、校验位、停止位、DTR和RTS*/
-bool SerialPortWidget::openSerialPort(const QString portName,int baudRate,
+bool SerialPortObj::openSerialPort(const QString portName,int baudRate,
                                       int dataBit,QString parityBit,
                                       QString stopBit,bool setDTR,bool setRTS)
 {
@@ -156,13 +153,13 @@ bool SerialPortWidget::openSerialPort(const QString portName,int baudRate,
         return false;
     }
 }
-void SerialPortWidget::closeSerialPort()
+void SerialPortObj::closeSerialPort()
 {
     serial->close();
 }
 
 /*串口读取数据*/
-void SerialPortWidget::serialPortRead(QString &readString,QString prefix,QString suffix)
+void SerialPortObj::serialPortRead(QString &readString,QString prefix,QString suffix)
 {
     if (serial->bytesAvailable()<=0)
     {
@@ -215,7 +212,7 @@ void SerialPortWidget::serialPortRead(QString &readString,QString prefix,QString
 }
 
 /*串口发送数据*/
-void SerialPortWidget::serialPortWrite(QString writeString)
+void SerialPortObj::serialPortWrite(QString writeString)
 {
     if(writeString.isEmpty())
         return;
@@ -223,7 +220,7 @@ void SerialPortWidget::serialPortWrite(QString writeString)
     serial->write(byteWrite);
 }
 
-void SerialPortWidget::clearBuffer()
+void SerialPortObj::clearBuffer()
 {
     serial->clear(QSerialPort::AllDirections);
     byteRead = "";

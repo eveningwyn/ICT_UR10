@@ -20,11 +20,12 @@ public:
 
 private:
     Ui::ErrorListDialog *ui;
-
     void closeEvent(QCloseEvent *event);
 
-private slots:
+public slots:
     void errorMessage(QString errorMsg);//错误记录清单
+
+private slots:
     void on_pushButtonSaveErrorList_clicked();
     void on_pushButtonClearErrorList_clicked();
 };

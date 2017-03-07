@@ -26,9 +26,9 @@ private slots:
 
 private:
     Ui::RobotDialog *ui;
-    void initGetInfo();
+    void initGetInfo();//初始化UI
     bool isSave;
-    void saveConfig();
+    void saveConfig();//保存参数配置
 };
 
 #endif // ROBOTDIALOG_H
