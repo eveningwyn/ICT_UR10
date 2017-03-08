@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QMessageBox>
+#include "language.h"
 
 ErrorListDialog::ErrorListDialog(QWidget *parent) :
     QDialog(parent),
@@ -39,7 +40,7 @@ void ErrorListDialog::on_pushButtonSaveErrorList_clicked()
 {
     QDateTime time = QDateTime::currentDateTime();
     QString strTime = time.toString("yyyy-MM-dd_hh-mm-ss");
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Save As..."),QString("ErrorList_%1.txt").arg(strTime));
+    QString fileName = QFileDialog::getSaveFileName(this,tr("另存为..."),QString("ErrorList_%1.txt").arg(strTime));
     if(!fileName.isEmpty())
     {
         QFile file(fileName);
@@ -56,7 +57,7 @@ void ErrorListDialog::on_pushButtonSaveErrorList_clicked()
 
 void ErrorListDialog::on_pushButtonClearErrorList_clicked()
 {
-    if(QMessageBox::Yes==QMessageBox::warning(this,"Warning","Are you sure don't need to save error records?",QMessageBox::Yes|QMessageBox::No))
+    if(QMessageBox::Yes==QMessageBox::warning(this,tr("提示"),tr("请确认是否清空错误记录？"),QMessageBox::Yes|QMessageBox::No))
         ui->textBrowserErrorList->clear();
 }
 

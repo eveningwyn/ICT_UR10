@@ -21,6 +21,7 @@ public:
     void serialPortRead(QString &readString,QString prefix,QString suffix);
     void serialPortWrite(QString writeString);
     void clearBuffer();
+    bool serialPortIsOpen();
 
 signals:
     void serialReadReady();

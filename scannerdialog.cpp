@@ -4,6 +4,7 @@
 #include <QSerialPortInfo>
 #include <QSettings>
 #include "staticname.h"
+#include "language.h"
 
 ScannerDialog::ScannerDialog(QWidget *parent) :
     QDialog(parent),
@@ -19,7 +20,7 @@ ScannerDialog::~ScannerDialog()
 }
 void ScannerDialog::on_pushButtonSetting_clicked()
 {
-    if(QMessageBox::Yes == QMessageBox::warning(this,"Setting","Are you sure to configuration parameters?",
+    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存设置"),tr("请确认是否保存配置文件？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
         QString portName = ui->comboBoxPortNum->currentText();

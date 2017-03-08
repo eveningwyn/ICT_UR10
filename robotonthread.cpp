@@ -2,6 +2,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include "staticname.h"
+#include "language.h"
 
 #include <QDebug>
 
@@ -75,7 +76,7 @@ void RobotOnThread::checkSn(QString sn)
     }
     else
     {
-        emit robot_Error_Msg("Please check this products test station information!\n");
+        emit robot_Error_Msg(tr("当前产品不属于当前工站，请确认该产品已正常过站！\n"));
     }
 }
 
@@ -95,13 +96,13 @@ void RobotOnThread::init_Robot()
     quint16 port =(quint16) configRead->value(SERVER_PORT).toString().toInt();
     if(!robotServer->stratListen(ipAddress,port))
     {
-        emit robot_Status("Robot:Disconnected!");
-        emit robot_Error_Msg("Robot initialize failed!\n");
+        emit robot_Status(tr("机器人:已断开"));
+        emit robot_Error_Msg(tr("服务器创建失败,请检查后重启软件！\n"));
     }
     else
     {
-        emit robot_Status("Robot:Listening...");
-        emit forShow_To_Comm(forShowString(QString("Robot:%1 %2 Listening...")
+        emit robot_Status(tr("机器人:服务器 Listening..."));
+        emit forShow_To_Comm(forShowString(QString(tr("机器人:服务器 %1 %2 Listening..."))
                                            .arg(ipAddress).arg(port)));
     }
     delete configRead;

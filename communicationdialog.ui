@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Communication</string>
+   <string>通讯信息</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
@@ -59,7 +59,7 @@
    <item row="0" column="3">
     <widget class="QPushButton" name="pushButtonSend">
      <property name="text">
-      <string>Send</string>
+      <string>发送</string>
      </property>
     </widget>
    </item>
@@ -69,7 +69,7 @@
    <item row="0" column="4">
     <widget class="QCheckBox" name="checkBoxShowInfo">
      <property name="text">
-      <string>ShowInfo</string>
+      <string>显示信息</string>
      </property>
     </widget>
    </item>

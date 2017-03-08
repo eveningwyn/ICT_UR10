@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>RobotDialog</class>
  <widget class="QDialog" name="RobotDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>568</width>
+    <height>300</height>
+   </rect>
+  </property>
   <property name="maximumSize">
    <size>
     <width>571</width>
@@ -9,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Robot</string>
+   <string>Robot配置</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
@@ -25,7 +33,7 @@
       <enum>Qt::RightToLeft</enum>
      </property>
      <property name="text">
-      <string>IP Address:</string>
+      <string>服务器IP：</string>
      </property>
     </widget>
    </item>
@@ -45,7 +53,7 @@
       <enum>Qt::RightToLeft</enum>
      </property>
      <property name="text">
-      <string>Port:</string>
+      <string>服务器端口号：</string>
      </property>
     </widget>
    </item>
@@ -68,7 +76,7 @@
    <item row="0" column="6" rowspan="2">
     <widget class="QPushButton" name="Setting">
      <property name="text">
-      <string>Setting</string>
+      <string>保存配置</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -82,7 +90,7 @@
       <enum>Qt::RightToLeft</enum>
      </property>
      <property name="text">
-      <string>Robot IP:</string>
+      <string>机器人IP：</string>
      </property>
     </widget>
    </item>
@@ -102,7 +110,7 @@
       <enum>Qt::RightToLeft</enum>
      </property>
      <property name="text">
-      <string>Robot Port:</string>
+      <string>机器人端口号：</string>
      </property>
     </widget>
    </item>
@@ -344,28 +352,64 @@
    </item>
    <item row="3" column="2" colspan="3">
     <widget class="QPushButton" name="pushButtonAddType">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="text">
-      <string>Add Product Type</string>
+      <string>添加产品类型</string>
      </property>
     </widget>
    </item>
    <item row="3" column="5">
     <widget class="QPushButton" name="pushButtonSaveType">
-     <property name="text">
-      <string>Save Product Type</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="6" colspan="2">
-    <widget class="QPushButton" name="pushButtonDelType">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="text">
-      <string>Delete Product Type</string>
+      <string>保存产品类型</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="6" colspan="2">
+    <widget class="QPushButton" name="pushButtonDelType">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>删除产品类型</string>
      </property>
     </widget>
    </item>
@@ -379,12 +423,12 @@
      </attribute>
      <column>
       <property name="text">
-       <string>Product Type</string>
+       <string>产品类型</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Robot Program No.</string>
+       <string>Robot程序号</string>
       </property>
      </column>
     </widget>

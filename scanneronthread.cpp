@@ -2,6 +2,7 @@
 #include "staticname.h"
 #include <QSettings>
 #include <QDateTime>
+#include "language.h"
 
 #include <QDebug>
 
@@ -35,6 +36,11 @@ void ScannerOnThread::scannerReadSN()
 
 void ScannerOnThread::scannerScanSN()
 {
+    if(!scanner->serialPortIsOpen())
+    {
+        emit scanner_Error_Msg(tr("扫描枪未连接，请检查后重启软件！\n"));
+        return;
+    }
     if(true == canScan)
     {
         canRead = true;
@@ -86,13 +92,13 @@ void ScannerOnThread::init_Scanner()
     QString stopBits = configRead->value(SCANNER_STOP_BITS).toString();
     if(!(scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
     {
-        emit scanner_Status(QString("Scanner:%1 Disconnected").arg(portName));
-        emit scanner_Error_Msg("Scanner initialize failed!\n");
+        emit scanner_Status(QString(tr("扫描器:%1 已断开")).arg(portName));
+        emit scanner_Error_Msg(tr("扫描枪连接失败，请检查后重启软件！\n"));
     }
     else
     {
-        emit scanner_Status(QString("Scanner:%1 Connected").arg(portName));
-        emit forShow_To_Comm(forShowString(QString("Scanner:%1 Connected.\n").arg(portName)));
+        emit scanner_Status(QString(tr("扫描器:%1 已连接")).arg(portName));
+        emit forShow_To_Comm(forShowString(QString(tr("扫描器:%1 已连接\n")).arg(portName)));
     }
 
     delete configRead;

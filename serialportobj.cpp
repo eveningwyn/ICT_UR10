@@ -225,3 +225,8 @@ void SerialPortObj::clearBuffer()
     serial->clear(QSerialPort::AllDirections);
     byteRead = "";
 }
+
+bool SerialPortObj::serialPortIsOpen()
+{
+    return serial->isOpen();
+}

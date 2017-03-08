@@ -49,7 +49,8 @@ HEADERS  += ict_ur10.h \
     errorlistdialog.h \
     scanneronthread.h \
     robotonthread.h \
-    serialportobj.h
+    serialportobj.h \
+    language.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

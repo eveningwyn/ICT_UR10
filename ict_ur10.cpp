@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QDir>
 #include "staticname.h"
+#include "language.h"
 
 #include <QDebug>
 
@@ -45,7 +46,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     errorDlg = new ErrorListDialog(this);
     errorDlgIsShow = false;
 
-    testCount = 0;
+    testCount = 0;//测试次数，用于对主界面的计数
 
     ui->tableWidgetResultList->setColumnWidth(3,200);
 
@@ -78,9 +79,6 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     robotThread->start();//开启robot的子线程
 
     init_UI();
-    update_UI_show();
-    disEnableUI();
-    newFile();
 }
 
 ICT_UR10::~ICT_UR10()
@@ -165,12 +163,18 @@ void ICT_UR10::init_UI()
     //设置状态栏
     statusBarLabel_Scanner = new QLabel(this);
     statusBarLabel_Robot = new QLabel(this);
+    statusBarLabel_ICT = new QLabel(this);
     statusBarLabel_Scanner->setFrameStyle(QFrame::StyledPanel);
     statusBarLabel_Scanner->setTextFormat(Qt::RichText);
     statusBarLabel_Robot->setFrameStyle(QFrame::StyledPanel);
     statusBarLabel_Robot->setTextFormat(Qt::RichText);
+    statusBarLabel_ICT->setFrameStyle(QFrame::StyledPanel);
+    statusBarLabel_ICT->setTextFormat(Qt::RichText);
     ui->statusBar->addPermanentWidget(statusBarLabel_Scanner);
     ui->statusBar->addPermanentWidget(statusBarLabel_Robot);
+    ui->statusBar->addPermanentWidget(statusBarLabel_ICT);
+
+    statusBarLabel_ICT->setText(tr("ICT:已断开"));
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     ui->comboBoxTypeSelect->clear();
@@ -186,6 +190,10 @@ void ICT_UR10::init_UI()
 
     emit init_scanner_robot();
     delete configRead;
+
+    update_UI_show();
+    disEnableUI();
+    newFile();
 }
 
 void ICT_UR10::update_UI_show()
@@ -218,12 +226,12 @@ void ICT_UR10::manualSendMsg_robot(QString sendMsg)
 
 void ICT_UR10::errorMessage(QString errorMsg)
 {
-    QMessageBox::warning(this,tr("Error"),QString("%1").arg(errorMsg),QMessageBox::Ok);
+    QMessageBox::warning(this,tr("错误信息"),QString(tr("%1")).arg(errorMsg),QMessageBox::Ok);
 }
 
 void ICT_UR10::disEnableUI()
 {
-    ui->actionLogin->setText("LogIn");
+    ui->actionLogin->setText(tr("登入"));
     ui->actionScanner->setDisabled(true);
     ui->actionRobot->setDisabled(true);
     commDlg->disEnable();
@@ -232,7 +240,7 @@ void ICT_UR10::disEnableUI()
 
 void ICT_UR10::Enable()
 {
-    ui->actionLogin->setText("LogOut");
+    ui->actionLogin->setText(tr("登出"));
     ui->actionScanner->setDisabled(false);
     ui->actionRobot->setDisabled(false);
     commDlg->Enable();
@@ -242,7 +250,7 @@ void ICT_UR10::Enable()
 void ICT_UR10::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton button;
-    button = QMessageBox::warning(this,tr("Warning"),tr("Are you sure to exit!"),QMessageBox::Yes|QMessageBox::No);
+    button = QMessageBox::warning(this,tr("提示"),tr("退出应用程序？"),QMessageBox::Yes|QMessageBox::No);
 
     if (button == QMessageBox::No)
     {
@@ -256,7 +264,7 @@ void ICT_UR10::closeEvent(QCloseEvent *event)
 
 void ICT_UR10::robotConnected(QString IP, int Port)
 {
-    emit forShow(forShowString(QString("Robot:%1 %2 Connected\n").arg(IP).arg(Port)));
+    emit forShow(forShowString(QString(tr(" %1 %2 已连接\n")).arg(IP).arg(Port)));
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotIP = configRead->value(ROBOT_IP).toString();
@@ -264,13 +272,13 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-        statusBarLabel_Robot->setText(QString("Robot:%1 %2 Connected").arg(IP).arg(Port));
+        statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
     }
 }
 
 void ICT_UR10::robotDisconnected(QString IP, int Port)
 {
-    emit forShow(forShowString(QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port)));
+    emit forShow(forShowString(QString(tr(" %1 %2 已断开!\n")).arg(IP).arg(Port)));
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotIP = configRead->value(ROBOT_IP).toString();
@@ -278,9 +286,9 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-        statusBarLabel_Robot->setText(QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port));
-        QMessageBox::warning(this,"Warning",QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port),QMessageBox::Ok);
-        emit sendErrorMsg(QString("Robot:%1 %2 Disconnected!\n").arg(IP).arg(Port));
+        statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
+        QMessageBox::warning(this,"警告",QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port),QMessageBox::Ok);
+        emit sendErrorMsg(QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port));
     }
 }
 
@@ -290,16 +298,6 @@ QString ICT_UR10::forShowString(QString str)
     str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + str + "\r\n";
     return str;
 }
-
-//void ICT_UR10::updateScannerStatue(QString portName,bool connected)
-//{
-//    if(true == connected)
-//    {
-//        statusBarLabel_Scanner->setText(QString("Scanner:%1 Connected").arg(portName));
-//        emit forShow(forShowString(QString("Scanner:%1 Connected\n").arg(portName)));
-//        return;
-//    }
-//}
 
 void ICT_UR10::updateTestResult(QString sn, QString result)
 {
@@ -406,7 +404,7 @@ void ICT_UR10::timerTimeOut()
 
     //三次扫描失败
     scanCount = 0;
-    QString errorMsg = "Scan barcode timeout!\n";
+    QString errorMsg = tr("扫描条码超时!\n");
     errorMessage(errorMsg);
     emit setCanScan();
     emit sendErrorMsg(errorMsg);

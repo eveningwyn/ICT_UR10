@@ -36,9 +36,8 @@ public:
     bool commDlgIsShow;
     bool loginDlgIsShow;
     bool errorDlgIsShow;
-//    void updateScannerStatue(QString portName, bool connected);
     void updateTestResult(QString sn,QString result);
-    int testCount;
+    int testCount;//测试次数，用于对主界面的计数
 
 private:
     Ui::ICT_UR10 *ui;
@@ -53,6 +52,7 @@ private:
     /*状态栏*/
     QLabel *statusBarLabel_Scanner;
     QLabel *statusBarLabel_Robot;
+    QLabel *statusBarLabel_ICT;
 
     void init_UI();//初始UI
     void newFile();//创建数据文件夹

@@ -1,6 +1,7 @@
 ﻿#include "communicationdialog.h"
 #include "ui_communicationdialog.h"
 #include "ict_ur10.h"
+#include "language.h"
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
