@@ -55,7 +55,7 @@ void RobotOnThread::robotSendMsg(QString sendMsg)
     QString robotPort = configRead->value(ROBOT_PORT).toString();
     delete configRead;
 
-    robotServer->sendData(robotPort.toInt(),sendMsg);//出现了线程阻塞，待排查
+    robotServer->sendData(robotPort.toInt(),sendMsg);
 
     emit forShow_To_Comm(forShowSendString(sendMsg));
 }
@@ -94,6 +94,7 @@ void RobotOnThread::init_Robot()
     //Robot
     QString ipAddress =configRead->value(SERVER_IP_ADDRESS).toString();
     quint16 port =(quint16) configRead->value(SERVER_PORT).toString().toInt();
+
     if(!robotServer->stratListen(ipAddress,port))
     {
         emit robot_Status(tr("机器人:已断开"));
@@ -102,7 +103,7 @@ void RobotOnThread::init_Robot()
     else
     {
         emit robot_Status(tr("机器人:服务器 Listening..."));
-        emit forShow_To_Comm(forShowString(QString(tr("机器人:服务器 %1 %2 Listening..."))
+        emit forShow_To_Comm(forShowString(QString(tr("服务器 %1 %2 Listening..."))
                                            .arg(ipAddress).arg(port)));
     }
     delete configRead;

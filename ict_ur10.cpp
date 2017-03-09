@@ -25,18 +25,22 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     failQty = 0;
     yield = 0.00;
 
-    /*实例化scanner类，并移入子线程scanThread中*/
-    scanThread = new QThread;//实例化scan线程对象
+    /*实例化scanner类，并移入子线程thread1中*/
+    thread1 = new QThread;//实例化thread1线程对象
     scan_on_thread = new ScannerOnThread;//实例化scanner处理类对象
-    scan_on_thread->moveToThread(scanThread);//将scanner处理类对象放在线程中
+    scan_on_thread->moveToThread(thread1);//将scanner处理类对象放在线程中
     scantimer = new QTimer(this);
     scanCount = 0;
     connect(scantimer,&QTimer::timeout,this,&ICT_UR10::timerTimeOut);
 
-    /*实例化robot类，并移入子线程robotThread中*/
-    robotThread = new QThread;//实例化robot线程对象
+    /*实例化robot类，并移入子线程thread2中*/
+    thread2 = new QThread;//实例化thread2线程对象
     robot_on_thread = new RobotOnThread;//实例化scanner处理类对象
-    robot_on_thread->moveToThread(robotThread);//将scanner处理类对象放在线程中
+    robot_on_thread->moveToThread(thread2);//将scanner处理类对象放在线程中
+
+    /*实例化ICT类，并移入子线程thread1中*/
+    ict = new ICT_Test_Obj;
+    ict->moveToThread(thread1);//将ict处理类对象放在线程中
 
     /*实例化对话框类对象*/
     commDlg = new CommunicationDialog(this);
@@ -49,6 +53,10 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     testCount = 0;//测试次数，用于对主界面的计数
 
     ui->tableWidgetResultList->setColumnWidth(3,200);
+
+    connect(thread1,&QThread::finished,thread1,&QThread::deleteLater);
+
+    connect(thread2,&QThread::finished,thread2,&QThread::deleteLater);
 
     connect(scan_on_thread,&ScannerOnThread::scanner_Status,this,&ICT_UR10::update_Scanner_Status);
     connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,this,&ICT_UR10::errorMessage);
@@ -67,6 +75,9 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::robotConnected,this,&ICT_UR10::robotConnected);
     connect(robot_on_thread,&RobotOnThread::robotDisconnected,this,&ICT_UR10::robotDisconnected);
 
+    connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::errorMessage);
+    connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
+
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
     connect(this,&ICT_UR10::manualScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
@@ -75,18 +86,21 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::init_scanner_robot,scan_on_thread,&ScannerOnThread::init_Scanner);
     connect(this,&ICT_UR10::init_scanner_robot,robot_on_thread,&RobotOnThread::init_Robot);
 
-    scanThread->start();//开启scanner的子线程
-    robotThread->start();//开启robot的子线程
+    connect(this,&ICT_UR10::getIctInfor,ict,&ICT_Test_Obj::getIctInfo);
+    connect(this,&ICT_UR10::setIctInfor,ict,&ICT_Test_Obj::setIctInfo);
+
+    thread1->start();//开启thread1的子线程
+    thread2->start();//开启thread2的子线程
 
     init_UI();
 }
 
 ICT_UR10::~ICT_UR10()
 {
-    if(scanThread->isRunning())
-        scanThread->quit();
-    if(robotThread->isRunning())
-        robotThread->quit();
+    if(thread1->isRunning())
+        thread1->quit();
+    if(thread2->isRunning())
+        thread2->quit();
     delete ui;
 }
 
@@ -373,11 +387,13 @@ void ICT_UR10::newFile()
 void ICT_UR10::on_pushButton_clicked()
 {
     updateTestResult("SN1234567890","PASS");
+//    emit getIctInfor(ICT_LOCAL_RESULT_NAME);
 }
 
 void ICT_UR10::on_pushButton_2_clicked()
 {
     updateTestResult("SN0987654321","FAIL");
+//    emit setIctInfor(ICT_LOCAL_STATUS_NAME);
 }
 
 void ICT_UR10::update_Scanner_Status(QString status)

@@ -64,10 +64,11 @@ void TcpIpServer::sendData(quint16 port, QString sendMsg)
     {
         if (clientSocketList[i]->peerPort()==port)
         {
-            clientSocketList[i]->write(sendByte);//造成线程阻塞
+            clientSocketList[i]->write(sendByte);
             return;
         }
     }
+    emit errorMessage(tr("The port number does not exist!"));
 }
 
 bool TcpIpServer::stratListen(QString address,quint16 port)

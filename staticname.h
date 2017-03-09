@@ -24,5 +24,10 @@
 #define TYPE_TOTAL               20
 #define MAIN_UI_TYPE             "/MainUIParameter/Index%1"
 
+#define ICT_LOCAL_IP             "192.168.3.123"
+#define ICT_LOCAL_TEST_PATH      "//192.168.3.123/data/%1"
+#define ICT_LOCAL_RESULT_NAME    "result.txt"
+#define ICT_LOCAL_STATUS_NAME    "status.txt"
+
 
 #endif // STATICNAME_H

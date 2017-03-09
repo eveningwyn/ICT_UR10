@@ -35,6 +35,12 @@ void TcpIpClient::clientReadData()
 
     byteBuf = this->readAll();
     readByteMsg.append(byteBuf);
+    if(1024<=readByteMsg.length())
+    {
+        emit readData(this->clientID,this->peerAddress().toString(),this->peerPort(),QString(readByteMsg));
+        readByteMsg = "";
+        return;
+    }
     /*判断是否接收完毕*/
     if(!prefix.isEmpty() && suffix.isEmpty())
     {   //如果有前缀无后缀

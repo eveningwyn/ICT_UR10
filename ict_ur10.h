@@ -3,14 +3,15 @@
 
 #include <QMainWindow>
 #include "communicationdialog.h"
-#include "scanneronthread.h"
-#include "robotonthread.h"
 #include "logindialog.h"
 #include "errorlistdialog.h"
+#include "scanneronthread.h"
+#include "robotonthread.h"
 #include <QCloseEvent>
 #include <QLabel>
 #include <QThread>
 #include <QTimer>
+#include "ict_test_obj.h"
 
 namespace Ui {
 class ICT_UR10;
@@ -23,13 +24,15 @@ class ICT_UR10 : public QMainWindow
 public:
     explicit ICT_UR10(QWidget *parent = 0);
     ~ICT_UR10();
-    QThread *scanThread;//scan子线程
+    QThread *thread1;//thread1子线程
     ScannerOnThread *scan_on_thread;//scan处理类-->移交到子线程运行
     void manualStartScan();
 
-    QThread *robotThread;//robot子线程
+    QThread *thread2;//thread2子线程
     RobotOnThread *robot_on_thread;//robot处理类-->移交到子线程运行
     void manualSendMsg_robot(QString sendMsg);
+
+    ICT_Test_Obj *ict;
 
     void disEnableUI();
     void Enable();
@@ -75,6 +78,9 @@ signals:
 
     void forShow(QString msg);//显示信息给对话框
     void sendErrorMsg(QString msg);//错误记录显示
+
+    void getIctInfor(QString path);//获取ICT测试机的状态
+    void setIctInfor(QString path);//设置ICT测试机的状态
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态

@@ -149,7 +149,6 @@ bool SerialPortObj::openSerialPort(const QString portName,int baudRate,
     }
     else
     {
-//        QMessageBox::warning(this,tr("SerialPort"),tr("串口打开失败，该串口不存在或者被其他程序占用！"),QMessageBox::Ok);
         return false;
     }
 }
@@ -214,6 +213,10 @@ void SerialPortObj::serialPortRead(QString &readString,QString prefix,QString su
 /*串口发送数据*/
 void SerialPortObj::serialPortWrite(QString writeString)
 {
+    if(!serial->isOpen())
+    {
+        return;
+    }
     if(writeString.isEmpty())
         return;
     QByteArray byteWrite = writeString.toLatin1();
