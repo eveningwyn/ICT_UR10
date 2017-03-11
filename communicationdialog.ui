@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>248</height>
+    <width>666</width>
+    <height>333</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,6 +18,26 @@
     <normaloff>:/res/communication_chat_32px.png</normaloff>:/res/communication_chat_32px.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEditSendData"/>
+   </item>
+   <item row="0" column="5">
+    <widget class="QCheckBox" name="checkBoxShowInfo">
+     <property name="text">
+      <string>显示信息</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="6">
+    <widget class="QTextBrowser" name="textBrowserCommunication"/>
+   </item>
+   <item row="1" column="0" colspan="6">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="2">
     <widget class="QComboBox" name="comboBoxSuffix">
      <item>
@@ -63,25 +83,18 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEditSendData"/>
-   </item>
    <item row="0" column="4">
-    <widget class="QCheckBox" name="checkBoxShowInfo">
-     <property name="text">
-      <string>显示信息</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="5">
-    <widget class="QTextBrowser" name="textBrowserCommunication"/>
-   </item>
-   <item row="1" column="0" colspan="5">
-    <widget class="Line" name="line">
+    <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

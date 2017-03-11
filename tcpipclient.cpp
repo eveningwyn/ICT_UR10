@@ -1,13 +1,14 @@
 ﻿#include "tcpipclient.h"
 #include <QHostAddress>
+#include "staticname.h"
 
 TcpIpClient::TcpIpClient(QObject *parent) :
     QTcpSocket(parent)
 {
     clientID = -1;
     readByteMsg = "";
-    prefix = "";
-    suffix = "";
+    prefix = PREFIX;
+    suffix = SUFFIX;
 
     connect(this,SIGNAL(readyRead()),this,SLOT(clientReadData()));
     connect(this,SIGNAL(disconnected()),this,SLOT(DisConnect()));//关闭连接时，发送断开连接信号

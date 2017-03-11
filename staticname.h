@@ -25,9 +25,19 @@
 #define MAIN_UI_TYPE             "/MainUIParameter/Index%1"
 
 #define ICT_LOCAL_IP             "192.168.3.123"
-#define ICT_LOCAL_TEST_PATH      "//192.168.3.123/data/%1"
-#define ICT_LOCAL_RESULT_NAME    "result.txt"
-#define ICT_LOCAL_STATUS_NAME    "status.txt"
+#define ICT_LOCAL_FILE_PATH      "//192.168.3.123/data/%1"
+#define ICT_LOCAL_SN_NAME        "SN.txt"
+#define ICT_LOCAL_RESULT_NAME    "Result.txt"
+#define ICT_LOCAL_OPEN_NAME      "Open.txt"
+#define ICT_LOCAL_CLOSE_NAME     "Close.txt"
+#define ICT_LOCAL_ERROR_NAME     "Error.txt"
+
+#define PREFIX  "@"
+#define SUFFIX  "##"
+
+//PREFIX_COMMAND_SUFFIX表示"@%1\r\n"
+#define PREFIX_COMMAND  "@%1"
+#define PREFIX_COMMAND_SUFFIX  "@%1##"
 
 
 #endif // STATICNAME_H

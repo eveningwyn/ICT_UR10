@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "serialportobj.h"
+#include <QTimer>
 
 class ScannerOnThread : public QObject
 {
@@ -13,6 +14,8 @@ public:
 
 private:
     SerialPortObj *scanner;
+    QTimer *scantimer;
+    int scanCount;//扫描次数
     QString prefix;
     QString suffix;
     bool canScan;
@@ -26,17 +29,14 @@ signals:
     void forShow_To_Comm(QString msg);//信息记录
     void scanner_Error_Msg(QString errorMsg);//发送错误信息errorMsg
     void scanner_Status(QString status);//更新连接状态给主界面
-    void start_timer();//告知主线程开始扫描超时计时
-    void stop_timer();//告知主线程停止扫描超时计时
 
 public slots:
     void init_Scanner();//初始化串口
     void scannerScanSN();//启动扫描
     void scannerReadSN();//读取SN
-    void setCanScan();//设置可以触发扫描
 
 private slots:
-
+    void timerTimeOut();//扫描超时处理
 };
 
 #endif // SCANNERONTHREAD_H

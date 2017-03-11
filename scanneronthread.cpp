@@ -25,9 +25,12 @@ void ScannerOnThread::scannerReadSN()
    {
 //       qDebug()<<"scan:"<<sn;
    }
+
+   sn = "SN1234567890\r\n";
+
    emit scanResult(sn);
    emit forShow_To_Comm(forShowReceiveString(sn));
-   emit stop_timer();
+   scantimer->stop();
 
    scanner->clearBuffer();
    canScan = true;
@@ -46,23 +49,41 @@ void ScannerOnThread::scannerScanSN()
         canRead = true;
         scanner->clearBuffer();
         scanner->serialPortWrite(prefix+"<T>"+suffix);
-        emit start_timer();//告知主线程开始超时计时
+        scanCount++;
+        scantimer->start(2200);
         emit forShow_To_Comm(forShowSendString(prefix+"<T>"+suffix));
         canScan = false;
     }
 }
 
+void ScannerOnThread::timerTimeOut()
+{
+    if(scantimer->isActive())
+        scantimer->stop();
+
+    canScan = true;
+    if(3 > scanCount)//3次扫描机会
+    {
+        scannerScanSN();
+        return;
+    }
+
+    //三次扫描失败
+    scanCount = 0;
+    emit scanner_Error_Msg(tr("扫描条码超时!\n"));
+}
+
 QString ScannerOnThread::forShowReceiveString(QString str)
 {
     QDateTime time = QDateTime::currentDateTime();
-    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Scanner_Receive:" + str;
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Receive_from_Scanner:" + str;
     return str;
 }
 
 QString ScannerOnThread::forShowSendString(QString str)
 {
     QDateTime time = QDateTime::currentDateTime();
-    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Scanner_Send:" + str;
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Send_to_Scanner:" + str;
     return str;
 }
 
@@ -76,9 +97,12 @@ QString ScannerOnThread::forShowString(QString str)
 void ScannerOnThread::init_Scanner()
 {
     scanner = new SerialPortObj(this);
+    scantimer = new QTimer(this);
+    scanCount = 0;
     prefix = "";
     suffix = "\r\n";
     connect(scanner,&SerialPortObj::serialReadReady,this,&ScannerOnThread::scannerReadSN);
+    connect(scantimer,&QTimer::timeout,this,&ScannerOnThread::timerTimeOut);
 
     canScan = true;
     canRead = false;
@@ -102,9 +126,4 @@ void ScannerOnThread::init_Scanner()
     }
 
     delete configRead;
-}
-
-void ScannerOnThread::setCanScan()
-{
-    canScan = true;
 }

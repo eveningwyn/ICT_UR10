@@ -32,6 +32,7 @@ public:
     RobotOnThread *robot_on_thread;//robot处理类-->移交到子线程运行
     void manualSendMsg_robot(QString sendMsg);
 
+    QThread *thread3;//thread3子线程
     ICT_Test_Obj *ict;
 
     void disEnableUI();
@@ -44,8 +45,7 @@ public:
 
 private:
     Ui::ICT_UR10 *ui;
-    QTimer *scantimer;//扫描定时
-    int scanCount;//扫描次数
+    bool robotIsInit;
 
     /*对话框*/
     CommunicationDialog *commDlg;
@@ -70,9 +70,8 @@ private:
     void update_UI_show();//更新看板数据
 
 signals:
-    void init_scanner_robot();//启动两个子线程的初始化
+    void init_scanner_robot_ict();//启动子线程的初始化
     void manualScan();//手动触发扫描
-    void setCanScan();//设置扫描运行
 
     void manualSendMsg(QString sendMsg);//手动触发发送
 
@@ -82,12 +81,12 @@ signals:
     void getIctInfor(QString path);//获取ICT测试机的状态
     void setIctInfor(QString path);//设置ICT测试机的状态
 
+    void robotInit();
+
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态
-    void start_scanner_timer();//告知主线程开始扫描超时计时
-    void stop_scanner_timer();//告知主线程停止扫描超时计时
-
     void update_Robot_Status(QString status);//更新robot连接状态
+    void robotInitStatus(bool status);
 
 private slots:
     void on_actionScanner_triggered();
@@ -100,15 +99,13 @@ private slots:
 
     void on_actionError_list_triggered();
 
-    void getSn(QString sn);
+    void getSn(QString sn,bool checkResult);
 
     void errorMessage(QString errorMsg);//弹框提示操作员
 
     void robotConnected(QString IP,int Port);
 
     void robotDisconnected(QString IP,int Port);
-
-    void timerTimeOut();//扫描超时处理
 
     void on_pushButton_clicked();//调试用
 

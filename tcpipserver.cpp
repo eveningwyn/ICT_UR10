@@ -1,12 +1,13 @@
 ﻿#include "tcpipserver.h"
+#include "staticname.h"
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)
 {
     clientSocketList.clear();//清空客户端对象集合
     clientSocketID.clear();//清空客户端序号集合
-    prefix = "";
-    suffix = "";
+    prefix = PREFIX;
+    suffix = SUFFIX;
 }
 
 void TcpIpServer::incomingConnection(qintptr socketDescriptor)

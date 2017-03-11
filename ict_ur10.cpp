@@ -29,18 +29,19 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     thread1 = new QThread;//实例化thread1线程对象
     scan_on_thread = new ScannerOnThread;//实例化scanner处理类对象
     scan_on_thread->moveToThread(thread1);//将scanner处理类对象放在线程中
-    scantimer = new QTimer(this);
-    scanCount = 0;
-    connect(scantimer,&QTimer::timeout,this,&ICT_UR10::timerTimeOut);
 
     /*实例化robot类，并移入子线程thread2中*/
     thread2 = new QThread;//实例化thread2线程对象
     robot_on_thread = new RobotOnThread;//实例化scanner处理类对象
     robot_on_thread->moveToThread(thread2);//将scanner处理类对象放在线程中
 
-    /*实例化ICT类，并移入子线程thread1中*/
+    /*实例化ICT类，并移入子线程thread3中*/
+    thread3 = new QThread;//实例化thread3线程对象
     ict = new ICT_Test_Obj;
-    ict->moveToThread(thread1);//将ict处理类对象放在线程中
+    ict->moveToThread(thread3);//将ict处理类对象放在线程中
+
+    /*状态初始化*/
+    robotIsInit = false;
 
     /*实例化对话框类对象*/
     commDlg = new CommunicationDialog(this);
@@ -58,20 +59,21 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     connect(thread2,&QThread::finished,thread2,&QThread::deleteLater);
 
+    connect(thread3,&QThread::finished,thread3,&QThread::deleteLater);
+
     connect(scan_on_thread,&ScannerOnThread::scanner_Status,this,&ICT_UR10::update_Scanner_Status);
     connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,this,&ICT_UR10::errorMessage);
     connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
     connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
     connect(scan_on_thread,&ScannerOnThread::scanResult,robot_on_thread,&RobotOnThread::checkSn);
-    connect(scan_on_thread,&ScannerOnThread::start_timer,this,&ICT_UR10::start_scanner_timer);
-    connect(scan_on_thread,&ScannerOnThread::stop_timer,this,&ICT_UR10::stop_scanner_timer);
 
     connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
     connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::errorMessage);
     connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
     connect(robot_on_thread,&RobotOnThread::startScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
     connect(robot_on_thread,&RobotOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
-    connect(robot_on_thread,&RobotOnThread::checkSnPass,this,&ICT_UR10::getSn);
+    connect(robot_on_thread,&RobotOnThread::checkSnResult,this,&ICT_UR10::getSn);
+    connect(robot_on_thread,&RobotOnThread::checkSnResult,robot_on_thread,&RobotOnThread::snCheckResult);
     connect(robot_on_thread,&RobotOnThread::robotConnected,this,&ICT_UR10::robotConnected);
     connect(robot_on_thread,&RobotOnThread::robotDisconnected,this,&ICT_UR10::robotDisconnected);
 
@@ -82,15 +84,17 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
     connect(this,&ICT_UR10::manualScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
     connect(this,&ICT_UR10::sendErrorMsg,errorDlg,&ErrorListDialog::errorMessage);
-    connect(this,&ICT_UR10::setCanScan,scan_on_thread,&ScannerOnThread::setCanScan);
-    connect(this,&ICT_UR10::init_scanner_robot,scan_on_thread,&ScannerOnThread::init_Scanner);
-    connect(this,&ICT_UR10::init_scanner_robot,robot_on_thread,&RobotOnThread::init_Robot);
+    connect(this,&ICT_UR10::init_scanner_robot_ict,scan_on_thread,&ScannerOnThread::init_Scanner);
+    connect(this,&ICT_UR10::init_scanner_robot_ict,robot_on_thread,&RobotOnThread::init_Robot);
+    connect(this,&ICT_UR10::init_scanner_robot_ict,ICT_Test_Obj,&ICT_Test_Obj::init_ict);
+    connect(this,&ICT_UR10::robotInit,robot_on_thread,&RobotOnThread::robot_Init);
 
     connect(this,&ICT_UR10::getIctInfor,ict,&ICT_Test_Obj::getIctInfo);
     connect(this,&ICT_UR10::setIctInfor,ict,&ICT_Test_Obj::setIctInfo);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
+    thread3->start();//开启thread3的子线程
 
     init_UI();
 }
@@ -101,6 +105,8 @@ ICT_UR10::~ICT_UR10()
         thread1->quit();
     if(thread2->isRunning())
         thread2->quit();
+    if(thread3->isRunning())
+        thread3->quit();
     delete ui;
 }
 
@@ -202,7 +208,7 @@ void ICT_UR10::init_UI()
         }
     }
 
-    emit init_scanner_robot();
+    emit init_scanner_robot_ict();
     delete configRead;
 
     update_UI_show();
@@ -218,13 +224,16 @@ void ICT_UR10::update_UI_show()
     ui->labelYield->setText(QString("%1%").arg(yield*100));
 }
 
-void ICT_UR10::getSn(QString sn)
+void ICT_UR10::getSn(QString sn, bool checkResult)
 {
-    if(ui->lineEditSN->text().isEmpty())
+    if(true == checkResult)
     {
-        sn.replace("\r","");
-        sn.replace("\n","");
-        ui->lineEditSN->setText(sn);
+        if(ui->lineEditSN->text().isEmpty())
+        {
+            sn.replace("\r","");
+            sn.replace("\n","");
+            ui->lineEditSN->setText(sn);
+        }
     }
 }
 
@@ -287,6 +296,14 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
+        if(false==robotIsInit)
+        {
+            if(QMessageBox::Yes==QMessageBox::warning(this,tr("安全提示"),tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
+                                                      QMessageBox::Yes|QMessageBox::No))
+            {
+                emit robotInit();
+            }
+        }
     }
 }
 
@@ -300,6 +317,7 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
+        robotInitStatus(false);
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
         QMessageBox::warning(this,"警告",QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port),QMessageBox::Ok);
         emit sendErrorMsg(QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port));
@@ -406,36 +424,8 @@ void ICT_UR10::update_Robot_Status(QString status)
     this->statusBarLabel_Robot->setText(status);
 }
 
-void ICT_UR10::timerTimeOut()
+void ICT_UR10::robotInitStatus(bool status)
 {
-    if(scantimer->isActive())
-        scantimer->stop();
-
-    if(3 > scanCount)//3次扫描机会
-    {
-        emit setCanScan();
-        manualStartScan();
-        return;
-    }
-
-    //三次扫描失败
-    scanCount = 0;
-    QString errorMsg = tr("扫描条码超时!\n");
-    errorMessage(errorMsg);
-    emit setCanScan();
-    emit sendErrorMsg(errorMsg);
-}
-
-void ICT_UR10::start_scanner_timer()
-{
-    scantimer->start(2200);
-    scanCount++;
-}
-
-void ICT_UR10::stop_scanner_timer()
-{
-    if(scantimer->isActive())
-        scantimer->stop();
-    scanCount = 0;
+    robotIsInit = status;
 }
 
