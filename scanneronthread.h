@@ -29,6 +29,8 @@ signals:
     void forShow_To_Comm(QString msg);//信息记录
     void scanner_Error_Msg(QString errorMsg);//发送错误信息errorMsg
     void scanner_Status(QString status);//更新连接状态给主界面
+    void scannerIsReady(bool isReady);
+    void scanError();
 
 public slots:
     void init_Scanner();//初始化串口

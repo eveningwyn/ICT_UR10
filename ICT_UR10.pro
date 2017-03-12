@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     scanneronthread.cpp \
     robotonthread.cpp \
     serialportobj.cpp \
-    ict_test_obj.cpp
+    ict_test_obj.cpp \
+    mescheckobj.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -52,7 +53,8 @@ HEADERS  += ict_ur10.h \
     robotonthread.h \
     serialportobj.h \
     language.h \
-    ict_test_obj.h
+    ict_test_obj.h \
+    mescheckobj.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

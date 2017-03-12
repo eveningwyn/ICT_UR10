@@ -40,6 +40,10 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     ict = new ICT_Test_Obj;
     ict->moveToThread(thread3);//将ict处理类对象放在线程中
 
+    /*实例化MES类，并移入子线程thread1中*/
+    mesSystem = new MesCheckObj;
+    mesSystem->moveToThread(thread1);//将mes处理类对象放在线程中
+
     /*状态初始化*/
     robotIsInit = false;
 
@@ -62,35 +66,47 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(thread3,&QThread::finished,thread3,&QThread::deleteLater);
 
     connect(scan_on_thread,&ScannerOnThread::scanner_Status,this,&ICT_UR10::update_Scanner_Status);
-    connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,this,&ICT_UR10::errorMessage);
-    connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
+    connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,this,&ICT_UR10::showErrorMessage);
+    connect(scan_on_thread,&ScannerOnThread::scanner_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
+    connect(scan_on_thread,&ScannerOnThread::scannerIsReady,this,&ICT_UR10::setScannerReady);
     connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
-    connect(scan_on_thread,&ScannerOnThread::scanResult,robot_on_thread,&RobotOnThread::checkSn);
+    connect(scan_on_thread,&ScannerOnThread::scanError,robot_on_thread,&RobotOnThread::scanError);
+    connect(scan_on_thread,&ScannerOnThread::scanResult,mesSystem,&MesCheckObj::checkSn);
 
     connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
-    connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::errorMessage);
-    connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
+    connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::showErrorMessage);
+    connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
     connect(robot_on_thread,&RobotOnThread::startScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
     connect(robot_on_thread,&RobotOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
-    connect(robot_on_thread,&RobotOnThread::checkSnResult,this,&ICT_UR10::getSn);
-    connect(robot_on_thread,&RobotOnThread::checkSnResult,robot_on_thread,&RobotOnThread::snCheckResult);
     connect(robot_on_thread,&RobotOnThread::robotConnected,this,&ICT_UR10::robotConnected);
     connect(robot_on_thread,&RobotOnThread::robotDisconnected,this,&ICT_UR10::robotDisconnected);
+    connect(robot_on_thread,&RobotOnThread::robotReady,this,&ICT_UR10::setRobotReady);
+    connect(robot_on_thread,&RobotOnThread::startTest,ict,&ICT_Test_Obj::testStart);
+    connect(robot_on_thread,&RobotOnThread::recordTestResult,this,&ICT_UR10::updateTestResult);
+    connect(robot_on_thread,&RobotOnThread::setRunStatus,this,&ICT_UR10::runStatus);
 
-    connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::errorMessage);
-    connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::errorMessage);
+    connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
+    connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
+    connect(ict,&ICT_Test_Obj::ictIsReady,this,&ICT_UR10::setIctReady);
+    connect(ict,&ICT_Test_Obj::ict_Status,this,&ICT_UR10::update_ICT_Status);
+    connect(ict,&ICT_Test_Obj::ictTestResult,robot_on_thread,&RobotOnThread::testResult);
+
+    connect(mesSystem,&MesCheckObj::checkSnResult,this,&ICT_UR10::getSn);
+    connect(mesSystem,&MesCheckObj::checkSnResult,robot_on_thread,&RobotOnThread::snCheckResult);
+    connect(mesSystem,&MesCheckObj::mes_Error_Msg,this,&ICT_UR10::showErrorMessage);
+    connect(mesSystem,&MesCheckObj::mes_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
 
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
     connect(this,&ICT_UR10::manualScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
-    connect(this,&ICT_UR10::sendErrorMsg,errorDlg,&ErrorListDialog::errorMessage);
-    connect(this,&ICT_UR10::init_scanner_robot_ict,scan_on_thread,&ScannerOnThread::init_Scanner);
-    connect(this,&ICT_UR10::init_scanner_robot_ict,robot_on_thread,&RobotOnThread::init_Robot);
-    connect(this,&ICT_UR10::init_scanner_robot_ict,ICT_Test_Obj,&ICT_Test_Obj::init_ict);
+    connect(this,&ICT_UR10::sendErrorMsg,errorDlg,&ErrorListDialog::recordErrorMessage);
+    connect(this,&ICT_UR10::init_scanner_robot_ict_mes,scan_on_thread,&ScannerOnThread::init_Scanner);
+    connect(this,&ICT_UR10::init_scanner_robot_ict_mes,robot_on_thread,&RobotOnThread::init_Robot);
+    connect(this,&ICT_UR10::init_scanner_robot_ict_mes,ict,&ICT_Test_Obj::init_ict);
+    connect(this,&ICT_UR10::init_scanner_robot_ict_mes,mesSystem,&MesCheckObj::init_mes);
     connect(this,&ICT_UR10::robotInit,robot_on_thread,&RobotOnThread::robot_Init);
-
-    connect(this,&ICT_UR10::getIctInfor,ict,&ICT_Test_Obj::getIctInfo);
-    connect(this,&ICT_UR10::setIctInfor,ict,&ICT_Test_Obj::setIctInfo);
+    connect(this,&ICT_UR10::pcIsReady,robot_on_thread,&RobotOnThread::set_PC_Status);
+    connect(this,&ICT_UR10::setType_Pro,robot_on_thread,&RobotOnThread::setPro_Num);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -180,6 +196,11 @@ void ICT_UR10::on_actionError_list_triggered()
 
 void ICT_UR10::init_UI()
 {
+    scannerIsReady = false;
+    robotIsReady = false;
+    ictIsReady = false;
+//    isAutoRun = false;
+
     //设置状态栏
     statusBarLabel_Scanner = new QLabel(this);
     statusBarLabel_Robot = new QLabel(this);
@@ -194,7 +215,9 @@ void ICT_UR10::init_UI()
     ui->statusBar->addPermanentWidget(statusBarLabel_Robot);
     ui->statusBar->addPermanentWidget(statusBarLabel_ICT);
 
-    statusBarLabel_ICT->setText(tr("ICT:已断开"));
+    this->statusBarLabel_ICT->setText(tr("ICT:已断开"));
+
+    emit init_scanner_robot_ict_mes();//初始化类对象
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     ui->comboBoxTypeSelect->clear();
@@ -207,8 +230,6 @@ void ICT_UR10::init_UI()
             ui->comboBoxTypeSelect->insertItem(i,strTypeTemp);
         }
     }
-
-    emit init_scanner_robot_ict();
     delete configRead;
 
     update_UI_show();
@@ -228,12 +249,10 @@ void ICT_UR10::getSn(QString sn, bool checkResult)
 {
     if(true == checkResult)
     {
-        if(ui->lineEditSN->text().isEmpty())
-        {
-            sn.replace("\r","");
-            sn.replace("\n","");
-            ui->lineEditSN->setText(sn);
-        }
+        sn.replace("\r","");
+        sn.replace("\n","");
+        ui->lineEditSN->setText(sn);
+        ui->lineEditResult->clear();
     }
 }
 
@@ -247,7 +266,7 @@ void ICT_UR10::manualSendMsg_robot(QString sendMsg)
     emit manualSendMsg(sendMsg);
 }
 
-void ICT_UR10::errorMessage(QString errorMsg)
+void ICT_UR10::showErrorMessage(QString errorMsg)
 {
     QMessageBox::warning(this,tr("错误信息"),QString(tr("%1")).arg(errorMsg),QMessageBox::Ok);
 }
@@ -273,7 +292,7 @@ void ICT_UR10::Enable()
 void ICT_UR10::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton button;
-    button = QMessageBox::warning(this,tr("提示"),tr("退出应用程序？"),QMessageBox::Yes|QMessageBox::No);
+    button = QMessageBox::warning(this,tr("退出应用"),tr("退出应用程序？"),QMessageBox::Yes|QMessageBox::No);
 
     if (button == QMessageBox::No)
     {
@@ -296,6 +315,8 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
+        setRobotReady(true);
+        on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
         if(false==robotIsInit)
         {
             if(QMessageBox::Yes==QMessageBox::warning(this,tr("安全提示"),tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
@@ -318,6 +339,7 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
         robotInitStatus(false);
+        setRobotReady(false);
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
         QMessageBox::warning(this,"警告",QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port),QMessageBox::Ok);
         emit sendErrorMsg(QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port));
@@ -333,10 +355,12 @@ QString ICT_UR10::forShowString(QString str)
 
 void ICT_UR10::updateTestResult(QString sn, QString result)
 {
+    ui->lineEditResult->setText(result.toUpper());
     if(100<=testCount)
     {
         ui->tableWidgetResultList->clearContents();
         ui->tableWidgetResultList->setRowCount(0);
+        testCount = 0;
     }
     testCount++;
 
@@ -358,6 +382,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     if("PASS"==result.toUpper())
     {
         ui->tableWidgetResultList->item(row, 4)->setBackgroundColor(QColor(0, 255, 0));
+        ui->lineEditResult->setStyleSheet("background :rgb(0, 255, 0)");
         passQty++;//pass数量加1
     }
     else
@@ -365,6 +390,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         if("FAIL"==result.toUpper())
         {
             ui->tableWidgetResultList->item(row, 4)->setBackgroundColor(QColor(255, 0, 0));
+            ui->lineEditResult->setStyleSheet("background :rgb(255, 0, 0)");
             failQty++;//fail数量加1
         }
     }
@@ -402,18 +428,6 @@ void ICT_UR10::newFile()
     }
 }
 
-void ICT_UR10::on_pushButton_clicked()
-{
-    updateTestResult("SN1234567890","PASS");
-//    emit getIctInfor(ICT_LOCAL_RESULT_NAME);
-}
-
-void ICT_UR10::on_pushButton_2_clicked()
-{
-    updateTestResult("SN0987654321","FAIL");
-//    emit setIctInfor(ICT_LOCAL_STATUS_NAME);
-}
-
 void ICT_UR10::update_Scanner_Status(QString status)
 {
     this->statusBarLabel_Scanner->setText(status);
@@ -424,8 +438,59 @@ void ICT_UR10::update_Robot_Status(QString status)
     this->statusBarLabel_Robot->setText(status);
 }
 
+void ICT_UR10::update_ICT_Status(QString status)
+{
+    this->statusBarLabel_ICT->setText(status);
+}
+
 void ICT_UR10::robotInitStatus(bool status)
 {
     robotIsInit = status;
 }
 
+void ICT_UR10::PC_Status()
+{
+    bool isReady = false;
+    if(true==scannerIsReady && true==robotIsReady && true==ictIsReady)
+    {
+        isReady = true;
+    }
+    emit pcIsReady(isReady);
+}
+
+void ICT_UR10::setScannerReady(bool isReady)
+{
+    scannerIsReady = isReady;
+    PC_Status();
+}
+
+void ICT_UR10::setRobotReady(bool isReady)
+{
+    robotIsReady = isReady;
+    PC_Status();
+}
+
+void ICT_UR10::setIctReady(bool isReady)
+{
+    ictIsReady = isReady;
+    ictIsReady = true;//调试用-------------------------------------------
+    PC_Status();
+}
+
+void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
+{
+    if(true == robotIsReady)
+    {
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(arg1)).toString();
+        delete configRead;
+        emit setType_Pro(pro_num);
+    }
+}
+
+void ICT_UR10::runStatus(bool isAuto)
+{
+//    isAutoRun = isAuto;
+    ui->comboBoxTypeSelect->setDisabled(isAuto);
+    ui->actionLogin->setDisabled(isAuto);
+}

@@ -12,6 +12,7 @@
 #include <QThread>
 #include <QTimer>
 #include "ict_test_obj.h"
+#include "mescheckobj.h"
 
 namespace Ui {
 class ICT_UR10;
@@ -35,6 +36,8 @@ public:
     QThread *thread3;//thread3子线程
     ICT_Test_Obj *ict;
 
+    MesCheckObj *mesSystem;
+
     void disEnableUI();
     void Enable();
     bool commDlgIsShow;
@@ -46,6 +49,12 @@ public:
 private:
     Ui::ICT_UR10 *ui;
     bool robotIsInit;
+
+    bool scannerIsReady;
+    bool robotIsReady;
+    bool ictIsReady;
+//    bool isAutoRun;
+    bool mainInitDone;
 
     /*对话框*/
     CommunicationDialog *commDlg;
@@ -70,7 +79,7 @@ private:
     void update_UI_show();//更新看板数据
 
 signals:
-    void init_scanner_robot_ict();//启动子线程的初始化
+    void init_scanner_robot_ict_mes();//启动子线程的初始化
     void manualScan();//手动触发扫描
 
     void manualSendMsg(QString sendMsg);//手动触发发送
@@ -78,15 +87,20 @@ signals:
     void forShow(QString msg);//显示信息给对话框
     void sendErrorMsg(QString msg);//错误记录显示
 
-    void getIctInfor(QString path);//获取ICT测试机的状态
-    void setIctInfor(QString path);//设置ICT测试机的状态
-
     void robotInit();
+    void pcIsReady(bool isReady);
+    void setType_Pro(QString pro_num);//设置产品类型对应的程序号
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态
     void update_Robot_Status(QString status);//更新robot连接状态
+    void update_ICT_Status(QString status);//更新robot连接状态
     void robotInitStatus(bool status);
+    void PC_Status();
+    void setScannerReady(bool isReady);
+    void setRobotReady(bool isReady);
+    void setIctReady(bool isReady);
+    void runStatus(bool isAuto);
 
 private slots:
     void on_actionScanner_triggered();
@@ -101,16 +115,13 @@ private slots:
 
     void getSn(QString sn,bool checkResult);
 
-    void errorMessage(QString errorMsg);//弹框提示操作员
+    void showErrorMessage(QString errorMsg);//弹框提示操作员
 
     void robotConnected(QString IP,int Port);
 
     void robotDisconnected(QString IP,int Port);
 
-    void on_pushButton_clicked();//调试用
-
-    void on_pushButton_2_clicked();//调试用
-
+    void on_comboBoxTypeSelect_currentTextChanged(const QString &arg1);
 };
 
 #endif // ICT_UR10_H

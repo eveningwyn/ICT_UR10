@@ -40,14 +40,12 @@
    </item>
    <item row="0" column="2">
     <widget class="QComboBox" name="comboBoxSuffix">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
      <item>
       <property name="text">
        <string>\r\n</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>\n\r</string>
       </property>
      </item>
      <item>

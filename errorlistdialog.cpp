@@ -19,7 +19,7 @@ ErrorListDialog::~ErrorListDialog()
     delete ui;
 }
 
-void ErrorListDialog::errorMessage(QString errorMsg)
+void ErrorListDialog::recordErrorMessage(QString errorMsg)
 {
     QDateTime time = QDateTime::currentDateTime();
     errorMsg = time.toString("yyyy-MM-dd hh:mm:ss.zzz :") + "\n" + errorMsg;

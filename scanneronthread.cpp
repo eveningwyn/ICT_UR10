@@ -21,12 +21,13 @@ void ScannerOnThread::scannerReadSN()
    scanner->serialPortRead(sn,prefix,suffix);
    if(sn.isEmpty())
        return;
+
+   sn = "SN1234567890\r\n";//用于调试
+
    if("noread\r\n"==sn.toLower())
    {
-//       qDebug()<<"scan:"<<sn;
+       return;
    }
-
-   sn = "SN1234567890\r\n";
 
    emit scanResult(sn);
    emit forShow_To_Comm(forShowReceiveString(sn));
@@ -50,6 +51,8 @@ void ScannerOnThread::scannerScanSN()
         scanner->clearBuffer();
         scanner->serialPortWrite(prefix+"<T>"+suffix);
         scanCount++;
+        if(scantimer->isActive())
+            scantimer->stop();
         scantimer->start(2200);
         emit forShow_To_Comm(forShowSendString(prefix+"<T>"+suffix));
         canScan = false;
@@ -71,6 +74,7 @@ void ScannerOnThread::timerTimeOut()
     //三次扫描失败
     scanCount = 0;
     emit scanner_Error_Msg(tr("扫描条码超时!\n"));
+    emit scanError();
 }
 
 QString ScannerOnThread::forShowReceiveString(QString str)
@@ -117,11 +121,13 @@ void ScannerOnThread::init_Scanner()
     if(!(scanner->openSerialPort(portName,baudRate,dataBits,parityBits,stopBits,true,true)))
     {
         emit scanner_Status(QString(tr("扫描器:%1 已断开")).arg(portName));
+        emit scannerIsReady(false);
         emit scanner_Error_Msg(tr("扫描枪连接失败，请检查后重启软件！\n"));
     }
     else
     {
         emit scanner_Status(QString(tr("扫描器:%1 已连接")).arg(portName));
+        emit scannerIsReady(true);
         emit forShow_To_Comm(forShowString(QString(tr("扫描器:%1 已连接\n")).arg(portName)));
     }
 

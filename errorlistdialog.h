@@ -23,7 +23,7 @@ private:
     void closeEvent(QCloseEvent *event);
 
 public slots:
-    void errorMessage(QString errorMsg);//错误记录清单
+    void recordErrorMessage(QString errorMsg);//错误记录清单
 
 private slots:
     void on_pushButtonSaveErrorList_clicked();
