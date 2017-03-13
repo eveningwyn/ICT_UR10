@@ -253,6 +253,7 @@ void ICT_UR10::getSn(QString sn, bool checkResult)
         sn.replace("\n","");
         ui->lineEditSN->setText(sn);
         ui->lineEditResult->clear();
+        ui->lineEditResult->setStyleSheet("background :rgb(255, 255, 255)");
     }
 }
 
@@ -414,7 +415,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         csvFile.write(datalist.toLatin1());
         csvFile.close();
     }
-    ui->lineEditSN->clear();
+//    ui->lineEditSN->clear();
     update_UI_show();
 }
 

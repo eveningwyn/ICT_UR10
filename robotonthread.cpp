@@ -251,10 +251,16 @@ void RobotOnThread::scanError()
 void RobotOnThread::testResult(QString result)
 {
     if("0"==result)
+    {
         testPass = true;
+        emit recordTestResult(barcode,"PASS");
+    }
     else
         if("1"==result)
+        {
             testPass = false;
+            emit recordTestResult(barcode,"FAIL");
+        }
     testDone();
 }
 
@@ -265,12 +271,10 @@ void RobotOnThread::testDone()
     if(true == testPass)
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Pass done"));
-        emit recordTestResult(barcode,"PASS");
     }
     else
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fail done"));
-        emit recordTestResult(barcode,"FAIL");
     }
     testResultTimer->start(5000);
 }

@@ -16,19 +16,19 @@ ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 {
     QFile file(QString(ICT_LOCAL_FILE_PATH).arg(fileName));
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件<%1>失败!\n")).arg(fileName));
         return ;
     }
     QTextStream in_out(&file);
     readMsg = in_out.readAll();
-    if(!readMsg.isEmpty())
-    {//刷新文件，然后清空文件
-        file.flush();
-        in_out << "";
-    }
     file.close();
+    //存在有效信息则在读取之后清空文件
+    if(!readMsg.isEmpty())
+    {
+        setIctInfo(fileName,"");
+    }
     return;
 }
 
@@ -96,7 +96,7 @@ void ICT_Test_Obj::statusReadTimeout()
 
         if(!errorMsg.isEmpty())
         {
-            emit ict_Error_Msg(errorMsg+"\n");//错误信息还未定义，可能需要需要转换解码
+            emit ict_Error_Msg(QString("ICT error:%1\n").arg(errorMsg));//错误信息还未定义，可能需要需要转换解码
         }
         return;
     }
