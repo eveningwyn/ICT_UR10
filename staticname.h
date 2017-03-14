@@ -39,5 +39,14 @@
 #define PREFIX_COMMAND  "@%1"
 #define PREFIX_COMMAND_SUFFIX  "@%1##"
 
+#define WEB_SERVEICE         "http://ezconsf.joytech.com.cn/WSCenter/WSCenterEntrance.svc"
+#define WEB_SERVEICE_TEST    "http://10.2.24.153/WSCenter/WSCenterEntrance.svc"
+//#define WEB_SERVEICE_IP      "210.75.11.119"
+//LIBRARY_ACTION_CODE
+#define GET_CONFIG           "GetConfigSetting"
+//#define GET_SFDATA           "getSFData"
+#define CHECKIN              "CheckIn"
+//#define TESTRESULT           "TestResult"
+
 
 #endif // STATICNAME_H
