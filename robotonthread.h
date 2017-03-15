@@ -31,6 +31,7 @@ private:
     QString barcode;
     bool testPass;
     QString robot_pro_num;
+    bool ictEnable;
 
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
@@ -57,6 +58,7 @@ public slots:
     void scanError();
     void roborReturn();
     void setPro_Num(QString pro_num);//设置产品类型对应的程序号
+    void set_ictEnable(bool enable);
 
 private slots:
     void scanDone();

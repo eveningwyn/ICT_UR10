@@ -5,6 +5,7 @@
 #include "communicationdialog.h"
 #include "logindialog.h"
 #include "errorlistdialog.h"
+#include "ict_mes_dialog.h"
 #include "scanneronthread.h"
 #include "robotonthread.h"
 #include <QCloseEvent>
@@ -90,6 +91,9 @@ signals:
     void robotInit();
     void pcIsReady(bool isReady);
     void setType_Pro(QString pro_num);//设置产品类型对应的程序号
+    void set_ict_Enable(bool enable);
+    void set_mes_Enable(bool enable);
+    void get_MES_Config(QString strMsg);
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态
@@ -122,6 +126,7 @@ private slots:
     void robotDisconnected(QString IP,int Port);
 
     void on_comboBoxTypeSelect_currentTextChanged(const QString &arg1);
+    void on_actionICT_MES_triggered();
 };
 
 #endif // ICT_UR10_H

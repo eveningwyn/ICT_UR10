@@ -533,6 +533,7 @@
     </property>
     <addaction name="actionScanner"/>
     <addaction name="actionRobot"/>
+    <addaction name="actionICT_MES"/>
     <addaction name="separator"/>
     <addaction name="actionCommunication"/>
     <addaction name="actionError_list"/>
@@ -559,8 +560,11 @@
    </attribute>
    <addaction name="actionScanner"/>
    <addaction name="actionRobot"/>
+   <addaction name="actionICT_MES"/>
+   <addaction name="separator"/>
    <addaction name="actionCommunication"/>
    <addaction name="actionError_list"/>
+   <addaction name="separator"/>
    <addaction name="actionLogin"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -634,6 +638,15 @@
    </property>
    <property name="statusTip">
     <string>错误信息显示</string>
+   </property>
+  </action>
+  <action name="actionICT_MES">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/res/Mes_fichiers_recus_32px.png</normaloff>:/res/Mes_fichiers_recus_32px.png</iconset>
+   </property>
+   <property name="text">
+    <string>ICT_MES</string>
    </property>
   </action>
  </widget>

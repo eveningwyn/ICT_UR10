@@ -17,6 +17,9 @@ private:
     QString result;
     bool canOpen;
     void updateTestResult();
+    bool ictEnable;
+    QString ictStatusStr;
+    QString ictEnableStr;
 
 signals:
     void ict_Error_Msg(QString errorMsg);
@@ -31,6 +34,7 @@ public slots:
     void statusReadTimeout();
     void openTimer();
     void testStart(QString sn);
+    void set_ictEnable(bool enable);
 };
 
 #endif // ICT_TEST_OBJ_H

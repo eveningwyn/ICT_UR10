@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     robotonthread.cpp \
     serialportobj.cpp \
     ict_test_obj.cpp \
-    mescheckobj.cpp
+    mescheckobj.cpp \
+    ict_mes_dialog.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -55,14 +56,16 @@ HEADERS  += ict_ur10.h \
     serialportobj.h \
     language.h \
     ict_test_obj.h \
-    mescheckobj.h
+    mescheckobj.h \
+    ict_mes_dialog.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \
     robotdialog.ui \
     communicationdialog.ui \
     logindialog.ui \
-    errorlistdialog.ui
+    errorlistdialog.ui \
+    ict_mes_dialog.ui
 
 RESOURCES += \
     resource.qrc

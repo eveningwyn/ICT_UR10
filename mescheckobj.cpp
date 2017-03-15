@@ -2,7 +2,7 @@
 #include "language.h"
 #include "staticname.h"
 #include <QUuid>
-#include <QtXml/QtXml>
+#include <QtXml>
 
 #include <QDebug>
 
@@ -15,7 +15,9 @@ void MesCheckObj::init_mes()
 {
     V_UID = QUuid::createUuid().toString();//取得唯一的GUID码
     V_USER_ID = "SF";
+
     mesEnable = true;
+    getConfig = false;
     mes_manager = new QNetworkAccessManager(this);
     connect(mes_manager,&QNetworkAccessManager::finished,this,&MesCheckObj::replyFinished);
 }
@@ -45,9 +47,10 @@ void MesCheckObj::set_mes_enable(bool enable)
     mesEnable = enable;
 }
 
-void MesCheckObj::get_mes_config()
+void MesCheckObj::get_mes_config(QString strMsg)
 {
-    post_mes(V_UID, V_USER_ID, GET_CONFIG, QString(""));
+    getConfig = true;
+    post_mes(V_UID, V_USER_ID, GET_CONFIG, strMsg);
 }
 
 void MesCheckObj::get_mes_SN_info(QString sn)
@@ -96,8 +99,22 @@ void MesCheckObj::replyFinished(QNetworkReply *reply)
     if(QNetworkReply::NoError == reply->error())
     {
         QByteArray replyBytes = reply->readAll();
+
         QString replyStr(replyBytes);//转化为字符串
         qDebug()<<replyStr;
+
+        QDomDocument doc;//创建Dom类对象解析xml
+        if(doc.setContent(replyStr))
+        {
+            QDomNode node = doc.documentElement().elementsByTagName("ROWSET").at(0);
+            node = node.toElement().elementsByTagName("OUTPUT").at(0);
+            replyStr = node.toElement().text();//得到xml中某个节点的值
+        }
+
+        if(true == getConfig)
+        {
+            emit rtnConfig(replyStr);
+        }
     }
     else
     {
@@ -105,5 +122,6 @@ void MesCheckObj::replyFinished(QNetworkReply *reply)
         emit mes_Error_Msg(QString(tr("MES应答信息异常！\n%1\n")).arg(reply->errorString()));
     }
 
+    getConfig = false;
     reply->deleteLater();
 }

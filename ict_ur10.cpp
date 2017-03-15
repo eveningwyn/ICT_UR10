@@ -107,6 +107,10 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::robotInit,robot_on_thread,&RobotOnThread::robot_Init);
     connect(this,&ICT_UR10::pcIsReady,robot_on_thread,&RobotOnThread::set_PC_Status);
     connect(this,&ICT_UR10::setType_Pro,robot_on_thread,&RobotOnThread::setPro_Num);
+    connect(this,&ICT_UR10::set_ict_Enable,ict,&ICT_Test_Obj::set_ictEnable);
+    connect(this,&ICT_UR10::set_ict_Enable,robot_on_thread,&RobotOnThread::set_ictEnable);
+    connect(this,&ICT_UR10::set_mes_Enable,mesSystem,&MesCheckObj::set_mes_enable);
+    connect(this,&ICT_UR10::get_MES_Config,mesSystem,&MesCheckObj::get_mes_config);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -194,6 +198,13 @@ void ICT_UR10::on_actionError_list_triggered()
     }
 }
 
+void ICT_UR10::on_actionICT_MES_triggered()
+{
+    ICT_MES_Dialog ict_mes_Dlg(this);
+    connect(mesSystem,&MesCheckObj::rtnConfig,&ict_mes_Dlg,&ICT_MES_Dialog::showConfig);
+    ict_mes_Dlg.exec();
+}
+
 void ICT_UR10::init_UI()
 {
     scannerIsReady = false;
@@ -277,6 +288,7 @@ void ICT_UR10::disEnableUI()
     ui->actionLogin->setText(tr("登入"));
     ui->actionScanner->setDisabled(true);
     ui->actionRobot->setDisabled(true);
+    ui->actionICT_MES->setDisabled(true);
     commDlg->disEnable();
     errorDlg->disEnable();
 }
@@ -286,6 +298,7 @@ void ICT_UR10::Enable()
     ui->actionLogin->setText(tr("登出"));
     ui->actionScanner->setDisabled(false);
     ui->actionRobot->setDisabled(false);
+    ui->actionICT_MES->setDisabled(false);
     commDlg->Enable();
     errorDlg->Enable();
 }
@@ -356,6 +369,8 @@ QString ICT_UR10::forShowString(QString str)
 
 void ICT_UR10::updateTestResult(QString sn, QString result)
 {
+    sn.replace("\r","");
+    sn.replace("\n","");
     ui->lineEditResult->setText(result.toUpper());
     if(100<=testCount)
     {
@@ -493,5 +508,8 @@ void ICT_UR10::runStatus(bool isAuto)
 {
 //    isAutoRun = isAuto;
     ui->comboBoxTypeSelect->setDisabled(isAuto);
+    ui->actionScanner->setDisabled(isAuto);
+    ui->actionRobot->setDisabled(isAuto);
+    ui->actionICT_MES->setDisabled(isAuto);
     ui->actionLogin->setDisabled(isAuto);
 }

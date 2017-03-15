@@ -24,13 +24,23 @@
 #define TYPE_TOTAL               20
 #define MAIN_UI_TYPE             "/MainUIParameter/Index%1"
 
-#define ICT_LOCAL_IP             "192.168.3.123"
-#define ICT_LOCAL_FILE_PATH      "//192.168.3.123/data/%1"
-#define ICT_LOCAL_SN_NAME        "SN.txt"
-#define ICT_LOCAL_RESULT_NAME    "Result.txt"
-#define ICT_LOCAL_OPEN_NAME      "Open.txt"
-#define ICT_LOCAL_CLOSE_NAME     "Close.txt"
-#define ICT_LOCAL_ERROR_NAME     "Error.txt"
+#define ICT_LOCAL_IP                   "/ICT/IPaddress"
+//A File
+#define ICT_LOCAL_SN_FILE_NAME         "/ICT/SnFileName"
+#define ICT_LOCAL_SN_NAME              "/ICT/SnName"
+//B File
+#define ICT_LOCAL_RESULT_FILE_NAME     "/ICT/ResultFileName"
+#define ICT_LOCAL_RESULT_NAME          "/ICT/ResultName"
+//C File
+#define ICT_LOCAL_OPEN_FILE_NAME       "/ICT/OpenFileName"
+#define ICT_LOCAL_OPEN_NAME            "/ICT/OpenName"
+//D File
+#define ICT_LOCAL_CLOSE_FILE_NAME      "/ICT/CloseFileName"
+#define ICT_LOCAL_CLOSE_NAME           "/ICT/CloseName"
+//F File
+#define ICT_LOCAL_ERROR_FILE_NAME      "/ICT/ErrorFileName"
+#define ICT_LOCAL_ERROR_NAME           "/ICT/ErrorName"
+
 
 #define PREFIX  "@"
 #define SUFFIX  "##"

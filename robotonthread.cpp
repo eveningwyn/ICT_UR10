@@ -117,6 +117,11 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Test ready ACK"));
         emit startTest(barcode);//发出开始测试信号
+        if(false == ictEnable)
+        {
+            QThread::msleep(2000);
+            testResult("0");
+        }
         return;
     }
     if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Pass done ACK"))) ||
@@ -172,6 +177,7 @@ void RobotOnThread::init_Robot()
     barcode = "";
     testPass = false;
     robot_pro_num = "";
+    ictEnable = true;
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
@@ -304,4 +310,9 @@ void RobotOnThread::setPro_Num_Timeout()
         setProtTimer->stop();
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
     setProtTimer->start(5000);
+}
+
+void RobotOnThread::set_ictEnable(bool enable)
+{
+    ictEnable = enable;
 }
