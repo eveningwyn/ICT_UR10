@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <QDateTime>
 #include <QSettings>
+#include <QDateTime>
 #include <QDebug>
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
@@ -25,6 +26,8 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件<%1>失败!\n")).arg(fileName));
+        if(statusReadTimer->isActive())
+            statusReadTimer->stop();
         return ;
     }
     QTextStream in_out(&file);
@@ -65,8 +68,22 @@ int ICT_Test_Obj::pc_ict_Ping()
     QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
     delete configRead;
     QString pingStr = "ping " + ict_ip_addr + " -n 1";
+    int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
+    qDebug()<<"time_s1 return:"<<time_s1;//for debug-----------------------------
     int ref = QProcess::execute(pingStr);
-    return ref;
+    qDebug()<<"ref return:"<<ref;//for debug--------------------------------------
+    int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
+    qDebug()<<"time_s2 return:"<<time_s2;//for debug-------------------------------
+    int time_offset = time_s2 - time_s1;
+    qDebug()<<"time_offset return:"<<time_offset;//for debug----------------------
+    if(0 == ref && 0 == time_offset)
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void ICT_Test_Obj::init_ict()

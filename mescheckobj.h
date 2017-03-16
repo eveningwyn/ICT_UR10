@@ -4,11 +4,15 @@
 #include <QObject>
 #include <QtNetwork>
 
+class QNetworkAccessManager;
+class QNetworkRequest;
+
 class MesCheckObj : public QObject
 {
     Q_OBJECT
 public:
     explicit MesCheckObj(QObject *parent = 0);
+    ~MesCheckObj();
 
 private:
     bool mesEnable;

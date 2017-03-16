@@ -8,6 +8,10 @@
 
 MesCheckObj::MesCheckObj(QObject *parent) : QObject(parent)
 {
+}
+
+MesCheckObj::~MesCheckObj()
+{
 
 }
 

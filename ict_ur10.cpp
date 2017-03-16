@@ -214,16 +214,16 @@ void ICT_UR10::init_UI()
 
     //设置状态栏
     statusBarLabel_Scanner = new QLabel(this);
-    statusBarLabel_Robot = new QLabel(this);
-    statusBarLabel_ICT = new QLabel(this);
     statusBarLabel_Scanner->setFrameStyle(QFrame::StyledPanel);
     statusBarLabel_Scanner->setTextFormat(Qt::RichText);
+    ui->statusBar->addPermanentWidget(statusBarLabel_Scanner);
+    statusBarLabel_Robot = new QLabel(this);
     statusBarLabel_Robot->setFrameStyle(QFrame::StyledPanel);
     statusBarLabel_Robot->setTextFormat(Qt::RichText);
+    ui->statusBar->addPermanentWidget(statusBarLabel_Robot);
+    statusBarLabel_ICT = new QLabel(this);
     statusBarLabel_ICT->setFrameStyle(QFrame::StyledPanel);
     statusBarLabel_ICT->setTextFormat(Qt::RichText);
-    ui->statusBar->addPermanentWidget(statusBarLabel_Scanner);
-    ui->statusBar->addPermanentWidget(statusBarLabel_Robot);
     ui->statusBar->addPermanentWidget(statusBarLabel_ICT);
 
     this->statusBarLabel_ICT->setText(tr("ICT:已断开"));
