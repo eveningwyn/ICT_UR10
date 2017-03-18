@@ -29,10 +29,36 @@ void RobotDialog::initGetInfo()
     QString port = configRead->value(SERVER_PORT).toString();
     QString robotIP = configRead->value(ROBOT_IP).toString();
     QString robotPort = configRead->value(ROBOT_PORT).toString();
+    int flag = 0;
+    if(""==ipAddress)
+    {
+        ipAddress = "192.168.3.1";
+        flag++;
+    }
+    if(""==port)
+    {
+        port = "4098";
+        flag++;
+    }
+    if(""==robotIP)
+    {
+        robotIP = "192.168.3.100";
+        flag++;
+    }
+    if(""==robotPort)
+    {
+        robotPort = "4092";
+        flag++;
+    }
     ui->lineEditIPAddress->setText(ipAddress);
     ui->lineEditPort->setText(port);
     ui->lineEditRobotPAddress->setText(robotIP);
     ui->lineEditRobotPort->setText(robotPort);
+    if(0<flag)
+    {
+        saveIPConfig();
+        QMessageBox::warning(this,tr("提示"),tr("IP地址和端口号有部分参数已恢复默认设置，请检查参数配置！\n"),QMessageBox::Ok);
+    }
 
     QString typeTemp = "";
     QString pro_numTemp = "";
@@ -57,20 +83,11 @@ void RobotDialog::initGetInfo()
 
 void RobotDialog::on_Setting_clicked()
 {
-    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存设置"),tr("确认保存配置参数？"),
+    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存配置"),tr("确认保存配置参数？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
-        QString ipAddress = ui->lineEditIPAddress->text();
-        QString port = ui->lineEditPort->text();
-        QString robotIP = ui->lineEditRobotPAddress->text();
-        QString robotPort = ui->lineEditRobotPort->text();
-
-        QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        configWrite->setValue(SERVER_IP_ADDRESS, ipAddress);
-        configWrite->setValue(SERVER_PORT, port);
-        configWrite->setValue(ROBOT_IP, robotIP);
-        configWrite->setValue(ROBOT_PORT, robotPort);
-        delete configWrite;
+        saveIPConfig();
+        QMessageBox::warning(this,tr("保存配置"),tr("保存配置成功！\n"),QMessageBox::Ok);
     }
 }
 
@@ -192,4 +209,19 @@ void RobotDialog::saveConfig()
     delete configWrite;
     isSave = true;
     ui->pushButtonDelType->setDisabled(false);
+}
+
+void RobotDialog::saveIPConfig()
+{
+    QString ipAddress = ui->lineEditIPAddress->text();
+    QString port = ui->lineEditPort->text();
+    QString robotIP = ui->lineEditRobotPAddress->text();
+    QString robotPort = ui->lineEditRobotPort->text();
+
+    QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    configWrite->setValue(SERVER_IP_ADDRESS, ipAddress);
+    configWrite->setValue(SERVER_PORT, port);
+    configWrite->setValue(ROBOT_IP, robotIP);
+    configWrite->setValue(ROBOT_PORT, robotPort);
+    delete configWrite;
 }

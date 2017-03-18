@@ -28,6 +28,7 @@ private:
     Ui::RobotDialog *ui;
     void initGetInfo();//初始化UI
     bool isSave;
+    void saveIPConfig();
     void saveConfig();//保存参数配置
 };
 

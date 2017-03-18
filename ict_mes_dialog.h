@@ -29,6 +29,7 @@ private slots:
 
 private:
     Ui::ICT_MES_Dialog *ui;
+    void saveICTConfig();
 };
 
 #endif // ICT_MES_DIALOG_H

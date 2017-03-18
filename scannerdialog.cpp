@@ -20,22 +20,11 @@ ScannerDialog::~ScannerDialog()
 }
 void ScannerDialog::on_pushButtonSetting_clicked()
 {
-    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存设置"),tr("请确认是否保存配置文件？"),
+    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存配置"),tr("请确认是否保存配置文件？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
-        QString portName = ui->comboBoxPortNum->currentText();
-        QString baudRate = ui->comboBoxBaudBits->currentText();
-        QString dataBits = ui->comboBoxDataBits->currentText();
-        QString parityBits = ui->comboBoxParityBits->currentText();
-        QString stopBits = ui->comboBoxStopBits->currentText();
-
-        QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        configWrite->setValue(SCANNER_PORT_NAME, portName);
-        configWrite->setValue(SCANNER_BAUD_RATE, baudRate);
-        configWrite->setValue(SCANNER_DATA_BITS, dataBits);
-        configWrite->setValue(SCANNER_PARITY_BITS, parityBits);
-        configWrite->setValue(SCANNER_STOP_BITS, stopBits);
-        delete configWrite;
+        saveConfig();
+        QMessageBox::warning(this,tr("保存配置"),tr("保存配置成功！\n"),QMessageBox::Ok);
     }
 }
 
@@ -48,12 +37,44 @@ void ScannerDialog::initializeInfo()
     QString parityBits = configRead->value(SCANNER_PARITY_BITS).toString();
     QString stopBits   = configRead->value(SCANNER_STOP_BITS).toString();
     delete configRead;
+    int flag = 0;
+    if(""==portName)
+    {
+        portName = "COM1";
+        flag++;
+    }
+    if(""==baudRate)
+    {
+        baudRate = "115200";
+        flag++;
+    }
+    if(""==dataBits)
+    {
+        dataBits = "8";
+        flag++;
+    }
+    if(""==parityBits)
+    {
+        parityBits = "none";
+        flag++;
+    }
+    if(""==stopBits)
+    {
+        stopBits = "1";
+        flag++;
+    }
 
     ui->comboBoxPortNum->addItem(portName);
-    ui->comboBoxBaudBits->addItem(baudRate);
-    ui->comboBoxDataBits->addItem(dataBits);
-    ui->comboBoxParityBits->addItem(parityBits);
-    ui->comboBoxStopBits->addItem(stopBits);
+    ui->comboBoxBaudBits->setItemText(0,baudRate);
+    ui->comboBoxDataBits->setItemText(0,dataBits);
+    ui->comboBoxParityBits->setItemText(0,parityBits);
+    ui->comboBoxStopBits->setItemText(0,stopBits);
+
+    if(0<flag)
+    {
+        saveConfig();
+        QMessageBox::warning(this,tr("提示"),tr("串口配置有部分参数已恢复默认设置，请检查参数配置！\n"),QMessageBox::Ok);
+    }
 }
 
 void ScannerDialog::on_pushButtonRefresh_clicked()
@@ -82,5 +103,22 @@ void ScannerDialog::getPortName()
             ui->comboBoxPortNum->addItem(info.portName());
         }
     }
+}
+
+void ScannerDialog::saveConfig()
+{
+    QString portName = ui->comboBoxPortNum->currentText();
+    QString baudRate = ui->comboBoxBaudBits->currentText();
+    QString dataBits = ui->comboBoxDataBits->currentText();
+    QString parityBits = ui->comboBoxParityBits->currentText();
+    QString stopBits = ui->comboBoxStopBits->currentText();
+
+    QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    configWrite->setValue(SCANNER_PORT_NAME, portName);
+    configWrite->setValue(SCANNER_BAUD_RATE, baudRate);
+    configWrite->setValue(SCANNER_DATA_BITS, dataBits);
+    configWrite->setValue(SCANNER_PARITY_BITS, parityBits);
+    configWrite->setValue(SCANNER_STOP_BITS, stopBits);
+    delete configWrite;
 }
 

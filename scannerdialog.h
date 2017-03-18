@@ -25,6 +25,7 @@ private:
     Ui::ScannerDialog *ui;
     void initializeInfo();
     void getPortName();
+    void saveConfig();
 };
 
 #endif // SCANNERDIALOG_H
