@@ -73,17 +73,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="6" rowspan="2">
-    <widget class="QPushButton" name="Setting">
-     <property name="text">
-      <string>保存配置</string>
-     </property>
-     <property name="icon">
-      <iconset resource="resource.qrc">
-       <normaloff>:/res/config_configuration_32px.png</normaloff>:/res/config_configuration_32px.png</iconset>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="labelRobotIPAddress">
      <property name="layoutDirection">
@@ -101,32 +90,6 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3">
-    <widget class="QLabel" name="labelRobotPort">
-     <property name="layoutDirection">
-      <enum>Qt::RightToLeft</enum>
-     </property>
-     <property name="text">
-      <string>机器人端口号：</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4" colspan="2">
-    <widget class="QLineEdit" name="lineEditRobotPort">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>133</width>
-       <height>0</height>
-      </size>
      </property>
     </widget>
    </item>
@@ -440,14 +403,23 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="3">
+    <widget class="QPushButton" name="Setting">
+     <property name="text">
+      <string>保存配置</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/res/config_configuration_32px.png</normaloff>:/res/config_configuration_32px.png</iconset>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>lineEditIPAddress</tabstop>
   <tabstop>lineEditPort</tabstop>
   <tabstop>lineEditRobotPAddress</tabstop>
-  <tabstop>lineEditRobotPort</tabstop>
-  <tabstop>Setting</tabstop>
   <tabstop>pushButtonAddType</tabstop>
   <tabstop>tableWidgetRobotType</tabstop>
   <tabstop>pushButtonSaveType</tabstop>

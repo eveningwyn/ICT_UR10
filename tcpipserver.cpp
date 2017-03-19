@@ -1,5 +1,6 @@
 ﻿#include "tcpipserver.h"
 #include "staticname.h"
+#include <QDebug>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)
@@ -69,7 +70,8 @@ void TcpIpServer::sendData(quint16 port, QString sendMsg)
             return;
         }
     }
-    emit errorMessage(tr("The port number does not exist!"));
+    emit errorMessage(tr("The port number does not exist!\n"));
+    emit sendError();
 }
 
 bool TcpIpServer::stratListen(QString address,quint16 port)

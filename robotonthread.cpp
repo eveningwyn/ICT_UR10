@@ -52,6 +52,7 @@ void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
 
 void RobotOnThread::robotSendMsg(QString sendMsg)
 {
+    sendMsg.replace(SUFFIX,"");
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotPort = configRead->value(ROBOT_PORT).toString();
     delete configRead;
@@ -98,7 +99,9 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan ready")))
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan ready ACK"));
-        emit startScan();
+
+        snCheckResult("SN1234567890",true);
+        //emit startScan();
         return;
     }
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan done ACK")))
@@ -186,6 +189,7 @@ void RobotOnThread::init_Robot()
     connect(robotServer,&TcpIpServer::clientConnect,this,&RobotOnThread::robotConnected);
     connect(robotServer,&TcpIpServer::clientDisconnected,this,&RobotOnThread::robotDisconnected);
     connect(robotServer,&TcpIpServer::serverReadData,this,&RobotOnThread::robotReadData);
+    connect(robotServer,&TcpIpServer::sendError,this,&RobotOnThread::serverSendError);
 
     connect(initTimer,&QTimer::timeout,this,&RobotOnThread::robot_Init);
     connect(snResultTimer,&QTimer::timeout,this,&RobotOnThread::scanDone);
@@ -308,11 +312,21 @@ void RobotOnThread::setPro_Num_Timeout()
 {
     if(setProtTimer->isActive())
         setProtTimer->stop();
-    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
-    setProtTimer->start(5000);
+//    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
+//    setProtTimer->start(5000);
 }
 
 void RobotOnThread::set_ictEnable(bool enable)
 {
     ictEnable = enable;
+}
+
+void RobotOnThread::serverSendError()
+{
+    initTimer->stop();
+    snResultTimer->stop();
+    scanErrorTimer->stop();
+    testResultTimer->stop();
+    returnResultTimer->stop();
+    setProtTimer->stop();
 }

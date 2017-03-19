@@ -28,7 +28,7 @@ void RobotDialog::initGetInfo()
     QString ipAddress   = configRead->value(SERVER_IP_ADDRESS).toString();
     QString port = configRead->value(SERVER_PORT).toString();
     QString robotIP = configRead->value(ROBOT_IP).toString();
-    QString robotPort = configRead->value(ROBOT_PORT).toString();
+//    QString robotPort = configRead->value(ROBOT_PORT).toString();
     int flag = 0;
     if(""==ipAddress)
     {
@@ -45,15 +45,14 @@ void RobotDialog::initGetInfo()
         robotIP = "192.168.3.100";
         flag++;
     }
-    if(""==robotPort)
-    {
-        robotPort = "4092";
-        flag++;
-    }
+//    if(""==robotPort)
+//    {
+//        robotPort = "4092";
+//        flag++;
+//    }
     ui->lineEditIPAddress->setText(ipAddress);
     ui->lineEditPort->setText(port);
     ui->lineEditRobotPAddress->setText(robotIP);
-    ui->lineEditRobotPort->setText(robotPort);
     if(0<flag)
     {
         saveIPConfig();
@@ -216,12 +215,10 @@ void RobotDialog::saveIPConfig()
     QString ipAddress = ui->lineEditIPAddress->text();
     QString port = ui->lineEditPort->text();
     QString robotIP = ui->lineEditRobotPAddress->text();
-    QString robotPort = ui->lineEditRobotPort->text();
 
     QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     configWrite->setValue(SERVER_IP_ADDRESS, ipAddress);
     configWrite->setValue(SERVER_PORT, port);
     configWrite->setValue(ROBOT_IP, robotIP);
-    configWrite->setValue(ROBOT_PORT, robotPort);
     delete configWrite;
 }

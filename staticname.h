@@ -43,11 +43,11 @@
 
 
 #define PREFIX  "@"
-#define SUFFIX  "##"
+#define SUFFIX  "\n"
 
 //PREFIX_COMMAND_SUFFIX表示"@%1\r\n"
 #define PREFIX_COMMAND  "@%1"
-#define PREFIX_COMMAND_SUFFIX  "@%1##"
+#define PREFIX_COMMAND_SUFFIX  "@%1\n"
 
 #define WEB_SERVEICE         "http://ezconsf.joytech.com.cn/WSCenter/WSCenterEntrance.svc"
 #define WEB_SERVEICE_TEST    "http://10.2.24.153/WSCenter/WSCenterEntrance.svc"

@@ -324,10 +324,10 @@ void ICT_UR10::robotConnected(QString IP, int Port)
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotIP = configRead->value(ROBOT_IP).toString();
-    QString robotPort = configRead->value(ROBOT_PORT).toString();
-    delete configRead;
-    if(robotIP==IP && robotPort==QString("%1").arg(Port))
+//    QString robotPort = configRead->value(ROBOT_PORT).toString();
+    if(robotIP==IP)
     {
+        configRead->setValue(ROBOT_PORT,QString("%1").arg(Port));
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
         setRobotReady(true);
         on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
@@ -340,6 +340,8 @@ void ICT_UR10::robotConnected(QString IP, int Port)
             }
         }
     }
+
+    delete configRead;
 }
 
 void ICT_UR10::robotDisconnected(QString IP, int Port)
@@ -477,6 +479,7 @@ void ICT_UR10::PC_Status()
 void ICT_UR10::setScannerReady(bool isReady)
 {
     scannerIsReady = isReady;
+    scannerIsReady = true;//调试用
     PC_Status();
 }
 

@@ -59,6 +59,7 @@ public slots:
     void roborReturn();
     void setPro_Num(QString pro_num);//设置产品类型对应的程序号
     void set_ictEnable(bool enable);
+    void serverSendError();
 
 private slots:
     void scanDone();
