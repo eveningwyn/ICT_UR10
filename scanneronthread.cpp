@@ -22,14 +22,15 @@ void ScannerOnThread::scannerReadSN()
    if(sn.isEmpty())
        return;
 
-   sn = "SN1234567890\r\n";//用于调试
+   sn = "SN1234567890\r\n";//用于调试----------------------------------------
 
    if("noread\r\n"==sn.toLower())
    {
        return;
    }
 
-   emit scanResult(sn);
+   if(true == auto_Scan)
+       emit scanResult(sn);
    emit forShow_To_Comm(forShowReceiveString(sn));
    scantimer->stop();
 
@@ -38,7 +39,7 @@ void ScannerOnThread::scannerReadSN()
    canRead = false;
 }
 
-void ScannerOnThread::scannerScanSN()
+void ScannerOnThread::scannerScanSN(bool autoScan)
 {
     if(!scanner->serialPortIsOpen())
     {
@@ -47,6 +48,7 @@ void ScannerOnThread::scannerScanSN()
     }
     if(true == canScan)
     {
+        auto_Scan = autoScan;
         canRead = true;
         scanner->clearBuffer();
         scanner->serialPortWrite(prefix+"<T>"+suffix);
@@ -67,14 +69,15 @@ void ScannerOnThread::timerTimeOut()
     canScan = true;
     if(3 > scanCount)//3次扫描机会
     {
-        scannerScanSN();
+        scannerScanSN(auto_Scan);
         return;
     }
 
     //三次扫描失败
     scanCount = 0;
     emit scanner_Error_Msg(tr("扫描条码超时!\n"));
-    emit scanError();
+    if(true == auto_Scan)
+        emit scanError();
 }
 
 QString ScannerOnThread::forShowReceiveString(QString str)
@@ -110,6 +113,7 @@ void ScannerOnThread::init_Scanner()
 
     canScan = true;
     canRead = false;
+    auto_Scan = false;
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Scanner

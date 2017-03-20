@@ -143,6 +143,7 @@ void ICT_UR10::on_actionRobot_triggered()
 
     ui->comboBoxTypeSelect->clear();
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     QString strTypeTemp = "";
     for(int i=0; i<TYPE_TOTAL; i++)
     {
@@ -150,6 +151,17 @@ void ICT_UR10::on_actionRobot_triggered()
         if(""!=strTypeTemp)
         {
             ui->comboBoxTypeSelect->insertItem(i,strTypeTemp);
+        }
+    }
+    if("false"==robotTypeEnable)
+    {
+        ui->comboBoxTypeSelect->setDisabled(true);
+    }
+    else
+    {
+        if("true"==robotTypeEnable)
+        {
+            ui->comboBoxTypeSelect->setDisabled(false);
         }
     }
     delete configRead;
@@ -211,6 +223,8 @@ void ICT_UR10::init_UI()
     robotIsReady = false;
     ictIsReady = false;
 //    isAutoRun = false;
+    ictEnable = true;
+    mesEnable = true;
 
     //设置状态栏
     statusBarLabel_Scanner = new QLabel(this);
@@ -231,6 +245,7 @@ void ICT_UR10::init_UI()
     emit init_scanner_robot_ict_mes();//初始化类对象
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     ui->comboBoxTypeSelect->clear();
     QString strTypeTemp = "";
     for(int i=0; i<TYPE_TOTAL; i++)
@@ -240,6 +255,10 @@ void ICT_UR10::init_UI()
         {
             ui->comboBoxTypeSelect->insertItem(i,strTypeTemp);
         }
+    }
+    if("false"==robotTypeEnable)
+    {
+        ui->comboBoxTypeSelect->setDisabled(true);
     }
     delete configRead;
 
@@ -268,9 +287,9 @@ void ICT_UR10::getSn(QString sn, bool checkResult)
     }
 }
 
-void ICT_UR10::manualStartScan()
+void ICT_UR10::manualStartScan(bool autoScan)
 {
-    emit manualScan();
+    emit manualScan(autoScan);
 }
 
 void ICT_UR10::manualSendMsg_robot(QString sendMsg)
@@ -324,7 +343,6 @@ void ICT_UR10::robotConnected(QString IP, int Port)
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotIP = configRead->value(ROBOT_IP).toString();
-//    QString robotPort = configRead->value(ROBOT_PORT).toString();
     if(robotIP==IP)
     {
         configRead->setValue(ROBOT_PORT,QString("%1").arg(Port));
@@ -479,7 +497,7 @@ void ICT_UR10::PC_Status()
 void ICT_UR10::setScannerReady(bool isReady)
 {
     scannerIsReady = isReady;
-    scannerIsReady = true;//调试用
+    scannerIsReady = true;//调试用-------------------------------------------
     PC_Status();
 }
 
@@ -510,7 +528,13 @@ void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
 void ICT_UR10::runStatus(bool isAuto)
 {
 //    isAutoRun = isAuto;
-    ui->comboBoxTypeSelect->setDisabled(isAuto);
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
+    delete configRead;
+    if("true"==robotTypeEnable)
+    {
+        ui->comboBoxTypeSelect->setDisabled(isAuto);
+    }
     ui->actionScanner->setDisabled(isAuto);
     ui->actionRobot->setDisabled(isAuto);
     ui->actionICT_MES->setDisabled(isAuto);

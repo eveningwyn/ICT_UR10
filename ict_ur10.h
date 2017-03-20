@@ -28,7 +28,7 @@ public:
     ~ICT_UR10();
     QThread *thread1;//thread1子线程
     ScannerOnThread *scan_on_thread;//scan处理类-->移交到子线程运行
-    void manualStartScan();
+    void manualStartScan(bool autoScan);
 
     QThread *thread2;//thread2子线程
     RobotOnThread *robot_on_thread;//robot处理类-->移交到子线程运行
@@ -46,6 +46,8 @@ public:
     bool errorDlgIsShow;
     void updateTestResult(QString sn,QString result);
     int testCount;//测试次数，用于对主界面的计数
+    bool ictEnable;
+    bool mesEnable;
 
 private:
     Ui::ICT_UR10 *ui;
@@ -81,7 +83,7 @@ private:
 
 signals:
     void init_scanner_robot_ict_mes();//启动子线程的初始化
-    void manualScan();//手动触发扫描
+    void manualScan(bool autoScan);//手动触发扫描
 
     void manualSendMsg(QString sendMsg);//手动触发发送
 

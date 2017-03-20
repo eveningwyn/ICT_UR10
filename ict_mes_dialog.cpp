@@ -96,6 +96,9 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         saveICTConfig();
         QMessageBox::warning(this,tr("提示"),tr("ICT有部分参数已恢复默认设置，请检查ICT参数配置！\n"),QMessageBox::Ok);
     }
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    ui->checkBox_ICT_Enable->setChecked(ptr->ictEnable);
+    ui->checkBox_MES_Enable->setChecked(ptr->mesEnable);
     on_checkBox_ICT_Enable_clicked();
     on_checkBox_MES_Enable_clicked();
 }
@@ -128,6 +131,7 @@ void ICT_MES_Dialog::on_checkBox_ICT_Enable_clicked()
             ui->checkBox_ICT_Enable->setChecked(true);
         }
     }
+    ptr->ictEnable = (ui->checkBox_ICT_Enable->isChecked());
     emit ptr->set_ict_Enable(ui->checkBox_ICT_Enable->isChecked());
 }
 
@@ -145,6 +149,7 @@ void ICT_MES_Dialog::on_checkBox_MES_Enable_clicked()
             ui->checkBox_MES_Enable->setChecked(true);
         }
     }
+    ptr->mesEnable = (ui->checkBox_MES_Enable->isChecked());
     emit ptr->set_mes_Enable(ui->checkBox_MES_Enable->isChecked());
 }
 

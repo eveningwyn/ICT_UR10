@@ -100,8 +100,9 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan ready ACK"));
 
-        snCheckResult("SN1234567890",true);
-        //emit startScan();
+        snCheckResult("SN1234567890",true);//调试用---------------------------------------
+        return;//调试用---------------------------------------
+        emit startScan(true);
         return;
     }
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan done ACK")))
@@ -312,8 +313,14 @@ void RobotOnThread::setPro_Num_Timeout()
 {
     if(setProtTimer->isActive())
         setProtTimer->stop();
-//    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
-//    setProtTimer->start(5000);
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
+    if("true"==robotTypeEnable)
+    {
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
+        setProtTimer->start(5000);
+    }
+    delete configRead;
 }
 
 void RobotOnThread::set_ictEnable(bool enable)

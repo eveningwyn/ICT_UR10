@@ -24,6 +24,8 @@ private slots:
 
     void on_pushButtonSaveType_clicked();
 
+    void on_checkBox_TypeEnable_clicked();
+
 private:
     Ui::RobotDialog *ui;
     void initGetInfo();//初始化UI

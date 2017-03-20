@@ -23,6 +23,7 @@ private:
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);
     QString forShowString(QString str);
+    bool auto_Scan;
 
 signals:
     void scanResult(QString sn);//传送SN信息
@@ -34,7 +35,7 @@ signals:
 
 public slots:
     void init_Scanner();//初始化串口
-    void scannerScanSN();//启动扫描
+    void scannerScanSN(bool autoScan);//启动扫描
     void scannerReadSN();//读取SN
 
 private slots:

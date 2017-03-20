@@ -28,31 +28,42 @@ void RobotDialog::initGetInfo()
     QString ipAddress   = configRead->value(SERVER_IP_ADDRESS).toString();
     QString port = configRead->value(SERVER_PORT).toString();
     QString robotIP = configRead->value(ROBOT_IP).toString();
-//    QString robotPort = configRead->value(ROBOT_PORT).toString();
+    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     int flag = 0;
     if(""==ipAddress)
     {
-        ipAddress = "192.168.3.1";
+        ipAddress = "192.168.1.11";
         flag++;
     }
     if(""==port)
     {
-        port = "4098";
+        port = "12345";
         flag++;
     }
     if(""==robotIP)
     {
-        robotIP = "192.168.3.100";
+        robotIP = "192.168.1.1";
         flag++;
     }
-//    if(""==robotPort)
-//    {
-//        robotPort = "4092";
-//        flag++;
-//    }
+    if(""==robotTypeEnable)
+    {
+        robotTypeEnable = "true";
+        flag++;
+    }
     ui->lineEditIPAddress->setText(ipAddress);
     ui->lineEditPort->setText(port);
     ui->lineEditRobotPAddress->setText(robotIP);
+    if("true"==robotTypeEnable)
+    {
+        ui->checkBox_TypeEnable->setChecked(true);
+    }
+    else
+    {
+        if("false"==robotTypeEnable)
+        {
+            ui->checkBox_TypeEnable->setChecked(false);
+        }
+    }
     if(0<flag)
     {
         saveIPConfig();
@@ -176,8 +187,6 @@ void RobotDialog::on_pushButtonSaveType_clicked()
     if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存类型"),tr("请确认是否保存产品类型？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
-        /**************保存配置到本地配置文件***************/
-
         saveConfig();//保存配置
         QMessageBox::warning(this,tr("保存类型"),tr("参数保存成功！"),QMessageBox::Ok);
     }
@@ -215,10 +224,36 @@ void RobotDialog::saveIPConfig()
     QString ipAddress = ui->lineEditIPAddress->text();
     QString port = ui->lineEditPort->text();
     QString robotIP = ui->lineEditRobotPAddress->text();
+    QString robotTypeEnable;
+    if(ui->checkBox_TypeEnable->isChecked())
+    {
+        robotTypeEnable = "true";
+    }
+    else
+    {
+        robotTypeEnable = "false";
+    }
 
     QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     configWrite->setValue(SERVER_IP_ADDRESS, ipAddress);
     configWrite->setValue(SERVER_PORT, port);
     configWrite->setValue(ROBOT_IP, robotIP);
+    configWrite->setValue(ROBOT_TYPE_ENABLE, robotTypeEnable);
+    delete configWrite;
+}
+
+void RobotDialog::on_checkBox_TypeEnable_clicked()
+{
+    QString robotTypeEnable = "false";
+    if(ui->checkBox_TypeEnable->isChecked())
+    {
+        robotTypeEnable = "true";
+    }
+    else
+    {
+        robotTypeEnable = "false";
+    }
+    QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    configWrite->setValue(ROBOT_TYPE_ENABLE, robotTypeEnable);
     delete configWrite;
 }

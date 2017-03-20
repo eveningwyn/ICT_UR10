@@ -125,7 +125,6 @@ void MesCheckObj::replyFinished(QNetworkReply *reply)
         //处理错误
         emit mes_Error_Msg(QString(tr("MES应答信息异常！\n%1\n")).arg(reply->errorString()));
     }
-
     getConfig = false;
     reply->deleteLater();
 }

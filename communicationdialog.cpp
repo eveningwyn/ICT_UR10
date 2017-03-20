@@ -27,7 +27,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 
     if("scanner" == ui->comboBoxReceiver->currentText().toLower())
     {
-        ptr->manualStartScan();
+        ptr->manualStartScan(false);
     }
     else
         if("robot" == ui->comboBoxReceiver->currentText().toLower())

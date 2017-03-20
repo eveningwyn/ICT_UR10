@@ -18,6 +18,7 @@
 #define SERVER_PORT              "/RobotParameter/Port"
 #define ROBOT_IP                 "/RobotParameter/RobotIP"
 #define ROBOT_PORT               "/RobotParameter/RobotPort"
+#define ROBOT_TYPE_ENABLE        "/RobotParameter/RobotTypeEnable"
 #define ROBOT_TYPE               "/RobotParameter/Type_%1"
 #define ROBOT_PRO_NUM            "/RobotParameter/%1_Pro_Num"
 

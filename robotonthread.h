@@ -39,7 +39,7 @@ signals:
     void robotConnected(QString IP,int Port);
     void robotDisconnected(QString IP,int Port);
 
-    void startScan();//触发scanner线程开始扫描
+    void startScan(bool autoScan);//触发scanner线程开始扫描
     void forShow_To_Comm(QString msg);//通讯信息显示
     void startTest(QString sn);//ICT开始测试启动信号
     void sortComplete();//Robot分拣完成信号
