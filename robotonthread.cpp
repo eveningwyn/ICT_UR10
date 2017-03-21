@@ -6,6 +6,7 @@
 
 #include <QThread>
 #include <QDebug>
+#define TIMEOUT_SEC  500
 
 RobotOnThread::RobotOnThread(QObject *parent) : QObject(parent)
 {
@@ -218,13 +219,13 @@ void RobotOnThread::init_Robot()
     delete configRead;
 }
 
-/*通讯协议处理部分*/
+/*通讯协议处理部分-主动发送*/
 void RobotOnThread::robot_Init()
 {
     if(initTimer->isActive())
         initTimer->stop();
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init"));
-    initTimer->start(5000);
+    initTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::snCheckResult(QString sn,bool checkResult)
@@ -248,7 +249,7 @@ void RobotOnThread::scanDone()
         scanError();
         return;
     }
-    snResultTimer->start(5000);
+    snResultTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::scanError()
@@ -256,7 +257,7 @@ void RobotOnThread::scanError()
     if(scanErrorTimer->isActive())
         scanErrorTimer->stop();
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
-    scanErrorTimer->start(5000);
+    scanErrorTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::testResult(QString result)
@@ -287,7 +288,7 @@ void RobotOnThread::testDone()
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fail done"));
     }
-    testResultTimer->start(5000);
+    testResultTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::roborReturn()
@@ -295,7 +296,7 @@ void RobotOnThread::roborReturn()
     if(returnResultTimer->isActive())
         returnResultTimer->stop();
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
-    returnResultTimer->start(5000);
+    returnResultTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::set_PC_Status(bool isReady)
@@ -318,7 +319,7 @@ void RobotOnThread::setPro_Num_Timeout()
     if("true"==robotTypeEnable)
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
-        setProtTimer->start(5000);
+        setProtTimer->start(TIMEOUT_SEC);
     }
     delete configRead;
 }
