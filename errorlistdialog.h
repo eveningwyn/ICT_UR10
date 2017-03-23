@@ -15,12 +15,13 @@ class ErrorListDialog : public QDialog
 public:
     explicit ErrorListDialog(QWidget *parent = 0);
     ~ErrorListDialog();
-    void disEnable();
-    void Enable();
+    void disEnable(bool disable);
 
 private:
     Ui::ErrorListDialog *ui;
     void closeEvent(QCloseEvent *event);
+    void saveErrorToFile(QString errorMsg);
+    void checkFileExist();
 
 public slots:
     void recordErrorMessage(QString errorMsg);//错误记录清单

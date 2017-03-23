@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>ICT配置</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/res/Mes_fichiers_recus_32px.png</normaloff>:/res/Mes_fichiers_recus_32px.png</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox_ICT">
@@ -423,6 +427,8 @@
   <tabstop>lineEdit_Result_FileName</tabstop>
   <tabstop>lineEdit_Result_Name</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

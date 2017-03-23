@@ -35,20 +35,9 @@
 #define ICT_LOCAL_RUN_NAME           "/ICT/RunName"
 #define ICT_LOCAL_RESULT_FILE_NAME     "/ICT/ResultFileName"
 #define ICT_LOCAL_RESULT_NAME          "/ICT/ResultName"
-//B File
-//#define ICT_LOCAL_RESULT_FILE_NAME     "/ICT/ResultFileName"
-//#define ICT_LOCAL_RESULT_NAME          "/ICT/ResultName"
-//C File
-//#define ICT_LOCAL_OPEN_FILE_NAME       "/ICT/OpenFileName"
-//#define ICT_LOCAL_OPEN_NAME            "/ICT/OpenName"
-//D File
-//#define ICT_LOCAL_CLOSE_FILE_NAME      "/ICT/CloseFileName"
-//#define ICT_LOCAL_CLOSE_NAME           "/ICT/CloseName"
 //F File
 //#define ICT_LOCAL_ERROR_FILE_NAME      "/ICT/ErrorFileName"
 //#define ICT_LOCAL_ERROR_NAME           "/ICT/ErrorName"
-
-
 
 #define PREFIX  "@"
 #define SUFFIX  "\n"
@@ -65,6 +54,10 @@
 //#define GET_SFDATA           "getSFData"
 //#define CHECKIN              "CheckIn"
 //#define TESTRESULT           "TestResult"
+
+#define INFORMATION_FILE_NAME     "..\\log/Info_Log_%1.txt"
+#define ERROR_FILE_NAME           "..\\log/Error_Log_%1.txt"
+#define INFORMATION_FOLDER_NAME   "..\\log"
 
 
 #endif // STATICNAME_H

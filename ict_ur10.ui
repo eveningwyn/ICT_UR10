@@ -655,6 +655,10 @@
    </property>
   </action>
   <action name="actionDebug">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/res/debugging_30.662020905923px_.png</normaloff>:/res/debugging_30.662020905923px_.png</iconset>
+   </property>
    <property name="text">
     <string>Debug</string>
    </property>

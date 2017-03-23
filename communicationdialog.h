@@ -15,8 +15,7 @@ class CommunicationDialog : public QDialog
 public:
     explicit CommunicationDialog(QWidget *parent = 0);
     ~CommunicationDialog();
-    void disEnable();
-    void Enable();
+    void disEnable(bool disable);
 
 public slots:
     void forShowInfo(QString msg);//显示信息到界面
@@ -28,6 +27,8 @@ private slots:
 private:
     Ui::CommunicationDialog *ui;
     void closeEvent(QCloseEvent *event);
+    void saveInfoToFile(QString msg);
+    void checkFileExist();
 };
 
 #endif // COMMUNICATIONDIALOG_H

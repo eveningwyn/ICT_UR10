@@ -299,8 +299,8 @@ void ICT_UR10::disEnableUI()
     ui->actionRobot->setDisabled(true);
     ui->actionICT_MES->setDisabled(true);
     ui->actionDebug->setDisabled(true);
-    commDlg->disEnable();
-    errorDlg->disEnable();
+    commDlg->disEnable(true);
+    errorDlg->disEnable(true);
 }
 
 void ICT_UR10::Enable()
@@ -310,8 +310,8 @@ void ICT_UR10::Enable()
     ui->actionRobot->setDisabled(false);
     ui->actionICT_MES->setDisabled(false);
     ui->actionDebug->setDisabled(false);
-    commDlg->Enable();
-    errorDlg->Enable();
+    commDlg->disEnable(false);
+    errorDlg->disEnable(false);
 }
 
 void ICT_UR10::closeEvent(QCloseEvent *event)

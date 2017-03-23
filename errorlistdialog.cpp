@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include "language.h"
+#include "staticname.h"
 
 ErrorListDialog::ErrorListDialog(QWidget *parent) :
     QDialog(parent),
@@ -26,6 +27,7 @@ void ErrorListDialog::recordErrorMessage(QString errorMsg)
     ui->textBrowserErrorList->moveCursor(QTextCursor::End);
     ui->textBrowserErrorList->insertPlainText(errorMsg);
     ui->textBrowserErrorList->moveCursor(QTextCursor::End);
+    saveErrorToFile(errorMsg);
 }
 
 void ErrorListDialog::closeEvent(QCloseEvent *event)
@@ -61,14 +63,33 @@ void ErrorListDialog::on_pushButtonClearErrorList_clicked()
         ui->textBrowserErrorList->clear();
 }
 
-void ErrorListDialog::disEnable()
+void ErrorListDialog::disEnable(bool disable)
 {
-    ui->pushButtonSaveErrorList->setDisabled(true);
-    ui->pushButtonClearErrorList->setDisabled(true);
+    ui->pushButtonSaveErrorList->setDisabled(disable);
+    ui->pushButtonClearErrorList->setDisabled(disable);
 }
 
-void ErrorListDialog::Enable()
+void ErrorListDialog::saveErrorToFile(QString errorMsg)
 {
-    ui->pushButtonSaveErrorList->setDisabled(false);
-    ui->pushButtonClearErrorList->setDisabled(false);
+    checkFileExist();
+    QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
+    QFile file(QString(ERROR_FILE_NAME).arg(date));
+    if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
+    {
+        QTextStream out(&file);
+        QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
+        out << errorMsg;
+        QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+        file.close();
+    }
+}
+
+void ErrorListDialog::checkFileExist()
+{
+    QDir *temp = new QDir;
+    bool fileExist = temp->exists(INFORMATION_FOLDER_NAME);
+    if(!fileExist)
+    {
+        temp->mkdir(INFORMATION_FOLDER_NAME);
+    }
 }

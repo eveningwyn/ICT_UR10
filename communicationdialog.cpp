@@ -2,6 +2,10 @@
 #include "ui_communicationdialog.h"
 #include "ict_ur10.h"
 #include "language.h"
+#include <QFile>
+#include <QDir>
+#include "staticname.h"
+#include <QDateTime>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -42,6 +46,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 
 void CommunicationDialog::forShowInfo(QString msg)
 {
+    saveInfoToFile(msg);
     if(!(ui->checkBoxShowInfo->isChecked()))
     {
         ui->textBrowserCommunication->clear();
@@ -59,14 +64,9 @@ void CommunicationDialog::closeEvent(QCloseEvent *event)
     event->accept();  //accept
 }
 
-void CommunicationDialog::disEnable()
+void CommunicationDialog::disEnable(bool disable)
 {
-    ui->pushButtonSend->setDisabled(true);
-}
-
-void CommunicationDialog::Enable()
-{
-    ui->pushButtonSend->setDisabled(false);
+    ui->pushButtonSend->setDisabled(disable);
 }
 
 void CommunicationDialog::on_comboBoxReceiver_currentTextChanged(const QString &arg1)
@@ -81,5 +81,30 @@ void CommunicationDialog::on_comboBoxReceiver_currentTextChanged(const QString &
     {
         ui->lineEditSendData->clear();
         ui->lineEditSendData->setDisabled(false);
+    }
+}
+
+void CommunicationDialog::saveInfoToFile(QString msg)
+{
+    checkFileExist();
+    QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
+    QFile file(QString(INFORMATION_FILE_NAME).arg(date));
+    if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
+    {
+        QTextStream out(&file);
+        QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
+        out << msg;
+        QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+        file.close();
+    }
+}
+
+void CommunicationDialog::checkFileExist()
+{
+    QDir *temp = new QDir;
+    bool fileExist = temp->exists(INFORMATION_FOLDER_NAME);
+    if(!fileExist)
+    {
+        temp->mkdir(INFORMATION_FOLDER_NAME);
     }
 }
