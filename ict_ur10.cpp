@@ -9,6 +9,8 @@
 #include <QDir>
 #include "staticname.h"
 #include "language.h"
+#include "debuglogindialog.h"
+#include "debugdialog.h"
 
 #include <QDebug>
 
@@ -40,10 +42,6 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     ict = new ICT_Test_Obj;
     ict->moveToThread(thread3);//将ict处理类对象放在线程中
 
-    /*实例化MES类，并移入子线程thread1中*/
-    mesSystem = new MesCheckObj;
-    mesSystem->moveToThread(thread1);//将mes处理类对象放在线程中
-
     /*状态初始化*/
     robotIsInit = false;
 
@@ -71,7 +69,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(scan_on_thread,&ScannerOnThread::scannerIsReady,this,&ICT_UR10::setScannerReady);
     connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
     connect(scan_on_thread,&ScannerOnThread::scanError,robot_on_thread,&RobotOnThread::scanError);
-    connect(scan_on_thread,&ScannerOnThread::scanResult,mesSystem,&MesCheckObj::checkSn);
+    connect(scan_on_thread,&ScannerOnThread::scanResult,ict,&ICT_Test_Obj::ict_Check_SN);
 
     connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
     connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::showErrorMessage);
@@ -90,11 +88,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(ict,&ICT_Test_Obj::ictIsReady,this,&ICT_UR10::setIctReady);
     connect(ict,&ICT_Test_Obj::ict_Status,this,&ICT_UR10::update_ICT_Status);
     connect(ict,&ICT_Test_Obj::ictTestResult,robot_on_thread,&RobotOnThread::testResult);
-
-    connect(mesSystem,&MesCheckObj::checkSnResult,this,&ICT_UR10::getSn);
-    connect(mesSystem,&MesCheckObj::checkSnResult,robot_on_thread,&RobotOnThread::snCheckResult);
-    connect(mesSystem,&MesCheckObj::mes_Error_Msg,this,&ICT_UR10::showErrorMessage);
-    connect(mesSystem,&MesCheckObj::mes_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
+    connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,this,&ICT_UR10::getSn);
+    connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,robot_on_thread,&RobotOnThread::snCheckResult);
 
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
@@ -103,14 +98,11 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::init_scanner_robot_ict_mes,scan_on_thread,&ScannerOnThread::init_Scanner);
     connect(this,&ICT_UR10::init_scanner_robot_ict_mes,robot_on_thread,&RobotOnThread::init_Robot);
     connect(this,&ICT_UR10::init_scanner_robot_ict_mes,ict,&ICT_Test_Obj::init_ict);
-    connect(this,&ICT_UR10::init_scanner_robot_ict_mes,mesSystem,&MesCheckObj::init_mes);
     connect(this,&ICT_UR10::robotInit,robot_on_thread,&RobotOnThread::robot_Init);
     connect(this,&ICT_UR10::pcIsReady,robot_on_thread,&RobotOnThread::set_PC_Status);
     connect(this,&ICT_UR10::setType_Pro,robot_on_thread,&RobotOnThread::setPro_Num);
     connect(this,&ICT_UR10::set_ict_Enable,ict,&ICT_Test_Obj::set_ictEnable);
     connect(this,&ICT_UR10::set_ict_Enable,robot_on_thread,&RobotOnThread::set_ictEnable);
-    connect(this,&ICT_UR10::set_mes_Enable,mesSystem,&MesCheckObj::set_mes_enable);
-    connect(this,&ICT_UR10::get_MES_Config,mesSystem,&MesCheckObj::get_mes_config);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -213,7 +205,6 @@ void ICT_UR10::on_actionError_list_triggered()
 void ICT_UR10::on_actionICT_MES_triggered()
 {
     ICT_MES_Dialog ict_mes_Dlg(this);
-    connect(mesSystem,&MesCheckObj::rtnConfig,&ict_mes_Dlg,&ICT_MES_Dialog::showConfig);
     ict_mes_Dlg.exec();
 }
 
@@ -224,7 +215,6 @@ void ICT_UR10::init_UI()
     ictIsReady = false;
 //    isAutoRun = false;
     ictEnable = true;
-    mesEnable = true;
 
     //设置状态栏
     statusBarLabel_Scanner = new QLabel(this);
@@ -308,6 +298,7 @@ void ICT_UR10::disEnableUI()
     ui->actionScanner->setDisabled(true);
     ui->actionRobot->setDisabled(true);
     ui->actionICT_MES->setDisabled(true);
+    ui->actionDebug->setDisabled(true);
     commDlg->disEnable();
     errorDlg->disEnable();
 }
@@ -318,6 +309,7 @@ void ICT_UR10::Enable()
     ui->actionScanner->setDisabled(false);
     ui->actionRobot->setDisabled(false);
     ui->actionICT_MES->setDisabled(false);
+    ui->actionDebug->setDisabled(false);
     commDlg->Enable();
     errorDlg->Enable();
 }
@@ -539,4 +531,15 @@ void ICT_UR10::runStatus(bool isAuto)
     ui->actionRobot->setDisabled(isAuto);
     ui->actionICT_MES->setDisabled(isAuto);
     ui->actionLogin->setDisabled(isAuto);
+    ui->actionDebug->setDisabled(isAuto);
+}
+
+void ICT_UR10::on_actionDebug_triggered()
+{
+    DebugLoginDialog debugLoginDlg;
+    if(QDialog::Accepted==debugLoginDlg.exec())
+    {
+        DebugDialog debugDlg(this);
+        debugDlg.exec();
+    }
 }

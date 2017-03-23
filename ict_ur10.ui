@@ -534,6 +534,7 @@
     <addaction name="actionScanner"/>
     <addaction name="actionRobot"/>
     <addaction name="actionICT_MES"/>
+    <addaction name="actionDebug"/>
     <addaction name="separator"/>
     <addaction name="actionCommunication"/>
     <addaction name="actionError_list"/>
@@ -561,6 +562,7 @@
    <addaction name="actionScanner"/>
    <addaction name="actionRobot"/>
    <addaction name="actionICT_MES"/>
+   <addaction name="actionDebug"/>
    <addaction name="separator"/>
    <addaction name="actionCommunication"/>
    <addaction name="actionError_list"/>
@@ -646,7 +648,15 @@
      <normaloff>:/res/Mes_fichiers_recus_32px.png</normaloff>:/res/Mes_fichiers_recus_32px.png</iconset>
    </property>
    <property name="text">
-    <string>ICT_MES</string>
+    <string>ICT</string>
+   </property>
+   <property name="toolTip">
+    <string>ICT</string>
+   </property>
+  </action>
+  <action name="actionDebug">
+   <property name="text">
+    <string>Debug</string>
    </property>
   </action>
  </widget>

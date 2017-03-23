@@ -89,8 +89,6 @@ int ICT_Test_Obj::pc_ict_Ping()
 void ICT_Test_Obj::init_ict()
 {
     count = 0;
-    result = "";
-    canOpen = false;
     ictEnable = true;
     ictEnableStr = tr("已启用");
     statusReadTimer = new QTimer(this);
@@ -114,39 +112,45 @@ void ICT_Test_Obj::statusReadTimeout()
             count++;
         }
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+        QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
         QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
         QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
-        QString open_file_name = configRead->value(ICT_LOCAL_OPEN_FILE_NAME).toString();
-        QString open_name = configRead->value(ICT_LOCAL_OPEN_NAME).toString();
-        QString error_file_name = configRead->value(ICT_LOCAL_ERROR_FILE_NAME).toString();
-        QString error_name = configRead->value(ICT_LOCAL_ERROR_NAME).toString();
         delete configRead;
 
+        QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
-        QString open_path = QString("%1/%2").arg(open_file_name).arg(open_name);
-        QString error_path = QString("%1/%2").arg(error_file_name).arg(error_name);
 
-        QString testResult = "";
-        QString openSignal = "";
-        QString errorMsg = "";
-        getIctInfo(result_path, testResult);
-        getIctInfo(open_path, openSignal);
-        getIctInfo(error_path, errorMsg);
-        if(!testResult.isEmpty())
+        QString receiveStr = "";
+        QString testResultStr = "";
+
+        getIctInfo(receive_path, receiveStr);
+        if(!receiveStr.isEmpty())
         {
-            result = testResult;
+            if(receiveStr.contains(snTemp))
+            {
+                if(receiveStr.contains("P"))
+                {
+                    emit ict_Check_SN_Result(snTemp,true);
+                }
+                else
+                {
+                    if(receiveStr.contains("F"))
+                    {
+                        emit ict_Check_SN_Result(snTemp,false);
+                    }
+                }
+            }
+            else
+            {
+                emit ict_Error_Msg(QString(tr("Scan条码与ICT回传条码不一致：\n"
+                                      "Scan：%1; ICT：%2\n")).arg(snTemp).arg(receiveStr));
+            }
         }
-        if(!openSignal.isEmpty())
+        getIctInfo(result_path, testResultStr);
+        if(!testResultStr.isEmpty())
         {
-            if("2"==openSignal)
-                canOpen = true;
-        }
-
-        updateTestResult();
-
-        if(!errorMsg.isEmpty())
-        {
-            emit ict_Error_Msg(QString("ICT error:%1\n").arg(errorMsg));//错误信息还未定义，可能需要需要转换解码
+            emit ictTestResult(testResultStr);
         }
         return;
     }
@@ -170,17 +174,7 @@ void ICT_Test_Obj::openTimer()
         statusReadTimer->start(500);
 }
 
-void ICT_Test_Obj::updateTestResult()
-{
-    if(!result.isEmpty() && true == canOpen)
-    {
-        emit ictTestResult(result);
-        result = "";
-        canOpen = false;
-    }
-}
-
-void ICT_Test_Obj::testStart(QString sn)
+void ICT_Test_Obj::testStart()
 {
     if(false == ictEnable)
     {
@@ -189,17 +183,11 @@ void ICT_Test_Obj::testStart(QString sn)
     if(0 == pc_ict_Ping())
     {
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
-        QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
-        QString close_file_name = configRead->value(ICT_LOCAL_CLOSE_FILE_NAME).toString();
-        QString close_name = configRead->value(ICT_LOCAL_CLOSE_NAME).toString();
+        QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
+        QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
         delete configRead;
-
-        QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
-        QString close_path = QString("%1/%2").arg(close_file_name).arg(close_name);
-
-        setIctInfo(sn_path,sn);
-        setIctInfo(close_path,"3");
+        QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
+        setIctInfo(run_path,"RUN");
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
@@ -219,4 +207,28 @@ void ICT_Test_Obj::set_ictEnable(bool enable)
         ictEnableStr = tr("未启用");
     }
     emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
+}
+
+void ICT_Test_Obj::ict_Check_SN(QString sn)
+{
+    snTemp = sn;
+    if(false == ictEnable)
+    {
+        return;
+    }
+    if(0 == pc_ict_Ping())
+    {
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
+        QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
+        delete configRead;
+
+        QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
+
+        setIctInfo(sn_path,sn);
+        return;
+    }
+    emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
+                          "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
+    return ;
 }

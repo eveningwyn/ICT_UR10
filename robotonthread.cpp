@@ -121,7 +121,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Test ready")))
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Test ready ACK"));
-        emit startTest(barcode);//发出开始测试信号
+        emit startTest();//发出开始测试信号
         if(false == ictEnable)
         {
             QThread::msleep(2000);

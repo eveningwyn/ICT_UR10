@@ -16,16 +16,11 @@ public:
     ~ICT_MES_Dialog();
 
 public slots:
-    void showConfig(QString config);
 
 private slots:
     void on_pushButton_Save_ICT_Config_clicked();
 
     void on_checkBox_ICT_Enable_clicked();
-
-    void on_checkBox_MES_Enable_clicked();
-
-    void on_pushButtonGetWebConfig_clicked();
 
 private:
     Ui::ICT_MES_Dialog *ui;

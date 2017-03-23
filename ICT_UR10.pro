@@ -40,7 +40,9 @@ SOURCES += main.cpp\
     serialportobj.cpp \
     ict_test_obj.cpp \
     mescheckobj.cpp \
-    ict_mes_dialog.cpp
+    ict_mes_dialog.cpp \
+    debugdialog.cpp \
+    debuglogindialog.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -57,7 +59,9 @@ HEADERS  += ict_ur10.h \
     language.h \
     ict_test_obj.h \
     mescheckobj.h \
-    ict_mes_dialog.h
+    ict_mes_dialog.h \
+    debugdialog.h \
+    debuglogindialog.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \
@@ -65,7 +69,9 @@ FORMS    += ict_ur10.ui \
     communicationdialog.ui \
     logindialog.ui \
     errorlistdialog.ui \
-    ict_mes_dialog.ui
+    ict_mes_dialog.ui \
+    debugdialog.ui \
+    debuglogindialog.ui
 
 RESOURCES += \
     resource.qrc

@@ -37,8 +37,6 @@ public:
     QThread *thread3;//thread3子线程
     ICT_Test_Obj *ict;
 
-    MesCheckObj *mesSystem;
-
     void disEnableUI();
     void Enable();
     bool commDlgIsShow;
@@ -47,7 +45,6 @@ public:
     void updateTestResult(QString sn,QString result);
     int testCount;//测试次数，用于对主界面的计数
     bool ictEnable;
-    bool mesEnable;
 
 private:
     Ui::ICT_UR10 *ui;
@@ -94,8 +91,6 @@ signals:
     void pcIsReady(bool isReady);
     void setType_Pro(QString pro_num);//设置产品类型对应的程序号
     void set_ict_Enable(bool enable);
-    void set_mes_Enable(bool enable);
-    void get_MES_Config(QString strMsg);
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态
@@ -129,6 +124,7 @@ private slots:
 
     void on_comboBoxTypeSelect_currentTextChanged(const QString &arg1);
     void on_actionICT_MES_triggered();
+    void on_actionDebug_triggered();
 };
 
 #endif // ICT_UR10_H

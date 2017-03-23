@@ -29,18 +29,25 @@
 //A File
 #define ICT_LOCAL_SN_FILE_NAME         "/ICT/SnFileName"
 #define ICT_LOCAL_SN_NAME              "/ICT/SnName"
-//B File
+#define ICT_LOCAL_RECEIVE_FILE_NAME      "/ICT/ReceiveFileName"
+#define ICT_LOCAL_RECEIVE_NAME           "/ICT/ReceiveName"
+#define ICT_LOCAL_RUN_FILE_NAME      "/ICT/RunFileName"
+#define ICT_LOCAL_RUN_NAME           "/ICT/RunName"
 #define ICT_LOCAL_RESULT_FILE_NAME     "/ICT/ResultFileName"
 #define ICT_LOCAL_RESULT_NAME          "/ICT/ResultName"
+//B File
+//#define ICT_LOCAL_RESULT_FILE_NAME     "/ICT/ResultFileName"
+//#define ICT_LOCAL_RESULT_NAME          "/ICT/ResultName"
 //C File
-#define ICT_LOCAL_OPEN_FILE_NAME       "/ICT/OpenFileName"
-#define ICT_LOCAL_OPEN_NAME            "/ICT/OpenName"
+//#define ICT_LOCAL_OPEN_FILE_NAME       "/ICT/OpenFileName"
+//#define ICT_LOCAL_OPEN_NAME            "/ICT/OpenName"
 //D File
-#define ICT_LOCAL_CLOSE_FILE_NAME      "/ICT/CloseFileName"
-#define ICT_LOCAL_CLOSE_NAME           "/ICT/CloseName"
+//#define ICT_LOCAL_CLOSE_FILE_NAME      "/ICT/CloseFileName"
+//#define ICT_LOCAL_CLOSE_NAME           "/ICT/CloseName"
 //F File
-#define ICT_LOCAL_ERROR_FILE_NAME      "/ICT/ErrorFileName"
-#define ICT_LOCAL_ERROR_NAME           "/ICT/ErrorName"
+//#define ICT_LOCAL_ERROR_FILE_NAME      "/ICT/ErrorFileName"
+//#define ICT_LOCAL_ERROR_NAME           "/ICT/ErrorName"
+
 
 
 #define PREFIX  "@"
@@ -50,13 +57,13 @@
 #define PREFIX_COMMAND  "@%1"
 #define PREFIX_COMMAND_SUFFIX  "@%1\n"
 
-#define WEB_SERVEICE         "http://ezconsf.joytech.com.cn/WSCenter/WSCenterEntrance.svc"
-#define WEB_SERVEICE_TEST    "http://10.2.24.153/WSCenter/WSCenterEntrance.svc"
+//#define WEB_SERVEICE         "http://ezconsf.joytech.com.cn/WSCenter/WSCenterEntrance.svc"
+//#define WEB_SERVEICE_TEST    "http://10.2.24.153/WSCenter/WSCenterEntrance.svc"
 //#define WEB_SERVEICE_IP      "210.75.11.119"
 //LIBRARY_ACTION_CODE
-#define GET_CONFIG           "GetConfigSetting"
+//#define GET_CONFIG           "GetConfigSetting"
 //#define GET_SFDATA           "getSFData"
-#define CHECKIN              "CheckIn"
+//#define CHECKIN              "CheckIn"
 //#define TESTRESULT           "TestResult"
 
 
