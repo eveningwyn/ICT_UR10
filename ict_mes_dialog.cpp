@@ -15,22 +15,26 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
     QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
     QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
-    QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-    QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+    QString request_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+    QString request_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
     QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
     QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
     QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
     QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
+    QString yellow_limit = configRead->value(ICT_YELLOW_LIMIT).toString();
+    QString red_limit = configRead->value(ICT_RED_LIMIT).toString();
+    QString yield_base = configRead->value(ICT_YIELD_BASE).toString();
+    QString yield_limit = configRead->value(ICT_YIELD_LIMIT).toString();
     delete configRead;
     int flag = 0;
     if(""==ict_ip_addr)
     {
-        ict_ip_addr = "192.168.3.12";
+        ict_ip_addr = "10.10.6.5";
         flag++;
     }
     if(""==sn_file_name)
     {
-        sn_file_name = "data";
+        sn_file_name = "ict(mda)/UR";
         flag++;
     }
     if(""==sn_name)
@@ -38,19 +42,19 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         sn_name = "SN.txt";
         flag++;
     }
-    if(""==receive_file_name)
+    if(""==request_file_name)
     {
-        receive_file_name = "data";
+        request_file_name = "ict(mda)/UR";
         flag++;
     }
-    if(""==receive_name)
+    if(""==request_name)
     {
-        receive_name = "Receive.txt";
+        request_name = "Request.txt";
         flag++;
     }
     if(""==run_file_name)
     {
-        run_file_name = "data";
+        run_file_name = "ict(mda)/UR";
         flag++;
     }
     if(""==run_name)
@@ -60,7 +64,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     }
     if(""==result_file_name)
     {
-        result_file_name = "data";
+        result_file_name = "ict(mda)/UR";
         flag++;
     }
     if(""==result_name)
@@ -68,15 +72,39 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         result_name = "Result.txt";
         flag++;
     }
+    if(""==yellow_limit)
+    {
+        yellow_limit = "2";
+        flag++;
+    }
+    if(""==red_limit)
+    {
+        red_limit = "3";
+        flag++;
+    }
+    if(""==yield_base)
+    {
+        yield_base = "20";
+        flag++;
+    }
+    if(""==yield_limit)
+    {
+        yield_limit = "0.95";
+        flag++;
+    }
     ui->lineEdit_ICT_IP_Addr->setText(ict_ip_addr);
     ui->lineEdit_SN_FileName->setText(sn_file_name);
     ui->lineEdit_SN_Name->setText(sn_name);
-    ui->lineEdit_Receive_FileName->setText(receive_file_name);
-    ui->lineEdit_Receive_Name->setText(receive_name);
+    ui->lineEdit_Receive_FileName->setText(request_file_name);
+    ui->lineEdit_Receive_Name->setText(request_name);
     ui->lineEdit_Run_FileName->setText(run_file_name);
     ui->lineEdit_Run_Name->setText(run_name);
     ui->lineEdit_Result_FileName->setText(result_file_name);
     ui->lineEdit_Result_Name->setText(result_name);
+    ui->lineEdit_yellow_limit->setText(yellow_limit);
+    ui->lineEdit_Red_limit->setText(red_limit);
+    ui->lineEdit_Yield_base->setText(yield_base);
+    ui->lineEdit_Yield_limit->setText(yield_limit);
     if(0<flag)
     {
         saveICTConfig();
@@ -131,5 +159,9 @@ void ICT_MES_Dialog::saveICTConfig()
     configWrite->setValue(ICT_LOCAL_RUN_NAME, ui->lineEdit_Run_Name->text());
     configWrite->setValue(ICT_LOCAL_RESULT_FILE_NAME, ui->lineEdit_Result_FileName->text());
     configWrite->setValue(ICT_LOCAL_RESULT_NAME, ui->lineEdit_Result_Name->text());
+    configWrite->setValue(ICT_YELLOW_LIMIT,ui->lineEdit_yellow_limit->text());
+    configWrite->setValue(ICT_RED_LIMIT,ui->lineEdit_Red_limit->text());
+    configWrite->setValue(ICT_YIELD_BASE,ui->lineEdit_Yield_base->text());
+    configWrite->setValue(ICT_YIELD_LIMIT,ui->lineEdit_Yield_limit->text());
     delete configWrite;
 }

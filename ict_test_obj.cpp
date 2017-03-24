@@ -92,8 +92,11 @@ void ICT_Test_Obj::init_ict()
     ictEnable = true;
     ictEnableStr = tr("已启用");
     statusReadTimer = new QTimer(this);
+    testTimer = new QTimer(this);
     connect(statusReadTimer,&QTimer::timeout,this,&ICT_Test_Obj::statusReadTimeout);
+    connect(testTimer,&QTimer::timeout,this,&ICT_Test_Obj::testTimeout);
     statusReadTimer->start(500);
+
 }
 
 void ICT_Test_Obj::statusReadTimeout()
@@ -127,7 +130,8 @@ void ICT_Test_Obj::statusReadTimeout()
         getIctInfo(receive_path, receiveStr);
         if(!receiveStr.isEmpty())
         {
-            if(receiveStr.contains(snTemp))
+//            if(receiveStr.contains(snTemp))
+            if(true)
             {
                 if(receiveStr.contains("P"))
                 {
@@ -150,7 +154,21 @@ void ICT_Test_Obj::statusReadTimeout()
         getIctInfo(result_path, testResultStr);
         if(!testResultStr.isEmpty())
         {
-            emit ictTestResult(testResultStr);
+            int index = testResultStr.indexOf(snTemp);
+            index = index + snTemp.length() + 1;
+            QString strTemp = testResultStr.mid(index,1);
+            if("P"==strTemp)
+            {
+                emit ictTestResult("PASS");
+            }
+            else
+            {
+                if("F"==strTemp)
+                {
+                    emit ictTestResult("FAIL");
+                }
+            }
+            snTemp = "";
         }
         return;
     }
@@ -168,13 +186,13 @@ void ICT_Test_Obj::statusReadTimeout()
     return ;
 }
 
-void ICT_Test_Obj::openTimer()
+void ICT_Test_Obj::openTimer()//备用函数，用于后期重新打开定时器
 {
     if(!statusReadTimer->isActive())
         statusReadTimer->start(500);
 }
 
-void ICT_Test_Obj::testStart()
+void ICT_Test_Obj::testStart()//ict开始测试
 {
     if(false == ictEnable)
     {
@@ -188,6 +206,8 @@ void ICT_Test_Obj::testStart()
         delete configRead;
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
         setIctInfo(run_path,"RUN");
+        if(!testTimer->isActive())
+            testTimer->start(3*60*1000);
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
@@ -209,9 +229,11 @@ void ICT_Test_Obj::set_ictEnable(bool enable)
     emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
 }
 
-void ICT_Test_Obj::ict_Check_SN(QString sn)
+void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
 {
     snTemp = sn;
+    snTemp.replace("\r","");
+    snTemp.replace("\n","");
     if(false == ictEnable)
     {
         return;
@@ -231,4 +253,9 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
                           "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
     return ;
+}
+
+void ICT_Test_Obj::testTimeout()
+{
+    emit ict_Error_Msg(tr("ICT测试机测试超时！\n"));
 }

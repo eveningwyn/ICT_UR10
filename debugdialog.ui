@@ -19,69 +19,90 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QPushButton" name="pushButton_ICTOpen">
+    <widget class="QPushButton" name="pushButton_moveToScan">
      <property name="text">
-      <string>ICT打开</string>
+      <string>UR移至Scan</string>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QPushButton" name="pushButton_ICTClose">
+    <widget class="QPushButton" name="pushButton_Scan">
      <property name="text">
-      <string>ICT关闭</string>
+      <string>Scan</string>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QPushButton" name="pushButton_pickUp_ICT">
+    <widget class="QPushButton" name="pushButton_pickUp_Carrier">
      <property name="text">
-      <string>从ICT中抓料</string>
+      <string>载具中抓料</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
+    <widget class="QPushButton" name="pushButton_place_Carrier">
+     <property name="text">
+      <string>放料至载具</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
     <widget class="QPushButton" name="pushButton_place_ICT">
      <property name="text">
       <string>放料至ICT</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QPushButton" name="pushButton_pickUp_Carrier">
-     <property name="text">
-      <string>从载具中抓料</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="pushButton_place_Carrier">
+    <widget class="QPushButton" name="pushButton_pickUp_ICT">
      <property name="text">
-      <string>放料至载具位</string>
+      <string>ICT中抓料</string>
      </property>
     </widget>
    </item>
    <item row="3" column="0">
+    <widget class="QPushButton" name="pushButton_ICTClose">
+     <property name="text">
+      <string>ICT关闭</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="pushButton_ICTOpen">
+     <property name="text">
+      <string>ICT打开</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QPushButton" name="pushButton_ICT_Run">
+     <property name="text">
+      <string>ICT开始Run</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
     <widget class="QPushButton" name="pushButton_place_OK">
      <property name="text">
       <string>放料至OK位</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="5" column="1">
     <widget class="QPushButton" name="pushButton_place_NG">
      <property name="text">
       <string>放料至NG位</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QPushButton" name="pushButton_cylinder_up">
      <property name="text">
       <string>阻挡气缸上升</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="6" column="1">
     <widget class="QPushButton" name="pushButton_cylinder_down">
      <property name="text">
       <string>阻挡气缸下降</string>

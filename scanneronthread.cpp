@@ -104,11 +104,13 @@ QString ScannerOnThread::forShowString(QString str)
 void ScannerOnThread::init_Scanner()
 {
     scanner = new SerialPortObj(this);
+    controlBoard = new SerialPortObj(this);
     scantimer = new QTimer(this);
     scanCount = 0;
     prefix = "";
     suffix = "\r\n";
     connect(scanner,&SerialPortObj::serialReadReady,this,&ScannerOnThread::scannerReadSN);
+    connect(controlBoard,&SerialPortObj::serialReadReady,this,&ScannerOnThread::controlBoardRead);
     connect(scantimer,&QTimer::timeout,this,&ScannerOnThread::timerTimeOut);
 
     canScan = true;
@@ -135,5 +137,55 @@ void ScannerOnThread::init_Scanner()
         emit forShow_To_Comm(forShowString(QString(tr("扫描器:%1 已连接\n")).arg(portName)));
     }
 
+
+    QString portName_Control = configRead->value(SCANNER_PORT_NAME_CONTROL).toString();
+    int baudRate_Control = configRead->value(SCANNER_BAUD_RATE_CONTROL).toString().toInt();
+    int dataBits_Control = configRead->value(SCANNER_DATA_BITS_CONTROL).toString().toInt();
+    QString parityBits_Control = configRead->value(SCANNER_PARITY_BITS_CONTROL).toString();
+    QString stopBits_Control = configRead->value(SCANNER_STOP_BITS_CONTROL).toString();
+    if(!(controlBoard->openSerialPort(portName_Control,baudRate_Control,dataBits_Control,parityBits_Control,stopBits_Control,true,true)))
+    {
+        emit scannerIsReady(false);
+        emit scanner_Error_Msg(tr("阻挡气缸控制板连接失败，请检查后重启软件！\n"));
+    }
+    else
+    {
+        emit scannerIsReady(true);
+        emit forShow_To_Comm(forShowString(QString(tr("阻挡气缸控制板:%1 已连接\n")).arg(portName_Control)));
+    }
+
     delete configRead;
+}
+
+void ScannerOnThread::controlBoardRead()
+{
+    QString readStr;
+    controlBoard->serialPortRead(readStr,"@","!");
+    if(readStr.isEmpty())
+        return;
+    if("@0!"==readStr)
+    {
+        //流水线有料，气缸已上升
+        return;
+    }
+    if("@1!"==readStr)
+    {
+        //流水线无料，气缸已上升
+        return;
+    }
+    if("@2!"==readStr)
+    {
+        //流水线有料，气缸已下降
+        return;
+    }
+    if("@3!"==readStr)
+    {
+        //流水线无料，气缸已下降
+        return;
+    }
+}
+
+void ScannerOnThread::controlBoardWrite(QString writeMsg)
+{//writeMsg == ck,查询传感器状态//writeMsg == on,气缸上升//writeMsg == of,气缸下降
+    controlBoard->serialPortWrite("#"+writeMsg+"*");
 }

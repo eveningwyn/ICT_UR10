@@ -77,6 +77,11 @@ private:
     int failQty;//Fail数量
     float yield;//良率
     void update_UI_show();//更新看板数据
+    int failCount;//连续fail计数
+    int totalQtyTemp;
+    int passQtyTemp;//Pass数量
+    int failQtyTemp;//Fail数量
+    float yieldTemp;//良率
 
 signals:
     void init_scanner_robot_ict_mes();//启动子线程的初始化
@@ -125,6 +130,8 @@ private slots:
     void on_comboBoxTypeSelect_currentTextChanged(const QString &arg1);
     void on_actionICT_MES_triggered();
     void on_actionDebug_triggered();
+    void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
 };
 
 #endif // ICT_UR10_H

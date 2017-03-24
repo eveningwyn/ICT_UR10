@@ -13,6 +13,11 @@
 #define SCANNER_DATA_BITS        "/ScannerParameter/DataBits"
 #define SCANNER_PARITY_BITS      "/ScannerParameter/ParityBits"
 #define SCANNER_STOP_BITS        "/ScannerParameter/StopBits"
+#define SCANNER_PORT_NAME_CONTROL        "/ScannerParameter/PortNameControl"
+#define SCANNER_BAUD_RATE_CONTROL        "/ScannerParameter/BaudRateControl"
+#define SCANNER_DATA_BITS_CONTROL        "/ScannerParameter/DataBitsControl"
+#define SCANNER_PARITY_BITS_CONTROL      "/ScannerParameter/ParityBitsControl"
+#define SCANNER_STOP_BITS_CONTROL        "/ScannerParameter/StopBitsControl"
 
 #define SERVER_IP_ADDRESS        "/RobotParameter/IPaddress"
 #define SERVER_PORT              "/RobotParameter/Port"
@@ -38,6 +43,10 @@
 //F File
 //#define ICT_LOCAL_ERROR_FILE_NAME      "/ICT/ErrorFileName"
 //#define ICT_LOCAL_ERROR_NAME           "/ICT/ErrorName"
+#define ICT_YELLOW_LIMIT     "/ICT/YellowLimit"
+#define ICT_RED_LIMIT        "/ICT/RedLimit"
+#define ICT_YIELD_BASE       "/ICT/YieldBase"
+#define ICT_YIELD_LIMIT      "/ICT/YieldLimit"
 
 #define PREFIX  "@"
 #define SUFFIX  "\n"

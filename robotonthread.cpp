@@ -125,7 +125,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         if(false == ictEnable)
         {
             QThread::msleep(2000);
-            testResult("0");
+            testResult("PASS");
         }
         return;
     }
@@ -262,13 +262,13 @@ void RobotOnThread::scanError()
 
 void RobotOnThread::testResult(QString result)
 {
-    if("0"==result)
+    if("PASS"==result)
     {
         testPass = true;
         emit recordTestResult(barcode,"PASS");
     }
     else
-        if("1"==result)
+        if("FAIL"==result)
         {
             testPass = false;
             emit recordTestResult(barcode,"FAIL");

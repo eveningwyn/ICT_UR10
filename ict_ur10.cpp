@@ -26,6 +26,11 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     passQty = 0;
     failQty = 0;
     yield = 0.00;
+    failCount = 0;
+    totalQtyTemp = 0;
+    passQtyTemp = 0;
+    failQtyTemp = 0;
+    yieldTemp = 0.00;
 
     /*实例化scanner类，并移入子线程thread1中*/
     thread1 = new QThread;//实例化thread1线程对象
@@ -259,10 +264,23 @@ void ICT_UR10::init_UI()
 
 void ICT_UR10::update_UI_show()
 {
+    QString time = QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss");
+    if(0==totalQty||1==totalQty)
+    {
+        ui->label_recordTime->setText(QString(tr("开始记录时间：%1")).arg(time));
+    }
     ui->labelTotalQty->setText(QString("%1").arg(totalQty));
     ui->labelPassQty->setText(QString("%1").arg(passQty));
     ui->labelFailQty->setText(QString("%1").arg(failQty));
     ui->labelYield->setText(QString("%1%").arg(yield*100));
+    if(0==totalQtyTemp||1==totalQtyTemp)
+    {
+        ui->label_recordTime_interim->setText(QString(tr("开始记录时间：%1")).arg(time));
+    }
+    ui->labelTotalQtyTemp->setText(QString("%1").arg(totalQtyTemp));
+    ui->labelPassQtyTemp->setText(QString("%1").arg(passQtyTemp));
+    ui->labelFailQtyTemp->setText(QString("%1").arg(failQtyTemp));
+    ui->labelYieldTemp->setText(QString("%1%").arg(yieldTemp*100));
 }
 
 void ICT_UR10::getSn(QString sn, bool checkResult)
@@ -407,11 +425,14 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     ui->tableWidgetResultList->item(row, 4)->setTextAlignment(Qt::AlignCenter);
 
     totalQty++;//总数量加1
+    totalQtyTemp++;
     if("PASS"==result.toUpper())
     {
         ui->tableWidgetResultList->item(row, 4)->setBackgroundColor(QColor(0, 255, 0));
         ui->lineEditResult->setStyleSheet("background :rgb(0, 255, 0)");
         passQty++;//pass数量加1
+        failCount = 0;
+        passQtyTemp++;
     }
     else
     {
@@ -420,9 +441,12 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
             ui->tableWidgetResultList->item(row, 4)->setBackgroundColor(QColor(255, 0, 0));
             ui->lineEditResult->setStyleSheet("background :rgb(255, 0, 0)");
             failQty++;//fail数量加1
+            failCount++;
+            failQtyTemp++;
         }
     }
     yield = ((float)passQty)/((float)totalQty);//计算良率
+    yieldTemp = ((float)passQtyTemp)/((float)totalQtyTemp);//计算良率
     ui->tableWidgetResultList->scrollToBottom();
 
     //保存测试结果到csv文件
@@ -436,14 +460,57 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     {
         if(0 == csvFile.size())
         {
-            csvFile.write(QString("Product Type,Date,Time,SN,TestResult\n").toLatin1());
+            csvFile.write(QString("ProductType,Date,Time,SN,TestResult\n").toLatin1());
         }
         csvFile.seek(csvFile.size());
         csvFile.write(datalist.toLatin1());
         csvFile.close();
     }
-//    ui->lineEditSN->clear();
     update_UI_show();
+
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString yellow_limit = configRead->value(ICT_YELLOW_LIMIT).toString();
+    QString red_limit = configRead->value(ICT_RED_LIMIT).toString();
+    QString yield_base = configRead->value(ICT_YIELD_BASE).toString();
+    QString yield_limit = configRead->value(ICT_YIELD_LIMIT).toString();
+    delete configRead;
+    if(yellow_limit.toInt()<=failCount || red_limit.toInt()<=failCount)
+    {
+        if(yellow_limit.toInt()<=failCount && red_limit.toInt()>failCount)
+        {
+            //点亮三色灯_黄灯
+            qDebug()<<tr("点亮三色灯_黄灯");
+        }
+        else
+        {
+            if(red_limit.toInt()<=failCount)
+            {
+                //点亮三色灯_红灯
+                qDebug()<<tr("点亮三色灯_红灯");
+            }
+        }
+    }
+    else
+    {
+        //关闭三色灯提示
+        qDebug()<<tr("关闭三色灯提示");
+    }
+
+    if(yield_base.toInt() <= totalQtyTemp && yield_limit.toFloat() > yieldTemp)
+    {
+        if(QMessageBox::Yes ==QMessageBox::warning(this,tr("测试良率警告"),
+                                                   QString(tr("已连续测试%1PCS产品，良率为%2%，良率值较低，请检查ICT测试机!\n"
+                                                              "是否解除当前良率检测，重新统计？\n解除请选择Yes,不解除请选择No\n"))
+                                                   .arg(totalQtyTemp).arg(yieldTemp*100),QMessageBox::Yes|QMessageBox::No))
+        {
+            passQtyTemp = 0;
+            failQtyTemp = 0;
+            totalQtyTemp = 0;
+            yieldTemp = 0.00;
+            failCount = 0;
+            update_UI_show();
+        }
+    }
 }
 
 void ICT_UR10::newFile()
@@ -542,4 +609,14 @@ void ICT_UR10::on_actionDebug_triggered()
         DebugDialog debugDlg(this);
         debugDlg.exec();
     }
+}
+
+void ICT_UR10::on_pushButton_clicked()
+{
+    updateTestResult("SN1234567890987654","PASS");
+}
+
+void ICT_UR10::on_pushButton_2_clicked()
+{
+    updateTestResult("SN3456789987654098","FAIL");
 }

@@ -24,6 +24,7 @@ private:
     QString forShowSendString(QString str);
     QString forShowString(QString str);
     bool auto_Scan;
+    SerialPortObj *controlBoard;
 
 signals:
     void scanResult(QString sn);//传送SN信息
@@ -37,6 +38,8 @@ public slots:
     void init_Scanner();//初始化串口
     void scannerScanSN(bool autoScan);//启动扫描
     void scannerReadSN();//读取SN
+    void controlBoardRead();
+    void controlBoardWrite(QString writeMsg);
 
 private slots:
     void timerTimeOut();//扫描超时处理
