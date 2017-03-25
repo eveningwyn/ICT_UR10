@@ -14,6 +14,7 @@ public:
 
 private:
     TcpIpServer *robotServer;
+    bool robotPortExist;
 
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);
@@ -32,6 +33,8 @@ private:
     bool testPass;
     QString robot_pro_num;
     bool ictEnable;
+    bool robotAutoMode;
+    QTimer *setRunModeTimer;
 
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
@@ -60,11 +63,23 @@ public slots:
     void setPro_Num(QString pro_num);//设置产品类型对应的程序号
     void set_ictEnable(bool enable);
     void serverSendError();
+    void setRobotRunMode(bool autoMode);
+    void setrobotPortExist(bool robot_exist);
+    void debug_moveToScan();
+    void debug_fixturePickup();
+    void debug_fixturePlace();
+    void debug_ictPlace();
+    void debug_ictPickup();
+    void debug_ictClose();
+    void debug_ictOpen();
+    void debug_placeOKPos();
+    void debug_placeNGPos();
 
 private slots:
     void scanDone();
     void testDone();
     void setPro_Num_Timeout();//设置产品类型对应的程序号
+    void setRunModeTimeout();
 };
 
 #endif // ROBOTONTHREAD_H

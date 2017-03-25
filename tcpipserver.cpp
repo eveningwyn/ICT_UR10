@@ -70,8 +70,8 @@ void TcpIpServer::sendData(quint16 port, QString sendMsg)
             return;
         }
     }
+//    emit sendError();
     emit errorMessage(tr("The port number does not exist!\n"));
-    emit sendError();
 }
 
 bool TcpIpServer::stratListen(QString address,quint16 port)

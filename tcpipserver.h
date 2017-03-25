@@ -30,7 +30,6 @@ signals:
     void clientConnect(QString IP,int Port);                    //发送已连接的客户端IP地址和Port信息
     void clientDisconnected(QString IP,int Port);               //发送已断开连接的客户端IP地址和Port信息
     void errorMessage(QString errorMsg);                        //错误信号
-    void sendError();
 
 private slots:
     void serverReadMsg(int clientID,QString IP,int Port,QString readMsg);   //读取数据，并发射信号给上层调用

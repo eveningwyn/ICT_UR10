@@ -53,14 +53,22 @@ void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
 
 void RobotOnThread::robotSendMsg(QString sendMsg)
 {
-    sendMsg.replace(SUFFIX,"");
-    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString robotPort = configRead->value(ROBOT_PORT).toString();
-    delete configRead;
+    if(true == robotPortExist)
+    {
+        sendMsg.replace(SUFFIX,"");
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString robotPort = configRead->value(ROBOT_PORT).toString();
+        delete configRead;
 
-    robotServer->sendData(robotPort.toInt(),sendMsg);
+        robotServer->sendData(robotPort.toInt(),sendMsg);
 
-    emit forShow_To_Comm(forShowSendString(sendMsg));
+        emit forShow_To_Comm(forShowSendString(sendMsg));
+    }
+    else
+    {
+        serverSendError();
+        emit forShow_To_Comm(forShowSendString(tr("发送中断，Robot未连接！")));
+    }
 }
 
 void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的数据
@@ -80,72 +88,80 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init done ACK"));
         return;
     }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("PC status?")))
+    if(true == robotAutoMode)//自动模式
     {
-        if(true == PC_Is_Ready)
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("PC status?")))
         {
-            emit setRunStatus(true);
-            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("PC ready"));
-            return;
-        }
-        else
-        {
-            if(false == PC_Is_Ready)
+            if(true == PC_Is_Ready)
             {
-                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("PC not ready"));
+                emit setRunStatus(true);
+                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("PC ready"));
                 return;
             }
+            else
+            {
+                if(false == PC_Is_Ready)
+                {
+                    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("PC not ready"));
+                    return;
+                }
+            }
         }
-    }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan ready")))
-    {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan ready ACK"));
-
-        snCheckResult("SN1234567890",true);//调试用---------------------------------------
-        return;//调试用---------------------------------------
-        emit startScan(true);
-        return;
-    }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan done ACK")))
-    {
-        if(snResultTimer->isActive())
-            snResultTimer->stop();
-        return;
-    }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan error ACK")))
-    {
-        if(scanErrorTimer->isActive())
-            scanErrorTimer->stop();
-        return;
-    }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Test ready")))
-    {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Test ready ACK"));
-        emit startTest();//发出开始测试信号
-        if(false == ictEnable)
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan ready")))
         {
-            QThread::msleep(2000);
-            testResult("PASS");
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan ready ACK"));
+
+            snCheckResult("SN1234567890",true);//调试用---------------------------------------
+            return;//调试用---------------------------------------
+            emit startScan(true);
+            return;
         }
-        return;
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan done ACK")))
+        {
+            if(snResultTimer->isActive())
+                snResultTimer->stop();
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan error ACK")))
+        {
+            if(scanErrorTimer->isActive())
+                scanErrorTimer->stop();
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Test ready")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Test ready ACK"));
+            emit startTest();//发出开始测试信号
+            if(false == ictEnable)
+            {
+                QThread::msleep(2000);
+                testResult("PASS");
+            }
+            return;
+        }
+        if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Pass done ACK"))) ||
+                (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Fail done ACK"))))
+        {
+            if(testResultTimer->isActive())
+                testResultTimer->stop();
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Sort complete")))
+        {
+            checkPass = false;
+            barcode = "";
+            testPass = false;
+            emit setRunStatus(false);
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Sort complete ACK"));
+            emit sortComplete();//发出分拣完成信号
+            return;
+        }
     }
-    if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Pass done ACK"))) ||
-            (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Fail done ACK"))))
+    else//手动模式
     {
-        if(testResultTimer->isActive())
-            testResultTimer->stop();
-        return;
+        emit robot_Error_Msg(tr("当前模式为手动模式，请小心操作！"));
     }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Sort complete")))
-    {
-        checkPass = false;
-        barcode = "";
-        testPass = false;
-        emit setRunStatus(false);
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Sort complete ACK"));
-        emit sortComplete();//发出分拣完成信号
-        return;
-    }
+
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Error")))
     {
         msg.replace(SUFFIX,"");
@@ -166,6 +182,13 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             setProtTimer->stop();
         return;
     }
+    if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Auto mode ACK"))) ||
+            (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Debug mode ACK"))))
+    {
+        if(setRunModeTimer->isActive())
+            setRunModeTimer->stop();
+        return;
+    }
 }
 
 void RobotOnThread::init_Robot()
@@ -176,6 +199,7 @@ void RobotOnThread::init_Robot()
     testResultTimer = new QTimer(this);
     returnResultTimer = new QTimer(this);
     setProtTimer = new QTimer(this);
+    setRunModeTimer = new QTimer(this);
 
     PC_Is_Ready = false;
     checkPass = false;
@@ -183,6 +207,8 @@ void RobotOnThread::init_Robot()
     testPass = false;
     robot_pro_num = "";
     ictEnable = true;
+    robotAutoMode = true;//初始化为自动模式
+    robotPortExist = false;
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
@@ -191,7 +217,6 @@ void RobotOnThread::init_Robot()
     connect(robotServer,&TcpIpServer::clientConnect,this,&RobotOnThread::robotConnected);
     connect(robotServer,&TcpIpServer::clientDisconnected,this,&RobotOnThread::robotDisconnected);
     connect(robotServer,&TcpIpServer::serverReadData,this,&RobotOnThread::robotReadData);
-    connect(robotServer,&TcpIpServer::sendError,this,&RobotOnThread::serverSendError);
 
     connect(initTimer,&QTimer::timeout,this,&RobotOnThread::robot_Init);
     connect(snResultTimer,&QTimer::timeout,this,&RobotOnThread::scanDone);
@@ -199,6 +224,7 @@ void RobotOnThread::init_Robot()
     connect(testResultTimer,&QTimer::timeout,this,&RobotOnThread::testDone);
     connect(returnResultTimer,&QTimer::timeout,this,&RobotOnThread::roborReturn);
     connect(setProtTimer,&QTimer::timeout,this,&RobotOnThread::setPro_Num_Timeout);
+    connect(setRunModeTimer,&QTimer::timeout,this,&RobotOnThread::setRunModeTimeout);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Robot
@@ -224,8 +250,8 @@ void RobotOnThread::robot_Init()
 {
     if(initTimer->isActive())
         initTimer->stop();
-    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init"));
     initTimer->start(TIMEOUT_SEC);
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init"));
 }
 
 void RobotOnThread::snCheckResult(QString sn,bool checkResult)
@@ -239,6 +265,7 @@ void RobotOnThread::scanDone()
 {
     if(snResultTimer->isActive())
         snResultTimer->stop();
+    snResultTimer->start(TIMEOUT_SEC);
     if(true == checkPass)
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
@@ -249,15 +276,14 @@ void RobotOnThread::scanDone()
         scanError();
         return;
     }
-    snResultTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::scanError()
 {
     if(scanErrorTimer->isActive())
         scanErrorTimer->stop();
-    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
     scanErrorTimer->start(TIMEOUT_SEC);
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
 }
 
 void RobotOnThread::testResult(QString result)
@@ -280,6 +306,7 @@ void RobotOnThread::testDone()
 {
     if(testResultTimer->isActive())
         testResultTimer->stop();
+    testResultTimer->start(TIMEOUT_SEC);
     if(true == testPass)
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Pass done"));
@@ -288,15 +315,14 @@ void RobotOnThread::testDone()
     {
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fail done"));
     }
-    testResultTimer->start(TIMEOUT_SEC);
 }
 
 void RobotOnThread::roborReturn()
 {
     if(returnResultTimer->isActive())
         returnResultTimer->stop();
-    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
     returnResultTimer->start(TIMEOUT_SEC);
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
 }
 
 void RobotOnThread::set_PC_Status(bool isReady)
@@ -318,8 +344,8 @@ void RobotOnThread::setPro_Num_Timeout()
     QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     if("true"==robotTypeEnable)
     {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
         setProtTimer->start(TIMEOUT_SEC);
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
     }
     delete configRead;
 }
@@ -337,4 +363,37 @@ void RobotOnThread::serverSendError()
     testResultTimer->stop();
     returnResultTimer->stop();
     setProtTimer->stop();
+    setRunModeTimer->stop();
+}
+
+void RobotOnThread::setRunModeTimeout()
+{
+    if(setRunModeTimer->isActive())
+        setRunModeTimer->stop();
+    setRobotRunMode(robotAutoMode);
+}
+
+void RobotOnThread::setRobotRunMode(bool autoMode)
+{
+    bool modeTemp = robotAutoMode;
+    robotAutoMode = autoMode;
+    setRunModeTimer->start(TIMEOUT_SEC);
+    if(true == robotAutoMode)
+    {
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Auto mode"));
+    }
+    else
+    {
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Debug mode"));
+    }
+    if(false == modeTemp && true == robotAutoMode)
+    {
+        emit robot_Error_Msg(tr("UR机器人需要复位，请注意人员和设备安全！\n"));
+        robot_Init();//Debug模式切换到Auto模式后，Robot需复位
+    }
+}
+
+void RobotOnThread::setrobotPortExist(bool robot_exist)
+{
+    robotPortExist = robot_exist;
 }

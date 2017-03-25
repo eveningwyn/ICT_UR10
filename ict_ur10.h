@@ -96,6 +96,8 @@ signals:
     void pcIsReady(bool isReady);
     void setType_Pro(QString pro_num);//设置产品类型对应的程序号
     void set_ict_Enable(bool enable);
+    void robotSetAutoMode(bool autoMode);
+    void robotPortExist(bool robot_exist);
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态

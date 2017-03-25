@@ -108,6 +108,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::setType_Pro,robot_on_thread,&RobotOnThread::setPro_Num);
     connect(this,&ICT_UR10::set_ict_Enable,ict,&ICT_Test_Obj::set_ictEnable);
     connect(this,&ICT_UR10::set_ict_Enable,robot_on_thread,&RobotOnThread::set_ictEnable);
+    connect(this,&ICT_UR10::robotSetAutoMode,robot_on_thread,&RobotOnThread::setRobotRunMode);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -307,7 +308,7 @@ void ICT_UR10::manualSendMsg_robot(QString sendMsg)
 
 void ICT_UR10::showErrorMessage(QString errorMsg)
 {
-    QMessageBox::warning(this,tr("错误信息"),QString(tr("%1")).arg(errorMsg),QMessageBox::Ok);
+    QMessageBox::warning(this,tr("警告"),QString(tr("%1")).arg(errorMsg),QMessageBox::Ok);
 }
 
 void ICT_UR10::disEnableUI()
@@ -357,6 +358,7 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     {
         configRead->setValue(ROBOT_PORT,QString("%1").arg(Port));
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
+        emit robotPortExist(true);
         setRobotReady(true);
         on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
         if(false==robotIsInit)
@@ -382,6 +384,7 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
+        emit robotPortExist(true);
         robotInitStatus(false);
         setRobotReady(false);
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
@@ -607,7 +610,18 @@ void ICT_UR10::on_actionDebug_triggered()
     if(QDialog::Accepted==debugLoginDlg.exec())
     {
         DebugDialog debugDlg(this);
+        connect(&debugDlg,&DebugDialog::moveToScan,robot_on_thread,&RobotOnThread::debug_moveToScan);
+        connect(&debugDlg,&DebugDialog::fixturePickup,robot_on_thread,&RobotOnThread::debug_fixturePickup);
+        connect(&debugDlg,&DebugDialog::fixturePlace,robot_on_thread,&RobotOnThread::debug_fixturePlace);
+        connect(&debugDlg,&DebugDialog::ictPlace,robot_on_thread,&RobotOnThread::debug_ictPlace);
+        connect(&debugDlg,&DebugDialog::ictPickup,robot_on_thread,&RobotOnThread::debug_ictPickup);
+        connect(&debugDlg,&DebugDialog::ictClose,robot_on_thread,&RobotOnThread::debug_ictClose);
+        connect(&debugDlg,&DebugDialog::ictOpen,robot_on_thread,&RobotOnThread::debug_ictOpen);
+        connect(&debugDlg,&DebugDialog::placeOKPos,robot_on_thread,&RobotOnThread::debug_placeOKPos);
+        connect(&debugDlg,&DebugDialog::placeNGPos,robot_on_thread,&RobotOnThread::debug_placeNGPos);
+        emit robotSetAutoMode(false);
         debugDlg.exec();
+        emit robotSetAutoMode(true);
     }
 }
 
