@@ -42,6 +42,8 @@ private slots:
 
     void on_pushButton_cylinder_down_clicked();
 
+    void on_pushButton_return_clicked();
+
 private:
     Ui::DebugDialog *ui;
 
@@ -55,6 +57,7 @@ signals:
     void ictOpen();
     void placeOKPos();
     void placeNGPos();
+    void returnSafePos();
 };
 
 #endif // DEBUGDIALOG_H

@@ -584,12 +584,6 @@
     </item>
     <item row="4" column="0" colspan="6">
      <widget class="QTableWidget" name="tableWidgetResultList">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>300</height>
-       </size>
-      </property>
       <property name="statusTip">
        <string>测试结果记录清单</string>
       </property>

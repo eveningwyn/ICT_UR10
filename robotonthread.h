@@ -74,6 +74,7 @@ public slots:
     void debug_ictOpen();
     void debug_placeOKPos();
     void debug_placeNGPos();
+    void debug_returnSafePos();
 
 private slots:
     void scanDone();

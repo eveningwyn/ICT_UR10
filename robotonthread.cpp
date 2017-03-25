@@ -159,7 +159,51 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     }
     else//手动模式
     {
-        emit robot_Error_Msg(tr("当前模式为手动模式，请小心操作！"));
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Move to Scan done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Move to Scan done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Fixture pickup done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture pickup done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Fixture place done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture place done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT place done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT place done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT pickup done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT pickup done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT close done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT close done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT open done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT open done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Place OK done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place OK done ACK"));
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Place NG done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place NG done ACK"));
+            return;
+        }
     }
 
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Error")))
@@ -258,7 +302,10 @@ void RobotOnThread::snCheckResult(QString sn,bool checkResult)
 {
     barcode = sn;
     checkPass = checkResult;
-    scanDone();
+    if(true == robotAutoMode)
+    {
+        scanDone();
+    }
 }
 
 void RobotOnThread::scanDone()
@@ -396,4 +443,55 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
 void RobotOnThread::setrobotPortExist(bool robot_exist)
 {
     robotPortExist = robot_exist;
+}
+
+void RobotOnThread::debug_moveToScan()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Move to Scan"));
+}
+
+void RobotOnThread::debug_fixturePickup()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture pickup"));
+}
+
+void RobotOnThread::debug_fixturePlace()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture place"));
+}
+
+void RobotOnThread::debug_ictPlace()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT place"));
+}
+
+void RobotOnThread::debug_ictPickup()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT pickup"));
+}
+
+void RobotOnThread::debug_ictClose()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT close"));
+}
+
+void RobotOnThread::debug_ictOpen()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT open"));
+}
+
+void RobotOnThread::debug_placeOKPos()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place OK"));
+}
+
+void RobotOnThread::debug_placeNGPos()
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place NG"));
+}
+
+void RobotOnThread::debug_returnSafePos()
+{
+//    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
+    roborReturn();
 }

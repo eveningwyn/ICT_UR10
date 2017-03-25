@@ -1,5 +1,7 @@
 ﻿#include "debugdialog.h"
 #include "ui_debugdialog.h"
+#include "ict_ur10.h"
+
 DebugDialog::DebugDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DebugDialog)
@@ -19,7 +21,8 @@ void DebugDialog::on_pushButton_moveToScan_clicked()
 
 void DebugDialog::on_pushButton_Scan_clicked()
 {
-    //扫描SN
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    ptr->manualStartScan(true);
 }
 
 void DebugDialog::on_pushButton_pickUp_Carrier_clicked()
@@ -75,4 +78,9 @@ void DebugDialog::on_pushButton_cylinder_up_clicked()
 void DebugDialog::on_pushButton_cylinder_down_clicked()
 {
     //气缸下降
+}
+
+void DebugDialog::on_pushButton_return_clicked()
+{
+    emit returnSafePos();
 }
