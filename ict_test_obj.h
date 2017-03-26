@@ -26,6 +26,8 @@ signals:
     void ictIsReady(bool isReady);
     void ict_Status(QString status);//更新连接状态给主界面
     void ict_Check_SN_Result(QString sn, bool checkPass);
+    void openSwitch(QString str);
+    void ict_light_Red_Green_Yellow_Buzzer(QString str);
 
 public slots:
     void getIctInfo(QString fileName,QString &readMsg);

@@ -82,6 +82,7 @@ private:
     int passQtyTemp;//Pass数量
     int failQtyTemp;//Fail数量
     float yieldTemp;//良率
+    int lightCount;//0表示三色灯没有工作，1表示红灯点亮，2表示绿灯点亮，3表示黄灯点亮，4表示蜂鸣器工作
 
 signals:
     void init_scanner_robot_ict_mes();//启动子线程的初始化
@@ -98,6 +99,8 @@ signals:
     void set_ict_Enable(bool enable);
     void robotSetAutoMode(bool autoMode);
     void robotPortExist(bool robot_exist);
+    void manualSendMsg_controlBoard(QString sendMsg);
+    void light_Red_Green_Yellow_Buzzer(QString str);
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态

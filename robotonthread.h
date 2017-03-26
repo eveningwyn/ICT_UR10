@@ -35,6 +35,9 @@ private:
     bool ictEnable;
     bool robotAutoMode;
     QTimer *setRunModeTimer;
+    bool lineCanPlace;
+    bool lineIsNoBoard;
+    QTimer *infoLineReadyTimer;
 
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
@@ -49,6 +52,7 @@ signals:
     void robotReady(bool isReady);
     void recordTestResult(QString sn, QString result);//记录测试信息
     void setRunStatus(bool isAuto);//设置允许状态
+    void cylinderUpDown(QString str);
 
 public slots:
     void init_Robot();//初始化服务器连接
@@ -75,12 +79,16 @@ public slots:
     void debug_placeOKPos();
     void debug_placeNGPos();
     void debug_returnSafePos();
+    void set_light_Red_Green_Yellow_Buzzer(QString msg);
+    void lineReadyStatus(bool isTrue);
+    void lineNoBoardStatus(bool isTrue);
 
 private slots:
     void scanDone();
     void testDone();
     void setPro_Num_Timeout();//设置产品类型对应的程序号
     void setRunModeTimeout();
+    void infromLineInfoToRobot();
 };
 
 #endif // ROBOTONTHREAD_H

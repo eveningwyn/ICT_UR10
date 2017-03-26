@@ -1,6 +1,9 @@
 ﻿#include "debugdialog.h"
 #include "ui_debugdialog.h"
 #include "ict_ur10.h"
+#include <QMessageBox>
+#include "language.h"
+#include "staticname.h"
 
 DebugDialog::DebugDialog(QWidget *parent) :
     QDialog(parent),
@@ -22,7 +25,20 @@ void DebugDialog::on_pushButton_moveToScan_clicked()
 void DebugDialog::on_pushButton_Scan_clicked()
 {
     ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    ptr->manualStartScan(true);
+    QMessageBox::StandardButton rb = QMessageBox::warning(this,tr("提示"),
+                                                          tr("在线扫描请选择Yes，离线扫描请选择No，取消请选择Cancel."),
+                                                          QMessageBox::Cancel|QMessageBox::No|QMessageBox::Yes);
+    if(rb==QMessageBox::Yes)
+    {
+        ptr->manualStartScan(true);
+    }
+    else
+    {
+        if(rb==QMessageBox::No)
+        {
+            ptr->manualStartScan(false);
+        }
+    }
 }
 
 void DebugDialog::on_pushButton_pickUp_Carrier_clicked()
@@ -58,6 +74,7 @@ void DebugDialog::on_pushButton_ICTOpen_clicked()
 void DebugDialog::on_pushButton_ICT_Run_clicked()
 {
     //ict开始run
+    emit ict_start_test();
 }
 
 void DebugDialog::on_pushButton_place_OK_clicked()
@@ -73,11 +90,13 @@ void DebugDialog::on_pushButton_place_NG_clicked()
 void DebugDialog::on_pushButton_cylinder_up_clicked()
 {
     //气缸上升
+    emit debug_CylinderUpDown(CONTROL_OUT1_ON);
 }
 
 void DebugDialog::on_pushButton_cylinder_down_clicked()
 {
     //气缸下降
+    emit debug_CylinderUpDown(CONTROL_OUT1_OFF);
 }
 
 void DebugDialog::on_pushButton_return_clicked()

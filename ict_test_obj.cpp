@@ -21,6 +21,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
     QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
     delete configRead;
     QString ICT_path = QString("//%1/%2").arg(ict_ip_addr).arg(fileName);
+    ICT_path = QString("..\\test/%2").arg(fileName);//调试用----------
 
     QFile file(ICT_path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -47,6 +48,7 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
     QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
     delete configRead;
     QString ICT_path = QString("//%1/%2").arg(ict_ip_addr).arg(fileName);
+    ICT_path = QString("..\\test/%2").arg(fileName);//调试用----------
 
     QFile file(ICT_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -69,13 +71,22 @@ int ICT_Test_Obj::pc_ict_Ping()
     delete configRead;
     QString pingStr = "ping " + ict_ip_addr + " -n 1";
     int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
+
     qDebug()<<"time_s1 return:"<<time_s1;//for debug-----------------------------
+
     int ref = QProcess::execute(pingStr);
+
     qDebug()<<"ref return:"<<ref;//for debug--------------------------------------
+
     int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
+
     qDebug()<<"time_s2 return:"<<time_s2;//for debug-------------------------------
+
     int time_offset = time_s2 - time_s1;
+
     qDebug()<<"time_offset return:"<<time_offset;//for debug----------------------
+    return 0;//调试用--------------------------------
+
     if(0 == ref && 0 == time_offset)
     {
         return 0;
@@ -169,6 +180,8 @@ void ICT_Test_Obj::statusReadTimeout()
                 }
             }
             snTemp = "";
+            if(!testTimer->isActive())
+                testTimer->stop();//测试超时判断
         }
         return;
     }
@@ -207,7 +220,8 @@ void ICT_Test_Obj::testStart()//ict开始测试
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
         setIctInfo(run_path,"RUN");
         if(!testTimer->isActive())
-            testTimer->start(3*60*1000);
+            testTimer->start(3*60*1000);//测试超时判断
+        emit openSwitch(CONTROL_OUT2_ON);
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
@@ -257,5 +271,6 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
 
 void ICT_Test_Obj::testTimeout()
 {
+    emit ict_light_Red_Green_Yellow_Buzzer("Red light open");
     emit ict_Error_Msg(tr("ICT测试机测试超时！\n"));
 }

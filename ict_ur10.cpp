@@ -75,6 +75,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
     connect(scan_on_thread,&ScannerOnThread::scanError,robot_on_thread,&RobotOnThread::scanError);
     connect(scan_on_thread,&ScannerOnThread::scanResult,ict,&ICT_Test_Obj::ict_Check_SN);
+    connect(scan_on_thread,&ScannerOnThread::lineReady,robot_on_thread,&RobotOnThread::lineReadyStatus);
+    connect(scan_on_thread,&ScannerOnThread::lineNoBoard,robot_on_thread,&RobotOnThread::lineNoBoardStatus);
 
     connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
     connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::showErrorMessage);
@@ -87,6 +89,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::startTest,ict,&ICT_Test_Obj::testStart);
     connect(robot_on_thread,&RobotOnThread::recordTestResult,this,&ICT_UR10::updateTestResult);
     connect(robot_on_thread,&RobotOnThread::setRunStatus,this,&ICT_UR10::runStatus);
+    connect(robot_on_thread,&RobotOnThread::cylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
 
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
@@ -95,6 +98,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(ict,&ICT_Test_Obj::ictTestResult,robot_on_thread,&RobotOnThread::testResult);
     connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,this,&ICT_UR10::getSn);
     connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,robot_on_thread,&RobotOnThread::snCheckResult);
+    connect(ict,&ICT_Test_Obj::ict_light_Red_Green_Yellow_Buzzer,robot_on_thread,&RobotOnThread::set_light_Red_Green_Yellow_Buzzer);
 
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
@@ -109,6 +113,9 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::set_ict_Enable,ict,&ICT_Test_Obj::set_ictEnable);
     connect(this,&ICT_UR10::set_ict_Enable,robot_on_thread,&RobotOnThread::set_ictEnable);
     connect(this,&ICT_UR10::robotSetAutoMode,robot_on_thread,&RobotOnThread::setRobotRunMode);
+    connect(this,&ICT_UR10::manualSendMsg_controlBoard,scan_on_thread,&ScannerOnThread::controlBoardWrite);
+    connect(this,&ICT_UR10::light_Red_Green_Yellow_Buzzer,robot_on_thread,&RobotOnThread::set_light_Red_Green_Yellow_Buzzer);
+    connect(this,&ICT_UR10::robotPortExist,robot_on_thread,&RobotOnThread::setrobotPortExist);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -384,7 +391,7 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-        emit robotPortExist(true);
+        emit robotPortExist(false);
         robotInitStatus(false);
         setRobotReady(false);
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
@@ -482,21 +489,35 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         if(yellow_limit.toInt()<=failCount && red_limit.toInt()>failCount)
         {
             //点亮三色灯_黄灯
-            qDebug()<<tr("点亮三色灯_黄灯");
+            emit light_Red_Green_Yellow_Buzzer("Red light open");
+            lightCount = 3;
         }
         else
         {
             if(red_limit.toInt()<=failCount)
             {
                 //点亮三色灯_红灯
-                qDebug()<<tr("点亮三色灯_红灯");
+                emit light_Red_Green_Yellow_Buzzer("Yellow light open");
+                lightCount = 1;
             }
         }
     }
     else
     {
         //关闭三色灯提示
-        qDebug()<<tr("关闭三色灯提示");
+        if(1==lightCount)
+        {
+            //关闭三色灯_红灯
+            emit light_Red_Green_Yellow_Buzzer("Red light close");
+        }
+        else
+        {
+            if(3==lightCount)
+            {
+                //关闭三色灯_黄灯
+                emit light_Red_Green_Yellow_Buzzer("Yellow light close");
+            }
+        }
     }
 
     if(yield_base.toInt() <= totalQtyTemp && yield_limit.toFloat() > yieldTemp)
@@ -619,6 +640,9 @@ void ICT_UR10::on_actionDebug_triggered()
         connect(&debugDlg,&DebugDialog::ictOpen,robot_on_thread,&RobotOnThread::debug_ictOpen);
         connect(&debugDlg,&DebugDialog::placeOKPos,robot_on_thread,&RobotOnThread::debug_placeOKPos);
         connect(&debugDlg,&DebugDialog::placeNGPos,robot_on_thread,&RobotOnThread::debug_placeNGPos);
+        connect(&debugDlg,&DebugDialog::returnSafePos,robot_on_thread,&RobotOnThread::debug_returnSafePos);
+        connect(&debugDlg,&DebugDialog::ict_start_test,ict,&ICT_Test_Obj::testStart);
+        connect(&debugDlg,&DebugDialog::debug_CylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
         emit robotSetAutoMode(false);
         debugDlg.exec();
         emit robotSetAutoMode(true);

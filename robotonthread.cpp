@@ -92,6 +92,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     {
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("PC status?")))
         {
+            emit cylinderUpDown(CONTROL_OUT1_ON);
             if(true == PC_Is_Ready)
             {
                 emit setRunStatus(true);
@@ -111,8 +112,8 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         {
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan ready ACK"));
 
-            snCheckResult("SN1234567890",true);//调试用---------------------------------------
-            return;//调试用---------------------------------------
+//            snCheckResult("SN1234567890",true);//调试用---------------------------------------
+//            return;//调试用---------------------------------------
             emit startScan(true);
             return;
         }
@@ -148,6 +149,10 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Sort complete")))
         {
+            if(true==testPass)
+            {
+                emit cylinderUpDown(CONTROL_OUT1_OFF);
+            }
             checkPass = false;
             barcode = "";
             testPass = false;
@@ -199,13 +204,8 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place OK done ACK"));
             return;
         }
-        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Place NG done")))
-        {
-            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place NG done ACK"));
-            return;
-        }
     }
-
+    //手动/自动模式共用通讯协议部分
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Error")))
     {
         msg.replace(SUFFIX,"");
@@ -233,6 +233,20 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             setRunModeTimer->stop();
         return;
     }
+    if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Auto mode ACK"))) ||
+            (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Debug mode ACK"))))
+    {
+        if(setRunModeTimer->isActive())
+            setRunModeTimer->stop();
+        return;
+    }
+    if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line ready ACK"))) ||
+            (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line not ready ACK"))))
+    {
+        if(infoLineReadyTimer->isActive())
+            infoLineReadyTimer->stop();
+        return;
+    }
 }
 
 void RobotOnThread::init_Robot()
@@ -244,6 +258,7 @@ void RobotOnThread::init_Robot()
     returnResultTimer = new QTimer(this);
     setProtTimer = new QTimer(this);
     setRunModeTimer = new QTimer(this);
+    infoLineReadyTimer = new QTimer(this);
 
     PC_Is_Ready = false;
     checkPass = false;
@@ -253,6 +268,9 @@ void RobotOnThread::init_Robot()
     ictEnable = true;
     robotAutoMode = true;//初始化为自动模式
     robotPortExist = false;
+
+    lineCanPlace = false;
+    lineIsNoBoard = true;
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
@@ -312,9 +330,9 @@ void RobotOnThread::scanDone()
 {
     if(snResultTimer->isActive())
         snResultTimer->stop();
-    snResultTimer->start(TIMEOUT_SEC);
     if(true == checkPass)
     {
+        snResultTimer->start(TIMEOUT_SEC);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
     }
     else
@@ -494,4 +512,52 @@ void RobotOnThread::debug_returnSafePos()
 {
 //    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
     roborReturn();
+}
+
+void RobotOnThread::set_light_Red_Green_Yellow_Buzzer(QString msg)
+{
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(msg));
+}
+
+void RobotOnThread::lineReadyStatus(bool isTrue)
+{
+    bool temp = lineCanPlace;
+    lineCanPlace = isTrue;
+    if(temp != lineCanPlace)
+    {
+        infromLineInfoToRobot();
+    }
+}
+
+void RobotOnThread::lineNoBoardStatus(bool isTrue)
+{
+    bool temp = lineCanPlace;
+    bool temp1 = lineIsNoBoard;
+    lineIsNoBoard = isTrue;
+    lineCanPlace = false;
+    if(temp != lineCanPlace)
+    {
+        infromLineInfoToRobot();
+    }
+    if(temp1 != lineIsNoBoard && true == lineIsNoBoard)
+    {
+        emit cylinderUpDown(CONTROL_OUT1_ON);
+    }
+}
+
+void RobotOnThread::infromLineInfoToRobot()
+{
+    if(infoLineReadyTimer->isActive())
+        infoLineReadyTimer->stop();
+    infoLineReadyTimer->start(TIMEOUT_SEC);
+    if(true == lineCanPlace)
+    {
+        //告知Robot流水线已准备好
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+    }
+    else
+    {
+        //告知Robot流水线未准备好
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
+    }
 }

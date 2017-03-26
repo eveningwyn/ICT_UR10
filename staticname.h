@@ -68,5 +68,11 @@
 #define ERROR_FILE_NAME           "..\\log/Error_Log_%1.txt"
 #define INFORMATION_FOLDER_NAME   "..\\log"
 
+#define CONTROL_CHECK      "ck"
+#define CONTROL_OUT1_ON    "on"
+#define CONTROL_OUT1_OFF   "of"
+#define CONTROL_OUT2_ON    "out2_on"
+#define CONTROL_OUT2_OFF   "out2_of"
+
 
 #endif // STATICNAME_H

@@ -58,6 +58,8 @@ signals:
     void placeOKPos();
     void placeNGPos();
     void returnSafePos();
+    void ict_start_test();
+    void debug_CylinderUpDown(QString str);
 };
 
 #endif // DEBUGDIALOG_H

@@ -25,6 +25,10 @@ private:
     QString forShowString(QString str);
     bool auto_Scan;
     SerialPortObj *controlBoard;
+    QTimer *checkSensorTimer;
+    QTimer *out2Timer;
+    bool lineIsReady;
+    bool lineIsNoBoard;
 
 signals:
     void scanResult(QString sn);//传送SN信息
@@ -33,6 +37,8 @@ signals:
     void scanner_Status(QString status);//更新连接状态给主界面
     void scannerIsReady(bool isReady);
     void scanError();
+    void lineReady(bool isTrue);
+    void lineNoBoard(bool isTrue);
 
 public slots:
     void init_Scanner();//初始化串口
@@ -40,9 +46,11 @@ public slots:
     void scannerReadSN();//读取SN
     void controlBoardRead();
     void controlBoardWrite(QString writeMsg);
+    void checkSensor();
 
 private slots:
     void timerTimeOut();//扫描超时处理
+    void out2TimerTimeOut();
 };
 
 #endif // SCANNERONTHREAD_H

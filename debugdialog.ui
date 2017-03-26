@@ -202,6 +202,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>pushButton_return</tabstop>
+  <tabstop>pushButton_moveToScan</tabstop>
+  <tabstop>pushButton_Scan</tabstop>
+  <tabstop>pushButton_pickUp_Carrier</tabstop>
+  <tabstop>pushButton_place_Carrier</tabstop>
+  <tabstop>pushButton_place_ICT</tabstop>
+  <tabstop>pushButton_pickUp_ICT</tabstop>
+  <tabstop>pushButton_ICTClose</tabstop>
+  <tabstop>pushButton_ICTOpen</tabstop>
+  <tabstop>pushButton_ICT_Run</tabstop>
+  <tabstop>pushButton_place_OK</tabstop>
+  <tabstop>pushButton_place_NG</tabstop>
+  <tabstop>pushButton_cylinder_up</tabstop>
+  <tabstop>pushButton_cylinder_down</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

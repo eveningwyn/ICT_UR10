@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QDateTime>
 #include "language.h"
+#include <QThread>
 
 #include <QDebug>
 
@@ -106,16 +107,23 @@ void ScannerOnThread::init_Scanner()
     scanner = new SerialPortObj(this);
     controlBoard = new SerialPortObj(this);
     scantimer = new QTimer(this);
+    checkSensorTimer = new QTimer(this);
+    out2Timer = new QTimer(this);
     scanCount = 0;
     prefix = "";
     suffix = "\r\n";
     connect(scanner,&SerialPortObj::serialReadReady,this,&ScannerOnThread::scannerReadSN);
     connect(controlBoard,&SerialPortObj::serialReadReady,this,&ScannerOnThread::controlBoardRead);
     connect(scantimer,&QTimer::timeout,this,&ScannerOnThread::timerTimeOut);
+    connect(checkSensorTimer,&QTimer::timeout,this,&ScannerOnThread::checkSensor);
+    connect(out2Timer,&QTimer::timeout,this,&ScannerOnThread::out2TimerTimeOut);
 
     canScan = true;
     canRead = false;
     auto_Scan = false;
+    checkSensorTimer->start(500);
+    lineIsReady = false;
+    lineIsNoBoard = true;
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Scanner
@@ -152,6 +160,7 @@ void ScannerOnThread::init_Scanner()
     {
         emit scannerIsReady(true);
         emit forShow_To_Comm(forShowString(QString(tr("阻挡气缸控制板:%1 已连接\n")).arg(portName_Control)));
+        checkSensor();//连接控制板之后，查询一次流水线Sensor状态
     }
 
     delete configRead;
@@ -159,33 +168,74 @@ void ScannerOnThread::init_Scanner()
 
 void ScannerOnThread::controlBoardRead()
 {
+    bool lineIsReadyTemp = lineIsReady;
+    bool lineIsNoBoardTemp = lineIsNoBoard;
     QString readStr;
     controlBoard->serialPortRead(readStr,"@","!");
     if(readStr.isEmpty())
         return;
     if("@0!"==readStr)
     {
-        //流水线有料，气缸已上升
-        return;
+        //流水线有载板，气缸已上升
+        lineIsReady = true;
     }
-    if("@1!"==readStr)
+    else
     {
-        //流水线无料，气缸已上升
-        return;
+        if("@1!"==readStr)
+        {
+            //流水线无载板，气缸已上升
+            lineIsReady = false;
+        }
+        else
+        {
+            if("@2!"==readStr)
+            {
+                //流水线有载板，气缸已下降
+                lineIsNoBoard = false;
+            }
+            else
+            {
+                if("@3!"==readStr)
+                {
+                    //流水线无载板，气缸已下降
+                    lineIsNoBoard = true;
+                }
+            }
+        }
     }
-    if("@2!"==readStr)
+    //流水线状态改变时发送信号
+    if(lineIsReadyTemp != lineIsReady)
     {
-        //流水线有料，气缸已下降
-        return;
+        emit lineReady(lineIsReady);
     }
-    if("@3!"==readStr)
+    if(lineIsNoBoardTemp != lineIsNoBoard)
     {
-        //流水线无料，气缸已下降
-        return;
+        emit lineNoBoard(lineIsNoBoard);
     }
 }
 
 void ScannerOnThread::controlBoardWrite(QString writeMsg)
 {//writeMsg == ck,查询传感器状态//writeMsg == on,气缸上升//writeMsg == of,气缸下降
     controlBoard->serialPortWrite("#"+writeMsg+"*");
+    if(CONTROL_OUT2_ON==writeMsg)
+    {
+        if(!out2Timer->isActive())
+        {
+            out2Timer->start(100);
+        }
+    }
+}
+
+void ScannerOnThread::out2TimerTimeOut()
+{
+    if(out2Timer->isActive())
+    {
+        out2Timer->stop();
+    }
+    controlBoardWrite(CONTROL_OUT2_OFF);
+}
+
+void ScannerOnThread::checkSensor()
+{
+    controlBoardWrite(CONTROL_CHECK);
 }

@@ -34,6 +34,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
         ptr->manualStartScan(false);
     }
     else
+    {
         if("robot" == ui->comboBoxReceiver->currentText().toLower())
         {
             QString suffix = ui->comboBoxSuffix->currentText();
@@ -42,6 +43,14 @@ void CommunicationDialog::on_pushButtonSend_clicked()
             str += suffix;
             ptr->manualSendMsg_robot(str);
         }
+        else
+        {
+            if("controlboard" == ui->comboBoxReceiver->currentText().toLower())
+            {
+                emit ptr->manualSendMsg_controlBoard(str);
+            }
+        }
+    }
 }
 
 void CommunicationDialog::forShowInfo(QString msg)
