@@ -3,9 +3,6 @@
 #include <QSettings>
 #include <QDateTime>
 #include "language.h"
-#include <QThread>
-
-#include <QDebug>
 
 ScannerOnThread::ScannerOnThread(QObject *parent) : QObject(parent)
 {
@@ -34,7 +31,6 @@ void ScannerOnThread::scannerReadSN()
        emit scanResult(sn);
    emit forShow_To_Comm(forShowReceiveString(sn));
    scantimer->stop();
-
    scanner->clearBuffer();
    canScan = true;
    canRead = false;

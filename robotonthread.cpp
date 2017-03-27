@@ -5,7 +5,7 @@
 #include "language.h"
 
 #include <QThread>
-#include <QDebug>
+
 #define TIMEOUT_SEC  500
 
 RobotOnThread::RobotOnThread(QObject *parent) : QObject(parent)
@@ -17,7 +17,7 @@ QString RobotOnThread::forShowReceiveString(QString str)
     str.replace("\r","");
     str.replace("\n","");
     QDateTime time = QDateTime::currentDateTime();
-    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Receive_from_Robot:" + str + "\r\n";
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Receive_from_Robot:" + str + "\n";
     return str;
 }
 
@@ -26,7 +26,7 @@ QString RobotOnThread::forShowSendString(QString str)
     str.replace("\r","");
     str.replace("\n","");
     QDateTime time = QDateTime::currentDateTime();
-    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Send_to_Robot:" + str + "\r\n";
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Send_to_Robot:" + str + "\n";
     return str;
 }
 

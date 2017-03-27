@@ -12,8 +12,6 @@
 #include "debuglogindialog.h"
 #include "debugdialog.h"
 
-#include <QDebug>
-
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
     QMainWindow(parent),
@@ -103,6 +101,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(ict,&ICT_Test_Obj::openSwitch,scan_on_thread,&ScannerOnThread::controlBoardWrite);
     connect(ict,&ICT_Test_Obj::setRunStatus,this,&ICT_UR10::runStatus);
     connect(ict,&ICT_Test_Obj::ict_testTimeout,robot_on_thread,&RobotOnThread::ict_testTimeout);
+    connect(ict,&ICT_Test_Obj::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
 
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
@@ -408,7 +407,7 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
 QString ICT_UR10::forShowString(QString str)
 {
     QDateTime time = QDateTime::currentDateTime();
-    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + str + "\r\n";
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + str + "\n";
     return str;
 }
 
@@ -565,6 +564,7 @@ void ICT_UR10::update_Robot_Status(QString status)
 void ICT_UR10::update_ICT_Status(QString status)
 {
     this->statusBarLabel_ICT->setText(status);
+    emit forShow(forShowString(status));
 }
 
 void ICT_UR10::robotInitStatus(bool status)

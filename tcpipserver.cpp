@@ -1,6 +1,5 @@
 ﻿#include "tcpipserver.h"
 #include "staticname.h"
-#include <QDebug>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)

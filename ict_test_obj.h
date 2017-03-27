@@ -19,6 +19,8 @@ private:
     QString ictEnableStr;
     QString snTemp;
     QTimer *testTimer;
+    QString forShowReceiveString(QString str);
+    QString forShowSendString(QString str);
 
 signals:
     void ict_Error_Msg(QString errorMsg);
@@ -30,6 +32,7 @@ signals:
     void ict_light_Red_Green_Yellow_Buzzer(QString str);
     void setRunStatus(bool isAuto);//设置允许状态
     void ict_testTimeout();
+    void forShow_To_Comm(QString msg);//信息记录
 
 public slots:
     void getIctInfo(QString fileName,QString &readMsg);

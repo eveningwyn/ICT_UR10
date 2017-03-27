@@ -139,8 +139,9 @@ void ICT_Test_Obj::statusReadTimeout()
         getIctInfo(receive_path, receiveStr);
         if(!receiveStr.isEmpty())
         {
+            emit forShow_To_Comm(forShowReceiveString(receiveStr));
 //            if(receiveStr.contains(snTemp))
-            if(true)
+            if(true)//用于调试------------------------------------------
             {
                 if(receiveStr.contains("PASS"))
                 {
@@ -163,6 +164,7 @@ void ICT_Test_Obj::statusReadTimeout()
         getIctInfo(result_path, testResultStr);
         if(!testResultStr.isEmpty())
         {
+            emit forShow_To_Comm(forShowReceiveString(testResultStr));
             /*"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"*/
             /*"C4-L1N,A,ICT,J1741705,3I1101, ,ICT_V04R03,AH12016602,P, , ,0,"*/
             QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
@@ -233,6 +235,7 @@ void ICT_Test_Obj::testStart()//ict开始测试
         //启动ICT测试
         setIctInfo(run_path,"RUN");
         emit openSwitch(CONTROL_OUT2_ON);
+        emit forShow_To_Comm(forShowSendString("RUN"));
         if(!testTimer->isActive())
             testTimer->start(test_timeout*1000);//测试超时判断
         return;
@@ -309,9 +312,29 @@ void ICT_Test_Obj::catchFail()//Robot抓取失败
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
         //启动ICT测试
         setIctInfo(run_path,"CATCHFAIL");
+        emit forShow_To_Comm(forShowSendString("CATCHFAIL"));
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
                           "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
     return ;
+}
+
+
+QString ICT_Test_Obj::forShowSendString(QString str)
+{
+    str.replace("\r","");
+    str.replace("\n","");
+    QDateTime time = QDateTime::currentDateTime();
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Send_to_ICT:" + str + "\n";
+    return str;
+}
+
+QString ICT_Test_Obj::forShowReceiveString(QString str)
+{
+    str.replace("\r","");
+    str.replace("\n","");
+    QDateTime time = QDateTime::currentDateTime();
+    str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Receive_from_ICT:" + str + "\n";
+    return str;
 }
