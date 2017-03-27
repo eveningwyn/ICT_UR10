@@ -82,6 +82,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     }
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Robot init done")))
     {
+        robotInitDone = true;
         emit robot_Status(tr("机器人:初始化完成"));
         emit robotReady(true);
         emit setRunStatus(false);
@@ -97,6 +98,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             {
                 emit setRunStatus(true);
                 robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("PC ready"));
+                emit robot_catchFail();
                 return;
             }
             else
@@ -111,9 +113,6 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan ready")))
         {
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan ready ACK"));
-
-//            snCheckResult("SN1234567890",true);//调试用---------------------------------------
-//            return;//调试用---------------------------------------
             emit startScan(true);
             return;
         }
@@ -205,6 +204,11 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place OK done ACK"));
             return;
         }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Place NG done")))
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place NG done ACK"));
+            return;
+        }
     }
     //手动/自动模式共用通讯协议部分
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Error")))
@@ -219,6 +223,11 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         emit setRunStatus(false);
         if(returnResultTimer->isActive())
             returnResultTimer->stop();
+        return;
+    }
+    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Robot return done")))
+    {
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return done ACK"));
         return;
     }
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg(robot_pro_num+" ACK")))
@@ -311,6 +320,7 @@ void RobotOnThread::init_Robot()
 /*通讯协议处理部分-主动发送*/
 void RobotOnThread::robot_Init()
 {
+    robotInitDone = false;
     if(initTimer->isActive())
         initTimer->stop();
     initTimer->start(TIMEOUT_SEC);
@@ -443,19 +453,22 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
 {
     bool modeTemp = robotAutoMode;
     robotAutoMode = autoMode;
-    setRunModeTimer->start(TIMEOUT_SEC);
-    if(true == robotAutoMode)
-    {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Auto mode"));
-    }
-    else
-    {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Debug mode"));
-    }
     if(false == modeTemp && true == robotAutoMode)
     {
         emit robot_Error_Msg(tr("UR机器人需要复位，请注意人员和设备安全！\n"));
         robot_Init();//Debug模式切换到Auto模式后，Robot需复位
+    }
+    setRunModeTimer->start(TIMEOUT_SEC);
+    if(true == robotInitDone)
+    {
+        if(true == robotAutoMode)
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Auto mode"));
+        }
+        else
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Debug mode"));
+        }
     }
 }
 
@@ -466,52 +479,69 @@ void RobotOnThread::setrobotPortExist(bool robot_exist)
 
 void RobotOnThread::debug_moveToScan()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Move to Scan"));
 }
 
 void RobotOnThread::debug_fixturePickup()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture pickup"));
 }
 
 void RobotOnThread::debug_fixturePlace()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture place"));
 }
 
 void RobotOnThread::debug_ictPlace()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT place"));
 }
 
 void RobotOnThread::debug_ictPickup()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT pickup"));
 }
 
 void RobotOnThread::debug_ictClose()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT close"));
 }
 
 void RobotOnThread::debug_ictOpen()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT open"));
 }
 
 void RobotOnThread::debug_placeOKPos()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place OK"));
 }
 
 void RobotOnThread::debug_placeNGPos()
 {
+    if(true == robotAutoMode)
+        return;
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place NG"));
 }
 
 void RobotOnThread::debug_returnSafePos()
 {
-//    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
     roborReturn();
 }
 

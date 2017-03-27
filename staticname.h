@@ -31,7 +31,7 @@
 #define MAIN_UI_TYPE             "/MainUIParameter/Index%1"
 
 #define ICT_LOCAL_IP                   "/ICT/IPaddress"
-//A File
+#define ICT_LOCAL_DRIVE                   "/ICT/Drive"
 #define ICT_LOCAL_SN_FILE_NAME         "/ICT/SnFileName"
 #define ICT_LOCAL_SN_NAME              "/ICT/SnName"
 #define ICT_LOCAL_RECEIVE_FILE_NAME      "/ICT/ReceiveFileName"

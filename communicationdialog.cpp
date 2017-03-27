@@ -28,6 +28,11 @@ void CommunicationDialog::on_pushButtonSend_clicked()
     }
 
     ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    if(true == ptr->isAutoRun)
+    {
+        ui->lineEditSendData->clear();
+        return;//如果正在自动运行中，则取消发送
+    }
 
     if("scanner" == ui->comboBoxReceiver->currentText().toLower())
     {

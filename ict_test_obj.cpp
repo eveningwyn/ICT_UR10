@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QDateTime>
 #include <QRegExp>
+#include <QThread>
 #include <QDebug>
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
@@ -19,10 +20,9 @@ ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 {
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
+    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
-    QString ICT_path = QString("//%1/%2").arg(ict_ip_addr).arg(fileName);
-    ICT_path = QString("..\\test/%2").arg(fileName);//调试用----------
+    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(fileName);
 
     QFile file(ICT_path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -46,10 +46,9 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 {
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
+    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
-    QString ICT_path = QString("//%1/%2").arg(ict_ip_addr).arg(fileName);
-    ICT_path = QString("..\\test/%2").arg(fileName);//调试用----------
+    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(fileName);
 
     QFile file(ICT_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -67,26 +66,24 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 
 int ICT_Test_Obj::pc_ict_Ping()
 {
+    return 0;//调试用--------------------------------------------
+
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
     delete configRead;
+    ict_ip_addr = "10.10.6.5";//调试用--------------------------------------------
     QString pingStr = "ping " + ict_ip_addr + " -n 1";
     int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
-
-    qDebug()<<"time_s1 return:"<<time_s1;//for debug-----------------------------
+    qDebug()<<"time_s1"<<time_s1;
 
     int ref = QProcess::execute(pingStr);
-
-    qDebug()<<"ref return:"<<ref;//for debug--------------------------------------
+    qDebug()<<"ref"<<ref;
 
     int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
-
-    qDebug()<<"time_s2 return:"<<time_s2;//for debug-------------------------------
+    qDebug()<<"time_s2"<<time_s2;
 
     int time_offset = time_s2 - time_s1;
-
-    qDebug()<<"time_offset return:"<<time_offset;//for debug----------------------
-    return 0;//调试用--------------------------------
+    qDebug()<<"time_offset"<<time_offset;
 
     if(0 == ref && 0 == time_offset)
     {
@@ -145,13 +142,13 @@ void ICT_Test_Obj::statusReadTimeout()
 //            if(receiveStr.contains(snTemp))
             if(true)
             {
-                if(receiveStr.contains("P"))
+                if(receiveStr.contains("PASS"))
                 {
                     emit ict_Check_SN_Result(snTemp,true);
                 }
                 else
                 {
-                    if(receiveStr.contains("F"))
+                    if(receiveStr.contains("FAIL"))
                     {
                         emit ict_Check_SN_Result(snTemp,false);
                     }
@@ -166,11 +163,8 @@ void ICT_Test_Obj::statusReadTimeout()
         getIctInfo(result_path, testResultStr);
         if(!testResultStr.isEmpty())
         {
-//            int index = testResultStr.indexOf(snTemp);
-//            index = index + snTemp.length() + 1;
-//            QString strTemp = testResultStr.mid(index,1);
-
             /*"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"*/
+            /*"C4-L1N,A,ICT,J1741705,3I1101, ,ICT_V04R03,AH12016602,P, , ,0,"*/
             QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
             if(0 <= testResultStr.indexOf(resultRE))
             {
@@ -224,6 +218,8 @@ void ICT_Test_Obj::testStart()//ict开始测试
 {
     if(false == ictEnable)
     {
+        QThread::msleep(2000);
+        emit ictTestResult("PASS");
         return;
     }
     if(0 == pc_ict_Ping())
@@ -267,6 +263,8 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
     snTemp.replace("\n","");
     if(false == ictEnable)
     {
+        QThread::msleep(2000);
+        emit ict_Check_SN_Result(snTemp,true);
         return;
     }
     if(0 == pc_ict_Ping())
@@ -294,4 +292,26 @@ void ICT_Test_Obj::testTimeout()
     emit setRunStatus(false);
     emit ict_Error_Msg(tr("ICT测试机测试超时！\nRobot将会复位，请注意安全！\n"));
     emit ict_testTimeout();
+}
+
+void ICT_Test_Obj::catchFail()//Robot抓取失败
+{
+    if(false == ictEnable)
+    {
+        return;
+    }
+    if(0 == pc_ict_Ping())
+    {
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
+        QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
+        delete configRead;
+        QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
+        //启动ICT测试
+        setIctInfo(run_path,"CATCHFAIL");
+        return;
+    }
+    emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
+                          "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
+    return ;
 }

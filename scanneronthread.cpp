@@ -23,7 +23,7 @@ void ScannerOnThread::scannerReadSN()
    if(sn.isEmpty())
        return;
 
-   sn = "SN1234567890\r\n";//用于调试----------------------------------------
+   sn = "AH12016602\r\n";//用于调试----------------------------------------
 
    if("noread\r\n"==sn.toLower())
    {
@@ -153,12 +153,10 @@ void ScannerOnThread::init_Scanner()
     QString stopBits_Control = configRead->value(SCANNER_STOP_BITS_CONTROL).toString();
     if(!(controlBoard->openSerialPort(portName_Control,baudRate_Control,dataBits_Control,parityBits_Control,stopBits_Control,true,true)))
     {
-        emit scannerIsReady(false);
         emit scanner_Error_Msg(tr("阻挡气缸控制板连接失败，请检查后重启软件！\n"));
     }
     else
     {
-        emit scannerIsReady(true);
         emit forShow_To_Comm(forShowString(QString(tr("阻挡气缸控制板:%1 已连接\n")).arg(portName_Control)));
         checkSensor();//连接控制板之后，查询一次流水线Sensor状态
     }

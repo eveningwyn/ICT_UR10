@@ -90,6 +90,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::recordTestResult,this,&ICT_UR10::updateTestResult);
     connect(robot_on_thread,&RobotOnThread::setRunStatus,this,&ICT_UR10::runStatus);
     connect(robot_on_thread,&RobotOnThread::cylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
+    connect(robot_on_thread,&RobotOnThread::robot_catchFail,ict,&ICT_Test_Obj::catchFail);
 
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
@@ -229,7 +230,7 @@ void ICT_UR10::init_UI()
     scannerIsReady = false;
     robotIsReady = false;
     ictIsReady = false;
-//    isAutoRun = false;
+    isAutoRun = false;
     ictEnable = true;
 
     //设置状态栏
@@ -395,6 +396,7 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
         emit robotPortExist(false);
+        runStatus(false);
         robotInitStatus(false);
         setRobotReady(false);
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
@@ -491,7 +493,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     {
         if(yellow_limit.toInt()<=failCount && red_limit.toInt()>failCount)
         {
-            //点亮三色灯_黄灯
+            //打开三色灯_黄灯
             emit light_Red_Green_Yellow_Buzzer("Red light open");
             lightCount = 3;
         }
@@ -499,7 +501,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         {
             if(red_limit.toInt()<=failCount)
             {
-                //点亮三色灯_红灯
+                //打开三色灯_红灯
                 emit light_Red_Green_Yellow_Buzzer("Yellow light open");
                 lightCount = 1;
             }
@@ -583,7 +585,7 @@ void ICT_UR10::PC_Status()
 void ICT_UR10::setScannerReady(bool isReady)
 {
     scannerIsReady = isReady;
-    scannerIsReady = true;//调试用-------------------------------------------
+//    scannerIsReady = true;//调试用-------------------------------------------
     PC_Status();
 }
 
@@ -596,7 +598,7 @@ void ICT_UR10::setRobotReady(bool isReady)
 void ICT_UR10::setIctReady(bool isReady)
 {
     ictIsReady = isReady;
-    ictIsReady = true;//调试用-------------------------------------------
+//    ictIsReady = true;//调试用-------------------------------------------
     PC_Status();
 }
 
@@ -613,7 +615,7 @@ void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
 
 void ICT_UR10::runStatus(bool isAuto)
 {
-//    isAutoRun = isAuto;
+    isAutoRun = isAuto;
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     delete configRead;
@@ -628,7 +630,7 @@ void ICT_UR10::runStatus(bool isAuto)
         ui->actionRobot->setDisabled(isAuto);
         ui->actionICT_MES->setDisabled(isAuto);
         ui->actionDebug->setDisabled(isAuto);
-        commDlg->disEnable(isAuto);
+//        commDlg->disEnable(isAuto);
         errorDlg->disEnable(isAuto);
     }
 }

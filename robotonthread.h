@@ -38,6 +38,7 @@ private:
     bool lineCanPlace;
     bool lineIsNoBoard;
     QTimer *infoLineReadyTimer;
+    bool robotInitDone;
 
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
@@ -53,6 +54,7 @@ signals:
     void recordTestResult(QString sn, QString result);//记录测试信息
     void setRunStatus(bool isAuto);//设置允许状态
     void cylinderUpDown(QString str);
+    void robot_catchFail();
 
 public slots:
     void init_Robot();//初始化服务器连接

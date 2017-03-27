@@ -41,6 +41,7 @@ public slots:
     void set_ictEnable(bool enable);
     void ict_Check_SN(QString sn);
     void testTimeout();
+    void catchFail();
 };
 
 #endif // ICT_TEST_OBJ_H

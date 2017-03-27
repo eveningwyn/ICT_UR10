@@ -45,6 +45,7 @@ public:
     void updateTestResult(QString sn,QString result);
     int testCount;//测试次数，用于对主界面的计数
     bool ictEnable;
+    bool isAutoRun;
 
 private:
     Ui::ICT_UR10 *ui;
@@ -53,7 +54,6 @@ private:
     bool scannerIsReady;
     bool robotIsReady;
     bool ictIsReady;
-//    bool isAutoRun;
     bool mainInitDone;
 
     /*对话框*/

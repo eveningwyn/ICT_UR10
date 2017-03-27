@@ -66,7 +66,7 @@ void ErrorListDialog::on_pushButtonClearErrorList_clicked()
 void ErrorListDialog::disEnable(bool disable)
 {
     ui->pushButtonSaveErrorList->setDisabled(disable);
-    ui->pushButtonClearErrorList->setDisabled(disable);
+//    ui->pushButtonClearErrorList->setDisabled(disable);
 }
 
 void ErrorListDialog::saveErrorToFile(QString errorMsg)

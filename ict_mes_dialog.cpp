@@ -12,7 +12,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
+    QString driveName = configRead->value(ICT_LOCAL_DRIVE).toString();
     QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
     QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
     QString request_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
@@ -28,14 +28,14 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     QString test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString();
     delete configRead;
     int flag = 0;
-    if(""==ict_ip_addr)
+    if(""==driveName)
     {
-        ict_ip_addr = "10.10.6.5";
+        driveName = "Z";
         flag++;
     }
     if(""==sn_file_name)
     {
-        sn_file_name = "ict(mda)/UR";
+        sn_file_name = "UR";
         flag++;
     }
     if(""==sn_name)
@@ -45,7 +45,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     }
     if(""==request_file_name)
     {
-        request_file_name = "ict(mda)/UR";
+        request_file_name = "UR";
         flag++;
     }
     if(""==request_name)
@@ -55,7 +55,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     }
     if(""==run_file_name)
     {
-        run_file_name = "ict(mda)/UR";
+        run_file_name = "UR";
         flag++;
     }
     if(""==run_name)
@@ -65,7 +65,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     }
     if(""==result_file_name)
     {
-        result_file_name = "ict(mda)/UR";
+        result_file_name = "UR";
         flag++;
     }
     if(""==result_name)
@@ -98,7 +98,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         test_timeout = "180";
         flag++;
     }
-    ui->lineEdit_ICT_IP_Addr->setText(ict_ip_addr);
+    ui->lineEdit_ICT_DriveName->setText(driveName);
     ui->lineEdit_SN_FileName->setText(sn_file_name);
     ui->lineEdit_SN_Name->setText(sn_name);
     ui->lineEdit_Receive_FileName->setText(request_file_name);
@@ -157,7 +157,8 @@ void ICT_MES_Dialog::on_checkBox_ICT_Enable_clicked()
 void ICT_MES_Dialog::saveICTConfig()
 {
     QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    configWrite->setValue(ICT_LOCAL_IP, ui->lineEdit_ICT_IP_Addr->text());
+    configWrite->setValue(ICT_LOCAL_IP, "10.10.6.5");
+    configWrite->setValue(ICT_LOCAL_DRIVE, ui->lineEdit_ICT_DriveName->text());
     configWrite->setValue(ICT_LOCAL_SN_FILE_NAME, ui->lineEdit_SN_FileName->text());
     configWrite->setValue(ICT_LOCAL_SN_NAME, ui->lineEdit_SN_Name->text());
     configWrite->setValue(ICT_LOCAL_RECEIVE_FILE_NAME, ui->lineEdit_Receive_FileName->text());
