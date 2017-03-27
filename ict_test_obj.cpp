@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QDateTime>
+#include <QRegExp>
 #include <QDebug>
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
@@ -165,23 +166,37 @@ void ICT_Test_Obj::statusReadTimeout()
         getIctInfo(result_path, testResultStr);
         if(!testResultStr.isEmpty())
         {
-            int index = testResultStr.indexOf(snTemp);
-            index = index + snTemp.length() + 1;
-            QString strTemp = testResultStr.mid(index,1);
-            if("P"==strTemp)
+//            int index = testResultStr.indexOf(snTemp);
+//            index = index + snTemp.length() + 1;
+//            QString strTemp = testResultStr.mid(index,1);
+
+            /*"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"*/
+            QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
+            if(0 <= testResultStr.indexOf(resultRE))
             {
-                emit ictTestResult("PASS");
-            }
-            else
-            {
-                if("F"==strTemp)
+                if(resultRE.cap(8)==snTemp)
                 {
-                    emit ictTestResult("FAIL");
+                    if("P"==resultRE.cap(9))
+                    {
+                        emit ictTestResult("PASS");
+                    }
+                    else
+                    {
+                        if("F"==resultRE.cap(9))
+                        {
+                            emit ictTestResult("FAIL");
+                        }
+                    }
+                }
+                else
+                {
+                    emit ict_Error_Msg(QString(tr("Scan条码与ICT测试结果回传条码不一致：\n"
+                                          "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(8)));
                 }
             }
             snTemp = "";
-            if(!testTimer->isActive())
-                testTimer->stop();//测试超时判断
+            if(testTimer->isActive())
+                testTimer->stop();
         }
         return;
     }
@@ -216,12 +231,14 @@ void ICT_Test_Obj::testStart()//ict开始测试
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
         QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
+        int test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString().toInt();
         delete configRead;
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
+        //启动ICT测试
         setIctInfo(run_path,"RUN");
-        if(!testTimer->isActive())
-            testTimer->start(3*60*1000);//测试超时判断
         emit openSwitch(CONTROL_OUT2_ON);
+        if(!testTimer->isActive())
+            testTimer->start(test_timeout*1000);//测试超时判断
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
@@ -271,6 +288,10 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
 
 void ICT_Test_Obj::testTimeout()
 {
+    if(testTimer->isActive())
+        testTimer->stop();
     emit ict_light_Red_Green_Yellow_Buzzer("Red light open");
-    emit ict_Error_Msg(tr("ICT测试机测试超时！\n"));
+    emit setRunStatus(false);
+    emit ict_Error_Msg(tr("ICT测试机测试超时！\nRobot将会复位，请注意安全！\n"));
+    emit ict_testTimeout();
 }

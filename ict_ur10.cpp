@@ -39,8 +39,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     /*实例化robot类，并移入子线程thread2中*/
     thread2 = new QThread;//实例化thread2线程对象
-    robot_on_thread = new RobotOnThread;//实例化scanner处理类对象
-    robot_on_thread->moveToThread(thread2);//将scanner处理类对象放在线程中
+    robot_on_thread = new RobotOnThread;//实例化robot处理类对象
+    robot_on_thread->moveToThread(thread2);//将robot处理类对象放在线程中
 
     /*实例化ICT类，并移入子线程thread3中*/
     thread3 = new QThread;//实例化thread3线程对象
@@ -99,6 +99,9 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,this,&ICT_UR10::getSn);
     connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,robot_on_thread,&RobotOnThread::snCheckResult);
     connect(ict,&ICT_Test_Obj::ict_light_Red_Green_Yellow_Buzzer,robot_on_thread,&RobotOnThread::set_light_Red_Green_Yellow_Buzzer);
+    connect(ict,&ICT_Test_Obj::openSwitch,scan_on_thread,&ScannerOnThread::controlBoardWrite);
+    connect(ict,&ICT_Test_Obj::setRunStatus,this,&ICT_UR10::runStatus);
+    connect(ict,&ICT_Test_Obj::ict_testTimeout,robot_on_thread,&RobotOnThread::ict_testTimeout);
 
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
@@ -618,11 +621,16 @@ void ICT_UR10::runStatus(bool isAuto)
     {
         ui->comboBoxTypeSelect->setDisabled(isAuto);
     }
-    ui->actionScanner->setDisabled(isAuto);
-    ui->actionRobot->setDisabled(isAuto);
-    ui->actionICT_MES->setDisabled(isAuto);
     ui->actionLogin->setDisabled(isAuto);
-    ui->actionDebug->setDisabled(isAuto);
+    if(tr("登出")==ui->actionLogin->text())
+    {
+        ui->actionScanner->setDisabled(isAuto);
+        ui->actionRobot->setDisabled(isAuto);
+        ui->actionICT_MES->setDisabled(isAuto);
+        ui->actionDebug->setDisabled(isAuto);
+        commDlg->disEnable(isAuto);
+        errorDlg->disEnable(isAuto);
+    }
 }
 
 void ICT_UR10::on_actionDebug_triggered()
@@ -647,14 +655,4 @@ void ICT_UR10::on_actionDebug_triggered()
         debugDlg.exec();
         emit robotSetAutoMode(true);
     }
-}
-
-void ICT_UR10::on_pushButton_clicked()
-{
-    updateTestResult("SN1234567890987654","PASS");
-}
-
-void ICT_UR10::on_pushButton_2_clicked()
-{
-    updateTestResult("SN3456789987654098","FAIL");
 }

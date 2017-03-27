@@ -127,6 +127,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         {
             if(scanErrorTimer->isActive())
                 scanErrorTimer->stop();
+            emit setRunStatus(false);
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Test ready")))
@@ -560,4 +561,9 @@ void RobotOnThread::infromLineInfoToRobot()
         //告知Robot流水线未准备好
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
     }
+}
+
+void RobotOnThread::ict_testTimeout()
+{
+    robot_Init();//ICT测试超时，robot复位
 }

@@ -47,6 +47,7 @@
 #define ICT_RED_LIMIT        "/ICT/RedLimit"
 #define ICT_YIELD_BASE       "/ICT/YieldBase"
 #define ICT_YIELD_LIMIT      "/ICT/YieldLimit"
+#define ICT_TEST_TIMEOUT      "/ICT/TestTimeout"
 
 #define PREFIX  "@"
 #define SUFFIX  "\n"
@@ -71,8 +72,8 @@
 #define CONTROL_CHECK      "ck"
 #define CONTROL_OUT1_ON    "on"
 #define CONTROL_OUT1_OFF   "of"
-#define CONTROL_OUT2_ON    "out2_on"
-#define CONTROL_OUT2_OFF   "out2_of"
+#define CONTROL_OUT2_ON    "op"
+#define CONTROL_OUT2_OFF   "cl"
 
 
 #endif // STATICNAME_H

@@ -28,6 +28,8 @@ signals:
     void ict_Check_SN_Result(QString sn, bool checkPass);
     void openSwitch(QString str);
     void ict_light_Red_Green_Yellow_Buzzer(QString str);
+    void setRunStatus(bool isAuto);//设置允许状态
+    void ict_testTimeout();
 
 public slots:
     void getIctInfo(QString fileName,QString &readMsg);

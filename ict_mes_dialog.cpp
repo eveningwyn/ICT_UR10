@@ -25,6 +25,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     QString red_limit = configRead->value(ICT_RED_LIMIT).toString();
     QString yield_base = configRead->value(ICT_YIELD_BASE).toString();
     QString yield_limit = configRead->value(ICT_YIELD_LIMIT).toString();
+    QString test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString();
     delete configRead;
     int flag = 0;
     if(""==ict_ip_addr)
@@ -92,6 +93,11 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         yield_limit = "0.95";
         flag++;
     }
+    if(""==test_timeout)
+    {
+        test_timeout = "180";
+        flag++;
+    }
     ui->lineEdit_ICT_IP_Addr->setText(ict_ip_addr);
     ui->lineEdit_SN_FileName->setText(sn_file_name);
     ui->lineEdit_SN_Name->setText(sn_name);
@@ -105,6 +111,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     ui->lineEdit_Red_limit->setText(red_limit);
     ui->lineEdit_Yield_base->setText(yield_base);
     ui->lineEdit_Yield_limit->setText(yield_limit);
+    ui->lineEdit_testTimeout->setText(test_timeout);
     if(0<flag)
     {
         saveICTConfig();
@@ -163,5 +170,6 @@ void ICT_MES_Dialog::saveICTConfig()
     configWrite->setValue(ICT_RED_LIMIT,ui->lineEdit_Red_limit->text());
     configWrite->setValue(ICT_YIELD_BASE,ui->lineEdit_Yield_base->text());
     configWrite->setValue(ICT_YIELD_LIMIT,ui->lineEdit_Yield_limit->text());
+    configWrite->setValue(ICT_TEST_TIMEOUT,ui->lineEdit_testTimeout->text());
     delete configWrite;
 }

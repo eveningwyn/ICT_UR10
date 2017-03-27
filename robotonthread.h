@@ -82,6 +82,7 @@ public slots:
     void set_light_Red_Green_Yellow_Buzzer(QString msg);
     void lineReadyStatus(bool isTrue);
     void lineNoBoardStatus(bool isTrue);
+    void ict_testTimeout();
 
 private slots:
     void scanDone();

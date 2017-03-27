@@ -793,20 +793,6 @@
       </property>
      </spacer>
     </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>PASS模拟</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="4">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="text">
-       <string>Fail模拟</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="mainMenuBar">
