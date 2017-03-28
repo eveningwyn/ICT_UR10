@@ -1,12 +1,11 @@
 ﻿#include "robotonthread.h"
+#include "staticname.h"
 #include <QDateTime>
 #include <QSettings>
-#include "staticname.h"
 #include "language.h"
-
 #include <QThread>
 
-#define TIMEOUT_SEC  500
+#define TIMEOUT_SEC  1000
 
 RobotOnThread::RobotOnThread(QObject *parent) : QObject(parent)
 {
@@ -93,7 +92,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     {
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("PC status?")))
         {
-            emit cylinderUpDown(CONTROL_OUT1_ON);
+            serverSendError();
             if(true == PC_Is_Ready)
             {
                 emit setRunStatus(true);
@@ -133,11 +132,6 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         {
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Test ready ACK"));
             emit startTest();//发出开始测试信号
-            if(false == ictEnable)
-            {
-                QThread::msleep(2000);
-                testResult("PASS");
-            }
             return;
         }
         if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Pass done ACK"))) ||
@@ -158,7 +152,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             testPass = false;
             emit setRunStatus(false);
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Sort complete ACK"));
-            emit sortComplete();//发出分拣完成信号
+            emit sortComplete();//发出分拣完成信号-----------------未启用
             return;
         }
     }
@@ -166,46 +160,55 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     {
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Move to Scan done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Move to Scan done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Fixture pickup done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture pickup done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Fixture place done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fixture place done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT place done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT place done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT pickup done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT pickup done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT close done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT close done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("ICT open done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("ICT open done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Place OK done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place OK done ACK"));
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Place NG done")))
         {
+            emit debugRunDone();
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Place NG done ACK"));
             return;
         }
@@ -243,13 +246,6 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             setRunModeTimer->stop();
         return;
     }
-    if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Auto mode ACK"))) ||
-            (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Debug mode ACK"))))
-    {
-        if(setRunModeTimer->isActive())
-            setRunModeTimer->stop();
-        return;
-    }
     if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line ready ACK"))) ||
             (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line not ready ACK"))))
     {
@@ -275,12 +271,11 @@ void RobotOnThread::init_Robot()
     barcode = "";
     testPass = false;
     robot_pro_num = "";
-    ictEnable = true;
     robotAutoMode = true;//初始化为自动模式
     robotPortExist = false;
 
-    lineCanPlace = false;
-    lineIsNoBoard = true;
+    lineSensor1 = false;
+    lineSensor2 = false;
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
@@ -297,6 +292,7 @@ void RobotOnThread::init_Robot()
     connect(returnResultTimer,&QTimer::timeout,this,&RobotOnThread::roborReturn);
     connect(setProtTimer,&QTimer::timeout,this,&RobotOnThread::setPro_Num_Timeout);
     connect(setRunModeTimer,&QTimer::timeout,this,&RobotOnThread::setRunModeTimeout);
+    connect(infoLineReadyTimer,&QTimer::timeout,this,&RobotOnThread::infromLineInfoToRobot);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Robot
@@ -310,8 +306,8 @@ void RobotOnThread::init_Robot()
     }
     else
     {
-        emit robot_Status(tr("机器人:服务器 Listening..."));
-        emit forShow_To_Comm(forShowString(QString(tr("服务器 %1 %2 Listening..."))
+        emit robot_Status(tr("机器人:PC服务器 Listening..."));
+        emit forShow_To_Comm(forShowString(QString(tr("PC服务器 %1 %2 Listening..."))
                                            .arg(ipAddress).arg(port)));
     }
     delete configRead;
@@ -426,11 +422,6 @@ void RobotOnThread::setPro_Num_Timeout()
     delete configRead;
 }
 
-void RobotOnThread::set_ictEnable(bool enable)
-{
-    ictEnable = enable;
-}
-
 void RobotOnThread::serverSendError()
 {
     initTimer->stop();
@@ -455,7 +446,6 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
     robotAutoMode = autoMode;
     if(false == modeTemp && true == robotAutoMode)
     {
-        emit robot_Error_Msg(tr("UR机器人需要复位，请注意人员和设备安全！\n"));
         robot_Init();//Debug模式切换到Auto模式后，Robot需复位
     }
     setRunModeTimer->start(TIMEOUT_SEC);
@@ -464,10 +454,12 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
         if(true == robotAutoMode)
         {
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Auto mode"));
+            emit robot_Status(tr("机器人:自动运行中..."));
         }
         else
         {
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Debug mode"));
+            emit robot_Status(tr("机器人:手动模式..."));
         }
     }
 }
@@ -545,34 +537,34 @@ void RobotOnThread::debug_returnSafePos()
     roborReturn();
 }
 
+void RobotOnThread::debug_clawOpen()
+{
+    if(true == robotAutoMode)
+        return;
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Claw open"));
+}
+
+void RobotOnThread::debug_clawClose()
+{
+    if(true == robotAutoMode)
+        return;
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Claw close"));
+}
+
 void RobotOnThread::set_light_Red_Green_Yellow_Buzzer(QString msg)
 {
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(msg));
 }
 
-void RobotOnThread::lineReadyStatus(bool isTrue)
+void RobotOnThread::lineSensorStatus(bool sensor1True, bool sensor2True)
 {
-    bool temp = lineCanPlace;
-    lineCanPlace = isTrue;
-    if(temp != lineCanPlace)
+    bool sensorTemp1 = lineSensor1;
+    bool sensorTemp2 = lineSensor2;
+    lineSensor2 = sensor1True;
+    lineSensor1 = sensor2True;
+    if(sensorTemp1!=lineSensor1 || sensorTemp2!=lineSensor2)
     {
         infromLineInfoToRobot();
-    }
-}
-
-void RobotOnThread::lineNoBoardStatus(bool isTrue)
-{
-    bool temp = lineCanPlace;
-    bool temp1 = lineIsNoBoard;
-    lineIsNoBoard = isTrue;
-    lineCanPlace = false;
-    if(temp != lineCanPlace)
-    {
-        infromLineInfoToRobot();
-    }
-    if(temp1 != lineIsNoBoard && true == lineIsNoBoard)
-    {
-        emit cylinderUpDown(CONTROL_OUT1_ON);
     }
 }
 
@@ -581,7 +573,7 @@ void RobotOnThread::infromLineInfoToRobot()
     if(infoLineReadyTimer->isActive())
         infoLineReadyTimer->stop();
     infoLineReadyTimer->start(TIMEOUT_SEC);
-    if(true == lineCanPlace)
+    if(true == lineSensor1 && true == lineSensor2)
     {
         //告知Robot流水线已准备好
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));

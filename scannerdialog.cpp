@@ -1,9 +1,9 @@
 ﻿#include "scannerdialog.h"
 #include "ui_scannerdialog.h"
+#include "staticname.h"
 #include <QMessageBox>
 #include <QSerialPortInfo>
 #include <QSettings>
-#include "staticname.h"
 #include "language.h"
 
 ScannerDialog::ScannerDialog(QWidget *parent) :

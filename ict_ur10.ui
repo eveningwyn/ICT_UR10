@@ -354,7 +354,7 @@
              </font>
             </property>
             <property name="statusTip">
-             <string>总测试PASS数量</string>
+             <string>临时PASS数量</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -410,7 +410,7 @@
              </font>
             </property>
             <property name="statusTip">
-             <string>总生产数量</string>
+             <string>临时生产数量</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -497,7 +497,7 @@
              </font>
             </property>
             <property name="statusTip">
-             <string>总测试FAIL数量</string>
+             <string>临时FAIL数量</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -553,7 +553,7 @@
              </font>
             </property>
             <property name="statusTip">
-             <string>良率</string>
+             <string>临时良率</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>

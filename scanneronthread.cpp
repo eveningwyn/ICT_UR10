@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QDateTime>
 #include "language.h"
+#include <QThread>
 
 ScannerOnThread::ScannerOnThread(QObject *parent) : QObject(parent)
 {
@@ -104,6 +105,7 @@ void ScannerOnThread::init_Scanner()
     controlBoard = new SerialPortObj(this);
     scantimer = new QTimer(this);
     checkSensorTimer = new QTimer(this);
+    out1Timer = new QTimer(this);
     out2Timer = new QTimer(this);
     scanCount = 0;
     prefix = "";
@@ -112,14 +114,16 @@ void ScannerOnThread::init_Scanner()
     connect(controlBoard,&SerialPortObj::serialReadReady,this,&ScannerOnThread::controlBoardRead);
     connect(scantimer,&QTimer::timeout,this,&ScannerOnThread::timerTimeOut);
     connect(checkSensorTimer,&QTimer::timeout,this,&ScannerOnThread::checkSensor);
+    connect(out1Timer,&QTimer::timeout,this,&ScannerOnThread::out1TimerTimeOut);
     connect(out2Timer,&QTimer::timeout,this,&ScannerOnThread::out2TimerTimeOut);
 
     canScan = true;
     canRead = false;
     auto_Scan = false;
     checkSensorTimer->start(500);
-    lineIsReady = false;
-    lineIsNoBoard = true;
+    sensor1 = false;
+    sensor2 = true;
+    cylinderUp = false;
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Scanner
@@ -149,11 +153,11 @@ void ScannerOnThread::init_Scanner()
     QString stopBits_Control = configRead->value(SCANNER_STOP_BITS_CONTROL).toString();
     if(!(controlBoard->openSerialPort(portName_Control,baudRate_Control,dataBits_Control,parityBits_Control,stopBits_Control,true,true)))
     {
-        emit scanner_Error_Msg(tr("阻挡气缸控制板连接失败，请检查后重启软件！\n"));
+        emit scanner_Error_Msg(tr("IO控制板连接失败，请检查后重启软件！\n"));
     }
     else
     {
-        emit forShow_To_Comm(forShowString(QString(tr("阻挡气缸控制板:%1 已连接\n")).arg(portName_Control)));
+        emit forShow_To_Comm(forShowString(QString(tr("IO控制板:%1 已连接\n")).arg(portName_Control)));
         checkSensor();//连接控制板之后，查询一次流水线Sensor状态
     }
 
@@ -162,70 +166,97 @@ void ScannerOnThread::init_Scanner()
 
 void ScannerOnThread::controlBoardRead()
 {
-    bool lineIsReadyTemp = lineIsReady;
-    bool lineIsNoBoardTemp = lineIsNoBoard;
+    bool sensor1Temp = sensor1;
+    bool sensor2Temp = sensor2;
     QString readStr;
     controlBoard->serialPortRead(readStr,"@","!");
     if(readStr.isEmpty())
         return;
     if("@0!"==readStr)
     {
-        //流水线有载板，气缸已上升
-        lineIsReady = true;
+        //流水线已有载板
+        sensor1 = true;
+        sensor2 = true;
     }
     else
     {
         if("@1!"==readStr)
         {
-            //流水线无载板，气缸已上升
-            lineIsReady = false;
+            //流水线正在上载板
+            sensor1 = false;
+            sensor2 = true;
         }
         else
         {
             if("@2!"==readStr)
             {
-                //流水线有载板，气缸已下降
-                lineIsNoBoard = false;
+                //流水线正在出载板，
+                sensor1 = true;
+                sensor2 = false;
             }
             else
             {
                 if("@3!"==readStr)
                 {
-                    //流水线无载板，气缸已下降
-                    lineIsNoBoard = true;
+                    //流水线无载板，可操作气缸
+                    sensor1 = false;
+                    sensor2 = false;
                 }
             }
         }
     }
     //流水线状态改变时发送信号
-    if(lineIsReadyTemp != lineIsReady)
+
+    if(sensor1Temp != sensor1 || sensor2Temp != sensor2)
     {
-        emit lineReady(lineIsReady);
-    }
-    if(lineIsNoBoardTemp != lineIsNoBoard)
-    {
-        emit lineNoBoard(lineIsNoBoard);
+        emit lineSensorStatus(sensor1,sensor2);
+        if(false==sensor1 && false==sensor2)
+        {
+            out1Timer->start(3000);
+        }
     }
 }
 
 void ScannerOnThread::controlBoardWrite(QString writeMsg)
-{//writeMsg == ck,查询传感器状态//writeMsg == on,气缸上升//writeMsg == of,气缸下降
+{//writeMsg == ck,查询传感器状态 //writeMsg == on,气缸上升 //writeMsg == of,气缸下降
     controlBoard->serialPortWrite("#"+writeMsg+"*");
+    if(CONTROL_CHECK==writeMsg)
+    {
+        return;
+    }
+    emit forShow_To_Comm(forShowString(QString(tr("Send_to_ControlBoard:#%1*\n")).arg(writeMsg)));
     if(CONTROL_OUT2_ON==writeMsg)
     {
         if(!out2Timer->isActive())
-        {
             out2Timer->start(100);
-        }
+        return;
     }
+    if(CONTROL_OUT1_ON==writeMsg)
+    {
+        cylinderUp = true;
+        return;
+    }
+    if(CONTROL_OUT1_OFF==writeMsg)
+    {
+        cylinderUp = false;
+        return;
+    }
+}
+
+void ScannerOnThread::out1TimerTimeOut()
+{
+    if((false==sensor1 && false==sensor2)||(false==cylinderUp && false==sensor1))
+    {
+        controlBoardWrite(CONTROL_OUT1_ON);
+    }
+    if(out1Timer->isActive())
+        out1Timer->stop();
 }
 
 void ScannerOnThread::out2TimerTimeOut()
 {
     if(out2Timer->isActive())
-    {
         out2Timer->stop();
-    }
     controlBoardWrite(CONTROL_OUT2_OFF);
 }
 

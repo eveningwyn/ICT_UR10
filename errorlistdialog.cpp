@@ -1,12 +1,12 @@
 ﻿#include "errorlistdialog.h"
 #include "ui_errorlistdialog.h"
+#include "staticname.h"
 #include <QDateTime>
 #include "ict_ur10.h"
 #include <QFileDialog>
 #include <QFile>
 #include <QMessageBox>
 #include "language.h"
-#include "staticname.h"
 
 ErrorListDialog::ErrorListDialog(QWidget *parent) :
     QDialog(parent),

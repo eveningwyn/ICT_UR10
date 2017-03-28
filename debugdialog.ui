@@ -18,6 +18,58 @@
     <normaloff>:/res/debugging_30.662020905923px_.png</normaloff>:/res/debugging_30.662020905923px_.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="9" column="1">
+    <widget class="QPushButton" name="pushButton_cylinder_down">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>阻挡气缸下降</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QPushButton" name="pushButton_ICT_Run">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>ICT开始Run</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QPushButton" name="pushButton_ICTClose">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>ICT关闭</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="pushButton_return">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>返回安全位</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="1">
     <widget class="QPushButton" name="pushButton_Scan">
      <property name="minimumSize">
@@ -122,7 +174,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="9" column="0">
     <widget class="QPushButton" name="pushButton_cylinder_up">
      <property name="minimumSize">
       <size>
@@ -148,8 +200,21 @@
      </property>
     </widget>
    </item>
+   <item row="7" column="0">
+    <widget class="QPushButton" name="pushButton_ClawOpen">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>夹爪张开</string>
+     </property>
+    </widget>
+   </item>
    <item row="7" column="1">
-    <widget class="QPushButton" name="pushButton_cylinder_down">
+    <widget class="QPushButton" name="pushButton_ClawClose">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -157,46 +222,7 @@
       </size>
      </property>
      <property name="text">
-      <string>阻挡气缸下降</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QPushButton" name="pushButton_ICT_Run">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>45</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>ICT开始Run</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QPushButton" name="pushButton_ICTClose">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>45</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>ICT关闭</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QPushButton" name="pushButton_return">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>45</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>返回安全位</string>
+      <string>夹爪夹紧</string>
      </property>
     </widget>
    </item>

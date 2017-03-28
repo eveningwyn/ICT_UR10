@@ -1,10 +1,10 @@
 ﻿#include "communicationdialog.h"
 #include "ui_communicationdialog.h"
+#include "staticname.h"
 #include "ict_ur10.h"
 #include "language.h"
 #include <QFile>
 #include <QDir>
-#include "staticname.h"
 #include <QDateTime>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :

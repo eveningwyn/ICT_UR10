@@ -1,9 +1,9 @@
 ﻿#include "ict_mes_dialog.h"
 #include "ui_ict_mes_dialog.h"
+#include "staticname.h"
 #include <QMessageBox>
 #include "language.h"
 #include <QSettings>
-#include "staticname.h"
 #include "ict_ur10.h"
 
 ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :

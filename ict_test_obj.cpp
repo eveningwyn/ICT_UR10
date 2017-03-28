@@ -9,8 +9,9 @@
 #include <QSettings>
 #include <QDateTime>
 #include <QRegExp>
-#include <QThread>
 #include <QDebug>
+
+#define HOLD_ON 15
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 {
@@ -102,8 +103,13 @@ void ICT_Test_Obj::init_ict()
     ictEnableStr = tr("已启用");
     statusReadTimer = new QTimer(this);
     testTimer = new QTimer(this);
+    snTemp = "";
+    testResultTemp = "";
+    hold_on_Timer = new QTimer(this);
+
     connect(statusReadTimer,&QTimer::timeout,this,&ICT_Test_Obj::statusReadTimeout);
     connect(testTimer,&QTimer::timeout,this,&ICT_Test_Obj::testTimeout);
+    connect(hold_on_Timer,&QTimer::timeout,this,&ICT_Test_Obj::hold_on_Timeout);
     statusReadTimer->start(500);
 
 }
@@ -135,13 +141,12 @@ void ICT_Test_Obj::statusReadTimeout()
 
         QString receiveStr = "";
         QString testResultStr = "";
-
+        /*获取SN check反馈*/
         getIctInfo(receive_path, receiveStr);
         if(!receiveStr.isEmpty())
         {
             emit forShow_To_Comm(forShowReceiveString(receiveStr));
-//            if(receiveStr.contains(snTemp))
-            if(true)//用于调试------------------------------------------
+            if(receiveStr.contains(snTemp) || true)//用于调试------------------------------------------
             {
                 if(receiveStr.contains("PASS"))
                 {
@@ -161,6 +166,7 @@ void ICT_Test_Obj::statusReadTimeout()
                                       "Scan：%1; ICT：%2\n")).arg(snTemp).arg(receiveStr));
             }
         }
+        /*获取test result反馈*/
         getIctInfo(result_path, testResultStr);
         if(!testResultStr.isEmpty())
         {
@@ -174,15 +180,16 @@ void ICT_Test_Obj::statusReadTimeout()
                 {
                     if("P"==resultRE.cap(9))
                     {
-                        emit ictTestResult("PASS");
+                        testResultTemp = "PASS";
                     }
                     else
                     {
                         if("F"==resultRE.cap(9))
                         {
-                            emit ictTestResult("FAIL");
+                            testResultTemp = "FAIL";
                         }
                     }
+                    send_ictTestResult();
                 }
                 else
                 {
@@ -190,10 +197,8 @@ void ICT_Test_Obj::statusReadTimeout()
                                           "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(8)));
                 }
             }
-            snTemp = "";
-            if(testTimer->isActive())
-                testTimer->stop();
         }
+
         return;
     }
 
@@ -220,8 +225,7 @@ void ICT_Test_Obj::testStart()//ict开始测试
 {
     if(false == ictEnable)
     {
-        QThread::msleep(2000);
-        emit ictTestResult("PASS");
+        send_ictTestResult();
         return;
     }
     if(0 == pc_ict_Ping())
@@ -266,7 +270,6 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
     snTemp.replace("\n","");
     if(false == ictEnable)
     {
-        QThread::msleep(2000);
         emit ict_Check_SN_Result(snTemp,true);
         return;
     }
@@ -280,6 +283,7 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
         setIctInfo(sn_path,sn);
+        emit forShow_To_Comm(forShowSendString(sn));
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
@@ -337,4 +341,28 @@ QString ICT_Test_Obj::forShowReceiveString(QString str)
     QDateTime time = QDateTime::currentDateTime();
     str = time.toString("yyyy-MM-dd hh:mm:ss.zzz_") + "Receive_from_ICT:" + str + "\n";
     return str;
+}
+
+void ICT_Test_Obj::send_ictTestResult()
+{
+    if(false == ictEnable)
+    {
+        testResultTemp = "PASS";
+    }
+    if(!hold_on_Timer->isActive())
+        hold_on_Timer->start(HOLD_ON*1000);
+}
+
+void ICT_Test_Obj::hold_on_Timeout()
+{
+    if(hold_on_Timer->isActive())
+        hold_on_Timer->stop();
+    if("PASS"==testResultTemp || "FAIL"==testResultTemp )
+    {
+        emit ictTestResult(testResultTemp);
+        testResultTemp = "";
+        snTemp = "";
+        if(testTimer->isActive())
+            testTimer->stop();
+    }
 }

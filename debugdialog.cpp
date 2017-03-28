@@ -1,9 +1,9 @@
 ﻿#include "debugdialog.h"
 #include "ui_debugdialog.h"
+#include "staticname.h"
 #include "ict_ur10.h"
 #include <QMessageBox>
 #include "language.h"
-#include "staticname.h"
 
 DebugDialog::DebugDialog(QWidget *parent) :
     QDialog(parent),
@@ -15,6 +15,12 @@ DebugDialog::DebugDialog(QWidget *parent) :
 DebugDialog::~DebugDialog()
 {
     delete ui;
+}
+
+void DebugDialog::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::warning(this,tr("安全提示"),tr("UR机器人需要复位，请注意人员和设备安全！\n"),QMessageBox::Ok);
+    event->accept();  //accept
 }
 
 void DebugDialog::on_pushButton_moveToScan_clicked()
@@ -102,4 +108,54 @@ void DebugDialog::on_pushButton_cylinder_down_clicked()
 void DebugDialog::on_pushButton_return_clicked()
 {
     emit returnSafePos();
+}
+
+void DebugDialog::on_pushButton_ClawOpen_clicked()
+{
+    emit clawOpen();
+}
+
+void DebugDialog::on_pushButton_ClawClose_clicked()
+{
+    emit clawClose();
+}
+
+void DebugDialog::urRunning()
+{
+    ui->pushButton_return->setDisabled(true);
+    ui->pushButton_moveToScan->setDisabled(true);
+//    ui->pushButton_Scan->setDisabled(true);
+    ui->pushButton_pickUp_Carrier->setDisabled(true);
+    ui->pushButton_place_Carrier->setDisabled(true);
+    ui->pushButton_place_ICT->setDisabled(true);
+    ui->pushButton_pickUp_ICT->setDisabled(true);
+//    ui->pushButton_ICTClose->setDisabled(true);
+//    ui->pushButton_ICTOpen->setDisabled(true);
+    ui->pushButton_ICT_Run->setDisabled(true);
+    ui->pushButton_place_OK->setDisabled(true);
+    ui->pushButton_place_NG->setDisabled(true);
+//    ui->pushButton_ClawOpen->setDisabled(true);
+//    ui->pushButton_ClawOpen->setDisabled(true);
+//    ui->pushButton_cylinder_up->setDisabled(true);
+//    ui->pushButton_cylinder_down->setDisabled(true);
+}
+
+void DebugDialog::runDone()
+{
+    ui->pushButton_return->setDisabled(false);
+    ui->pushButton_moveToScan->setDisabled(false);
+    ui->pushButton_Scan->setDisabled(false);
+    ui->pushButton_pickUp_Carrier->setDisabled(false);
+    ui->pushButton_place_Carrier->setDisabled(false);
+    ui->pushButton_place_ICT->setDisabled(false);
+    ui->pushButton_pickUp_ICT->setDisabled(false);
+    ui->pushButton_ICTClose->setDisabled(false);
+    ui->pushButton_ICTOpen->setDisabled(false);
+    ui->pushButton_ICT_Run->setDisabled(false);
+    ui->pushButton_place_OK->setDisabled(false);
+    ui->pushButton_place_NG->setDisabled(false);
+    ui->pushButton_ClawOpen->setDisabled(false);
+    ui->pushButton_ClawOpen->setDisabled(false);
+    ui->pushButton_cylinder_up->setDisabled(false);
+    ui->pushButton_cylinder_down->setDisabled(false);
 }

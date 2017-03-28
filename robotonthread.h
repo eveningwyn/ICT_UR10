@@ -32,11 +32,10 @@ private:
     QString barcode;
     bool testPass;
     QString robot_pro_num;
-    bool ictEnable;
     bool robotAutoMode;
     QTimer *setRunModeTimer;
-    bool lineCanPlace;
-    bool lineIsNoBoard;
+    bool lineSensor1;
+    bool lineSensor2;
     QTimer *infoLineReadyTimer;
     bool robotInitDone;
 
@@ -55,6 +54,7 @@ signals:
     void setRunStatus(bool isAuto);//设置允许状态
     void cylinderUpDown(QString str);
     void robot_catchFail();
+    void debugRunDone();
 
 public slots:
     void init_Robot();//初始化服务器连接
@@ -67,7 +67,6 @@ public slots:
     void scanError();
     void roborReturn();
     void setPro_Num(QString pro_num);//设置产品类型对应的程序号
-    void set_ictEnable(bool enable);
     void serverSendError();
     void setRobotRunMode(bool autoMode);
     void setrobotPortExist(bool robot_exist);
@@ -81,9 +80,10 @@ public slots:
     void debug_placeOKPos();
     void debug_placeNGPos();
     void debug_returnSafePos();
+    void debug_clawOpen();
+    void debug_clawClose();
     void set_light_Red_Green_Yellow_Buzzer(QString msg);
-    void lineReadyStatus(bool isTrue);
-    void lineNoBoardStatus(bool isTrue);
+    void lineSensorStatus(bool sensor1True,bool sensor2True);
     void ict_testTimeout();
 
 private slots:

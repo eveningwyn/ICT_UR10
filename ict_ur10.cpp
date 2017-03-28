@@ -1,5 +1,6 @@
 ﻿#include "ict_ur10.h"
 #include "ui_ict_ur10.h"
+#include "staticname.h"
 #include "scannerdialog.h"
 #include "robotdialog.h"
 #include <QSettings>
@@ -7,7 +8,6 @@
 #include <QDateTime>
 #include <QFile>
 #include <QDir>
-#include "staticname.h"
 #include "language.h"
 #include "debuglogindialog.h"
 #include "debugdialog.h"
@@ -73,8 +73,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
     connect(scan_on_thread,&ScannerOnThread::scanError,robot_on_thread,&RobotOnThread::scanError);
     connect(scan_on_thread,&ScannerOnThread::scanResult,ict,&ICT_Test_Obj::ict_Check_SN);
-    connect(scan_on_thread,&ScannerOnThread::lineReady,robot_on_thread,&RobotOnThread::lineReadyStatus);
-    connect(scan_on_thread,&ScannerOnThread::lineNoBoard,robot_on_thread,&RobotOnThread::lineNoBoardStatus);
+    connect(scan_on_thread,&ScannerOnThread::lineSensorStatus,robot_on_thread,&RobotOnThread::lineSensorStatus);
 
     connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
     connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::showErrorMessage);
@@ -114,7 +113,6 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::pcIsReady,robot_on_thread,&RobotOnThread::set_PC_Status);
     connect(this,&ICT_UR10::setType_Pro,robot_on_thread,&RobotOnThread::setPro_Num);
     connect(this,&ICT_UR10::set_ict_Enable,ict,&ICT_Test_Obj::set_ictEnable);
-    connect(this,&ICT_UR10::set_ict_Enable,robot_on_thread,&RobotOnThread::set_ictEnable);
     connect(this,&ICT_UR10::robotSetAutoMode,robot_on_thread,&RobotOnThread::setRobotRunMode);
     connect(this,&ICT_UR10::manualSendMsg_controlBoard,scan_on_thread,&ScannerOnThread::controlBoardWrite);
     connect(this,&ICT_UR10::light_Red_Green_Yellow_Buzzer,robot_on_thread,&RobotOnThread::set_light_Red_Green_Yellow_Buzzer);
@@ -161,13 +159,13 @@ void ICT_UR10::on_actionRobot_triggered()
             ui->comboBoxTypeSelect->insertItem(i,strTypeTemp);
         }
     }
-    if("false"==robotTypeEnable)
+    if("false"==robotTypeEnable.toLower())
     {
         ui->comboBoxTypeSelect->setDisabled(true);
     }
     else
     {
-        if("true"==robotTypeEnable)
+        if("true"==robotTypeEnable.toLower())
         {
             ui->comboBoxTypeSelect->setDisabled(false);
         }
@@ -522,6 +520,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
                 emit light_Red_Green_Yellow_Buzzer("Yellow light close");
             }
         }
+        lightCount = 0;
     }
 
     if(yield_base.toInt() <= totalQtyTemp && yield_limit.toFloat() > yieldTemp)
@@ -616,6 +615,14 @@ void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
 void ICT_UR10::runStatus(bool isAuto)
 {
     isAutoRun = isAuto;
+    if(true==isAutoRun)
+    {
+        this->statusBarLabel_Robot->setText(tr("机器人:自动运行中..."));
+    }
+    else
+    {
+        this->statusBarLabel_Robot->setText(tr("机器人:自动停止"));
+    }
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     delete configRead;
@@ -651,8 +658,11 @@ void ICT_UR10::on_actionDebug_triggered()
         connect(&debugDlg,&DebugDialog::placeOKPos,robot_on_thread,&RobotOnThread::debug_placeOKPos);
         connect(&debugDlg,&DebugDialog::placeNGPos,robot_on_thread,&RobotOnThread::debug_placeNGPos);
         connect(&debugDlg,&DebugDialog::returnSafePos,robot_on_thread,&RobotOnThread::debug_returnSafePos);
+        connect(&debugDlg,&DebugDialog::clawOpen,robot_on_thread,&RobotOnThread::debug_clawOpen);
+        connect(&debugDlg,&DebugDialog::clawClose,robot_on_thread,&RobotOnThread::debug_clawClose);
         connect(&debugDlg,&DebugDialog::ict_start_test,ict,&ICT_Test_Obj::testStart);
         connect(&debugDlg,&DebugDialog::debug_CylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
+        connect(robot_on_thread,&RobotOnThread::debugRunDone,&debugDlg,&DebugDialog::runDone);
         emit robotSetAutoMode(false);
         debugDlg.exec();
         emit robotSetAutoMode(true);

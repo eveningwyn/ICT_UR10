@@ -18,9 +18,12 @@ private:
     QString ictStatusStr;
     QString ictEnableStr;
     QString snTemp;
+    QString testResultTemp;
     QTimer *testTimer;
+    QTimer *hold_on_Timer;
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);
+    void send_ictTestResult();
 
 signals:
     void ict_Error_Msg(QString errorMsg);
@@ -45,6 +48,7 @@ public slots:
     void ict_Check_SN(QString sn);
     void testTimeout();
     void catchFail();
+    void hold_on_Timeout();
 };
 
 #endif // ICT_TEST_OBJ_H

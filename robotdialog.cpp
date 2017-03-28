@@ -1,8 +1,8 @@
 ﻿#include "robotdialog.h"
 #include "ui_robotdialog.h"
+#include "staticname.h"
 #include <QMessageBox>
 #include <QSettings>
-#include "staticname.h"
 #include "language.h"
 
 RobotDialog::RobotDialog(QWidget *parent) :

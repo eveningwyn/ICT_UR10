@@ -1,7 +1,7 @@
 ﻿#include "logindialog.h"
 #include "ui_logindialog.h"
-#include "ict_ur10.h"
 #include "staticname.h"
+#include "ict_ur10.h"
 #include "language.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :

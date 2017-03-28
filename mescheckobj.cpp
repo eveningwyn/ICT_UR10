@@ -1,6 +1,6 @@
 ﻿#include "mescheckobj.h"
-#include "language.h"
 #include "staticname.h"
+#include "language.h"
 #include <QUuid>
 #include <QtXml>
 
