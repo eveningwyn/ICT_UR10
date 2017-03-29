@@ -3,7 +3,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include "language.h"
-#include <QThread>
+//#include <QThread>
 
 #define TIMEOUT_SEC  1000
 

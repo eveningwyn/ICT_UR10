@@ -61,7 +61,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 void CommunicationDialog::forShowInfo(QString msg)
 {
     saveInfoToFile(msg);
-    if(!(ui->checkBoxShowInfo->isChecked()))
+    if((!(ui->checkBoxShowInfo->isChecked())) || "UI clear..."==msg)
     {
         ui->textBrowserCommunication->clear();
     }

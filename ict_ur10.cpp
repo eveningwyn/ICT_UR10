@@ -618,6 +618,8 @@ void ICT_UR10::runStatus(bool isAuto)
     if(true==isAutoRun)
     {
         this->statusBarLabel_Robot->setText(tr("机器人:自动运行中..."));
+        //清空通讯log
+        emit forShow("UI clear...");
     }
     else
     {

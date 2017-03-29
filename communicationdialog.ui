@@ -26,6 +26,9 @@
      <property name="text">
       <string>显示信息</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item row="2" column="0" colspan="6">

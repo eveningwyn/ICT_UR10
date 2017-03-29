@@ -7,9 +7,8 @@
 #include <QProcess>
 #include <QDateTime>
 #include <QSettings>
-#include <QDateTime>
 #include <QRegExp>
-#include <QDebug>
+//#include <QDebug>
 
 #define HOLD_ON 15
 
@@ -72,28 +71,23 @@ int ICT_Test_Obj::pc_ict_Ping()
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
     delete configRead;
-    ict_ip_addr = "10.10.6.5";//调试用--------------------------------------------
     QString pingStr = "ping " + ict_ip_addr + " -n 1";
     int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
-    qDebug()<<"time_s1"<<time_s1;
+//    qDebug()<<"time_s1"<<time_s1;
 
     int ref = QProcess::execute(pingStr);
-    qDebug()<<"ref"<<ref;
+//    qDebug()<<"ref"<<ref;
 
     int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
-    qDebug()<<"time_s2"<<time_s2;
+//    qDebug()<<"time_s2"<<time_s2;
 
     int time_offset = time_s2 - time_s1;
-    qDebug()<<"time_offset"<<time_offset;
+//    qDebug()<<"time_offset"<<time_offset;
 
     if(0 == ref && 0 == time_offset)
-    {
         return 0;
-    }
     else
-    {
         return -1;
-    }
 }
 
 void ICT_Test_Obj::init_ict()
@@ -146,7 +140,7 @@ void ICT_Test_Obj::statusReadTimeout()
         if(!receiveStr.isEmpty())
         {
             emit forShow_To_Comm(forShowReceiveString(receiveStr));
-            if(receiveStr.contains(snTemp) || true)//用于调试------------------------------------------
+            if(receiveStr.contains(snTemp)/* || true*/)
             {
                 if(receiveStr.contains("PASS"))
                 {
@@ -238,7 +232,7 @@ void ICT_Test_Obj::testStart()//ict开始测试
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
         //启动ICT测试
         setIctInfo(run_path,"RUN");
-        emit openSwitch(CONTROL_OUT2_ON);
+//        emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString("RUN"));
         if(!testTimer->isActive())
             testTimer->start(test_timeout*1000);//测试超时判断
@@ -283,6 +277,7 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
         setIctInfo(sn_path,sn);
+        emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString(sn));
         return;
     }

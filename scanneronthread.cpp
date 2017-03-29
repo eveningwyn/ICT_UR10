@@ -20,10 +20,14 @@ void ScannerOnThread::scannerReadSN()
    scanner->serialPortRead(sn,prefix,suffix);
    if(sn.isEmpty())
        return;
+
    if("<T>\r\n"==sn.toUpper())
    {//调试时，只需将串口2、3PIN短接即可屏蔽连接Scanner
        sn = "AH12016602\r\n";//用于调试----------------------------------------
    }
+
+   emit forShow_To_Comm(forShowReceiveString(sn));
+
    if("noread\r\n"==sn.toLower())
    {
        return;
@@ -31,7 +35,6 @@ void ScannerOnThread::scannerReadSN()
 
    if(true == auto_Scan)
        emit scanResult(sn);
-   emit forShow_To_Comm(forShowReceiveString(sn));
    scantimer->stop();
    scanner->clearBuffer();
    canScan = true;
@@ -40,6 +43,8 @@ void ScannerOnThread::scannerReadSN()
 
 void ScannerOnThread::scannerScanSN(bool autoScan)
 {
+//    emit scanResult("AH12016602\r\n");
+//    return;//用于调试----------------------------------------
     if(!scanner->serialPortIsOpen())
     {
         emit scanner_Error_Msg(tr("扫描枪未连接，请检查后重启软件！\n"));
