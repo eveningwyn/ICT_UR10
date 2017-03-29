@@ -20,9 +20,10 @@ void ScannerOnThread::scannerReadSN()
    scanner->serialPortRead(sn,prefix,suffix);
    if(sn.isEmpty())
        return;
-
-   sn = "AH12016602\r\n";//用于调试----------------------------------------
-
+   if("<T>\r\n"==sn.toUpper())
+   {//调试时，只需将串口2、3PIN短接即可屏蔽连接Scanner
+       sn = "AH12016602\r\n";//用于调试----------------------------------------
+   }
    if("noread\r\n"==sn.toLower())
    {
        return;
@@ -120,7 +121,6 @@ void ScannerOnThread::init_Scanner()
     canScan = true;
     canRead = false;
     auto_Scan = false;
-    checkSensorTimer->start(500);
     sensor1 = false;
     sensor2 = true;
     cylinderUp = false;
@@ -158,6 +158,7 @@ void ScannerOnThread::init_Scanner()
     else
     {
         emit forShow_To_Comm(forShowString(QString(tr("IO控制板:%1 已连接\n")).arg(portName_Control)));
+        controlBoardWrite(CONTROL_OUT1_OFF);
         checkSensor();//连接控制板之后，查询一次流水线Sensor状态
     }
 
@@ -262,5 +263,12 @@ void ScannerOnThread::out2TimerTimeOut()
 
 void ScannerOnThread::checkSensor()
 {
-    controlBoardWrite(CONTROL_CHECK);
+    if(checkSensorTimer->isActive())
+    {
+        controlBoardWrite(CONTROL_CHECK);
+    }
+    else
+    {
+        checkSensorTimer->start(1000);
+    }
 }
