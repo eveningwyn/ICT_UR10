@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDir>
 #include <QDateTime>
+#include <QMessageBox>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -36,7 +37,21 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 
     if("scanner" == ui->comboBoxReceiver->currentText().toLower())
     {
-        ptr->manualStartScan(false);
+        //ptr->manualStartScan(false);
+        QMessageBox::StandardButton rb = QMessageBox::warning(this,tr("提示"),
+                                                              tr("在线扫描请选择Yes，离线扫描请选择No，取消请选择Cancel."),
+                                                              QMessageBox::Cancel|QMessageBox::No|QMessageBox::Yes);
+        if(rb==QMessageBox::Yes)
+        {
+            ptr->manualStartScan(true);
+        }
+        else
+        {
+            if(rb==QMessageBox::No)
+            {
+                ptr->manualStartScan(false);
+            }
+        }
     }
     else
     {
@@ -61,7 +76,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 void CommunicationDialog::forShowInfo(QString msg)
 {
     saveInfoToFile(msg);
-    if((!(ui->checkBoxShowInfo->isChecked())) || "UI clear..."==msg)
+    if((!(ui->checkBoxShowInfo->isChecked())) || "UI clear...\n"==msg)
     {
         ui->textBrowserCommunication->clear();
     }

@@ -19,6 +19,7 @@ private:
     QString ictEnableStr;
     QString snTemp;
     QString testResultTemp;
+    bool testRunning;
     QTimer *testTimer;
     QTimer *hold_on_Timer;
     QString forShowReceiveString(QString str);

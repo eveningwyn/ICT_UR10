@@ -21,9 +21,9 @@ void ScannerOnThread::scannerReadSN()
    if(sn.isEmpty())
        return;
 
-   if("<T>\r\n"==sn.toUpper())
+   if("<T>\r\n"==sn)
    {//调试时，只需将串口2、3PIN短接即可屏蔽连接Scanner
-       sn = "AH12016602\r\n";//用于调试----------------------------------------
+       sn = "AH13001530\r\n";//用于调试----------------------------------------
    }
 
    emit forShow_To_Comm(forShowReceiveString(sn));
@@ -32,7 +32,6 @@ void ScannerOnThread::scannerReadSN()
    {
        return;
    }
-
    if(true == auto_Scan)
        emit scanResult(sn);
    scantimer->stop();
@@ -43,8 +42,6 @@ void ScannerOnThread::scannerReadSN()
 
 void ScannerOnThread::scannerScanSN(bool autoScan)
 {
-//    emit scanResult("AH12016602\r\n");
-//    return;//用于调试----------------------------------------
     if(!scanner->serialPortIsOpen())
     {
         emit scanner_Error_Msg(tr("扫描枪未连接，请检查后重启软件！\n"));
@@ -59,7 +56,7 @@ void ScannerOnThread::scannerScanSN(bool autoScan)
         scanCount++;
         if(scantimer->isActive())
             scantimer->stop();
-        scantimer->start(2200);
+        scantimer->start(2500);
         emit forShow_To_Comm(forShowSendString(prefix+"<T>"+suffix));
         canScan = false;
     }
@@ -216,9 +213,9 @@ void ScannerOnThread::controlBoardRead()
     if(sensor1Temp != sensor1 || sensor2Temp != sensor2)
     {
         emit lineSensorStatus(sensor1,sensor2);
-        if(false==sensor1 && false==sensor2)
+        if(false==sensor1)
         {
-            out1Timer->start(3000);
+            out1Timer->start(1000);
         }
     }
 }
@@ -231,12 +228,7 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
         return;
     }
     emit forShow_To_Comm(forShowString(QString(tr("Send_to_ControlBoard:#%1*\n")).arg(writeMsg)));
-    if(CONTROL_OUT2_ON==writeMsg)
-    {
-        if(!out2Timer->isActive())
-            out2Timer->start(100);
-        return;
-    }
+
     if(CONTROL_OUT1_ON==writeMsg)
     {
         cylinderUp = true;
@@ -247,11 +239,17 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
         cylinderUp = false;
         return;
     }
+    if(CONTROL_OUT2_ON==writeMsg)
+    {
+        if(!out2Timer->isActive())
+            out2Timer->start(100);
+        return;
+    }
 }
 
 void ScannerOnThread::out1TimerTimeOut()
 {
-    if((false==sensor1 && false==sensor2)||(false==cylinderUp && false==sensor1))
+    if((false==sensor1)||(false==cylinderUp && false==sensor1))
     {
         controlBoardWrite(CONTROL_OUT1_ON);
     }
@@ -274,6 +272,6 @@ void ScannerOnThread::checkSensor()
     }
     else
     {
-        checkSensorTimer->start(1000);
+        checkSensorTimer->start(500);
     }
 }

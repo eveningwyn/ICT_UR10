@@ -27,7 +27,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
     QFile file(ICT_path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件<%1>失败!\n")).arg(fileName));
+        emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件(%1)失败!\n")).arg(fileName));
         if(statusReadTimer->isActive())
             statusReadTimer->stop();
         return ;
@@ -53,7 +53,7 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
     QFile file(ICT_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件<%1>失败!\n")).arg(fileName));
+        emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件(%1)失败!\n")).arg(fileName));
         return ;
     }
     QTextStream out(&file);
@@ -99,13 +99,13 @@ void ICT_Test_Obj::init_ict()
     testTimer = new QTimer(this);
     snTemp = "";
     testResultTemp = "";
+    testRunning = false;
     hold_on_Timer = new QTimer(this);
 
     connect(statusReadTimer,&QTimer::timeout,this,&ICT_Test_Obj::statusReadTimeout);
     connect(testTimer,&QTimer::timeout,this,&ICT_Test_Obj::testTimeout);
     connect(hold_on_Timer,&QTimer::timeout,this,&ICT_Test_Obj::hold_on_Timeout);
-    statusReadTimer->start(500);
-
+    openTimer();
 }
 
 void ICT_Test_Obj::statusReadTimeout()
@@ -133,63 +133,71 @@ void ICT_Test_Obj::statusReadTimeout()
         QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
 
-        QString receiveStr = "";
-        QString testResultStr = "";
         /*获取SN check反馈*/
-        getIctInfo(receive_path, receiveStr);
-        if(!receiveStr.isEmpty())
+        if(!snTemp.isEmpty())
         {
-            emit forShow_To_Comm(forShowReceiveString(receiveStr));
-            if(receiveStr.contains(snTemp)/* || true*/)
+            QString sn_receiveStr = "";
+            getIctInfo(receive_path, sn_receiveStr);
+            if(!sn_receiveStr.isEmpty())
             {
-                if(receiveStr.contains("PASS"))
+                emit forShow_To_Comm(forShowReceiveString(sn_receiveStr));
+                if(sn_receiveStr.contains(snTemp)/* || true*/)
                 {
-                    emit ict_Check_SN_Result(snTemp,true);
-                }
-                else
-                {
-                    if(receiveStr.contains("FAIL"))
+                    if(sn_receiveStr.contains("PASS"))
                     {
-                        emit ict_Check_SN_Result(snTemp,false);
-                    }
-                }
-            }
-            else
-            {
-                emit ict_Error_Msg(QString(tr("Scan条码与ICT回传条码不一致：\n"
-                                      "Scan：%1; ICT：%2\n")).arg(snTemp).arg(receiveStr));
-            }
-        }
-        /*获取test result反馈*/
-        getIctInfo(result_path, testResultStr);
-        if(!testResultStr.isEmpty())
-        {
-            emit forShow_To_Comm(forShowReceiveString(testResultStr));
-            /*"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"*/
-            /*"C4-L1N,A,ICT,J1741705,3I1101, ,ICT_V04R03,AH12016602,P, , ,0,"*/
-            QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
-            if(0 <= testResultStr.indexOf(resultRE))
-            {
-                if(resultRE.cap(8)==snTemp)
-                {
-                    if("P"==resultRE.cap(9))
-                    {
-                        testResultTemp = "PASS";
+                        emit ict_Check_SN_Result(snTemp,true);
                     }
                     else
                     {
-                        if("F"==resultRE.cap(9))
+                        if(sn_receiveStr.contains("FAIL"))
                         {
-                            testResultTemp = "FAIL";
+                            emit ict_Check_SN_Result(snTemp,false);
                         }
                     }
-                    send_ictTestResult();
                 }
                 else
                 {
-                    emit ict_Error_Msg(QString(tr("Scan条码与ICT测试结果回传条码不一致：\n"
-                                          "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(8)));
+                    emit ict_Error_Msg(QString(tr("Scan条码与ICT回传条码不一致：\n"
+                                          "Scan：%1; ICT：%2\n")).arg(snTemp).arg(sn_receiveStr));
                 }
+            }
+        }
+        /*获取test result反馈*/
+        if(true==testRunning&&!snTemp.isEmpty())
+        {
+            QString testResultStr = "";
+            getIctInfo(result_path, testResultStr);
+            if(!testResultStr.isEmpty())
+            {
+                emit forShow_To_Comm(forShowReceiveString(testResultStr));
+                /*"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"*/
+                /*"C4-L1N,A,ICT,J1741705,3I1101, ,ICT_V04R03,AH12016602,P, , ,0,"*/
+                QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
+                if(0 <= testResultStr.indexOf(resultRE))
+                {
+                    if(resultRE.cap(8)==snTemp)
+                    {
+                        if("P"==resultRE.cap(9))
+                        {
+                            testResultTemp = "PASS";
+                        }
+                        else
+                        {
+                            if("F"==resultRE.cap(9))
+                            {
+                                testResultTemp = "FAIL";
+                            }
+                        }
+                        send_ictTestResult();
+                    }
+                    else
+                    {
+                        emit ict_Error_Msg(QString(tr("Scan条码与ICT测试结果回传条码不一致：\n"
+                                              "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(8)));
+                    }
+                }
+                else
+                    emit ict_Error_Msg(QString(tr("ICT回传测试结果格式异常：\n%1\n")).arg(testResultStr));
             }
         }
 
@@ -209,7 +217,7 @@ void ICT_Test_Obj::statusReadTimeout()
     return ;
 }
 
-void ICT_Test_Obj::openTimer()//备用函数，用于后期重新打开定时器
+void ICT_Test_Obj::openTimer()
 {
     if(!statusReadTimer->isActive())
         statusReadTimer->start(500);
@@ -227,11 +235,17 @@ void ICT_Test_Obj::testStart()//ict开始测试
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
         QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
+        QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
+        QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
         int test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString().toInt();
         delete configRead;
+
+        QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
         //启动ICT测试
+        setIctInfo(result_path,"");
         setIctInfo(run_path,"RUN");
+        testRunning = true;
 //        emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString("RUN"));
         if(!testTimer->isActive())
@@ -265,6 +279,7 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
     if(false == ictEnable)
     {
         emit ict_Check_SN_Result(snTemp,true);
+        snTemp = "";
         return;
     }
     if(0 == pc_ict_Ping())
@@ -272,11 +287,16 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
         QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
+        QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+        QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
         delete configRead;
-
+        QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
+        openTimer();
+        setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
+        testRunning = false;
         emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString(sn));
         return;
@@ -298,6 +318,7 @@ void ICT_Test_Obj::testTimeout()
 
 void ICT_Test_Obj::catchFail()//Robot抓取失败
 {
+    return;//用于调试-----------------------------------
     if(false == ictEnable)
     {
         return;
@@ -357,6 +378,7 @@ void ICT_Test_Obj::hold_on_Timeout()
         emit ictTestResult(testResultTemp);
         testResultTemp = "";
         snTemp = "";
+        testRunning = false;
         if(testTimer->isActive())
             testTimer->stop();
     }
