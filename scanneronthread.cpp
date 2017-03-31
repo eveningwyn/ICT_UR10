@@ -23,7 +23,7 @@ void ScannerOnThread::scannerReadSN()
 
    if("<T>\r\n"==sn)
    {//调试时，只需将串口2、3PIN短接即可屏蔽连接Scanner
-       sn = "AH13001530\r\n";//用于调试----------------------------------------
+       sn = "AH13012400\r\n";//用于调试----------------------------------------
    }
 
    emit forShow_To_Comm(forShowReceiveString(sn));
@@ -124,7 +124,7 @@ void ScannerOnThread::init_Scanner()
     canRead = false;
     auto_Scan = false;
     sensor1 = false;
-    sensor2 = true;
+    sensor2 = false;
     cylinderUp = false;
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);

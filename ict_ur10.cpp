@@ -18,7 +18,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     ui(new Ui::ICT_UR10)
 {
     ui->setupUi(this);
-//    ui->toolBar->setHidden(true);
+    ui->mainToolBar->setHidden(true);
 
     totalQty = 0;
     passQty = 0;
@@ -413,6 +413,13 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
 {
     sn.replace("\r","");
     sn.replace("\n","");
+    QString failCode = "";
+    if(result.contains("FAIL"))
+    {
+        failCode = result;
+        failCode.replace("FAIL,","");
+        result = "FAIL";
+    }
     ui->lineEditResult->setText(result.toUpper());
     if(100<=testCount)
     {
@@ -462,8 +469,8 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     ui->tableWidgetResultList->scrollToBottom();
 
     //保存测试结果到csv文件
-    QString datalist = QString("%1,%2,%3,%4,%5\n").arg(ui->comboBoxTypeSelect->currentText()).arg(time.toString("yyyyMMdd"))
-            .arg(time.toString("hh:mm:ss")).arg(sn).arg(result);
+    QString datalist = QString("%1,%2,%3,%4,%5,%6,%7\n").arg(ui->comboBoxTypeSelect->currentText()).arg(time.toString("yyyyMMdd"))
+            .arg(time.toString("hh:mm:ss")).arg(sn).arg(result).arg(failCode).arg(totalQty);
 
     newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹
 
@@ -472,7 +479,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     {
         if(0 == csvFile.size())
         {
-            csvFile.write(QString("ProductType,Date,Time,SN,TestResult\n").toLatin1());
+            csvFile.write(QString("ProductType,Date,Time,SN,TestResult,FailCode,ProductionTotalQty\n").toLatin1());
         }
         csvFile.seek(csvFile.size());
         csvFile.write(datalist.toLatin1());

@@ -341,6 +341,7 @@ void RobotOnThread::scanDone()
     {
         snResultTimer->start(TIMEOUT_SEC);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
+        infromLineInfoToRobot();//告知流水线状态
     }
     else
     {
@@ -431,6 +432,7 @@ void RobotOnThread::serverSendError()
     returnResultTimer->stop();
     setProtTimer->stop();
     setRunModeTimer->stop();
+    infoLineReadyTimer->stop();
 }
 
 void RobotOnThread::setRunModeTimeout()
@@ -467,6 +469,7 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
 void RobotOnThread::setrobotPortExist(bool robot_exist)
 {
     robotPortExist = robot_exist;
+    emit robot_catchFail();//Robot断开，让ICT复位
 }
 
 void RobotOnThread::debug_moveToScan()

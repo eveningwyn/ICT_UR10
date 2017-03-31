@@ -153,6 +153,10 @@ void ICT_Test_Obj::statusReadTimeout()
                         {
                             emit ict_Check_SN_Result(snTemp,false);
                         }
+                        else
+                        {
+                            emit ict_Error_Msg(QString(tr("ICT回传SN Check结果格式异常：\n%1\n")).arg(sn_receiveStr));
+                        }
                     }
                 }
                 else
@@ -185,7 +189,7 @@ void ICT_Test_Obj::statusReadTimeout()
                         {
                             if("F"==resultRE.cap(9))
                             {
-                                testResultTemp = "FAIL";
+                                testResultTemp = QString("FAIL,%1").arg(resultRE.cap(10));
                             }
                         }
                         send_ictTestResult();
@@ -197,7 +201,9 @@ void ICT_Test_Obj::statusReadTimeout()
                     }
                 }
                 else
+                {
                     emit ict_Error_Msg(QString(tr("ICT回传测试结果格式异常：\n%1\n")).arg(testResultStr));
+                }
             }
         }
 
@@ -318,7 +324,7 @@ void ICT_Test_Obj::testTimeout()
 
 void ICT_Test_Obj::catchFail()//Robot抓取失败
 {
-    return;//用于调试-----------------------------------
+    //return;//用于调试-----------------------------------
     if(false == ictEnable)
     {
         return;
@@ -373,7 +379,7 @@ void ICT_Test_Obj::hold_on_Timeout()
 {
     if(hold_on_Timer->isActive())
         hold_on_Timer->stop();
-    if("PASS"==testResultTemp || "FAIL"==testResultTemp )
+    if("PASS"==testResultTemp || testResultTemp.contains("FAIL"))
     {
         emit ictTestResult(testResultTemp);
         testResultTemp = "";

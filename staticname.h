@@ -3,18 +3,18 @@
 
 #include <QString>
 
-static QString USER_ID = "";
-static QString PASSWORD = "";
+static QString USER_ID = "admin";
+static QString PASSWORD = "admin";
 
-static QString CONFIG_FILE_NAME       = "..\\path/Config.ini";
-static QString LOCAL_DATA_FOLDER_NAME = "..\\ICT Data";
-static QString LOCAL_DATA_FILE_NAME   = "..\\ICT Data/ICT_UR10_test_result_%1.csv";
+static QString CONFIG_FILE_NAME                 = "..\\path/Config.ini";
+static QString LOCAL_DATA_FOLDER_NAME           = "..\\ICT Data";
+static QString LOCAL_DATA_FILE_NAME             = "..\\ICT Data/ICT_UR10_Test_Result_%1.csv";
 
-static QString SCANNER_PORT_NAME        = "/ScannerParameter/PortName";
-static QString SCANNER_BAUD_RATE        = "/ScannerParameter/BaudRate";
-static QString SCANNER_DATA_BITS        = "/ScannerParameter/DataBits";
-static QString SCANNER_PARITY_BITS      = "/ScannerParameter/ParityBits";
-static QString SCANNER_STOP_BITS        = "/ScannerParameter/StopBits";
+static QString SCANNER_PORT_NAME            = "/ScannerParameter/PortName";
+static QString SCANNER_BAUD_RATE            = "/ScannerParameter/BaudRate";
+static QString SCANNER_DATA_BITS            = "/ScannerParameter/DataBits";
+static QString SCANNER_PARITY_BITS          = "/ScannerParameter/ParityBits";
+static QString SCANNER_STOP_BITS            = "/ScannerParameter/StopBits";
 static QString SCANNER_PORT_NAME_CONTROL    = "/ScannerParameter/PortNameControl";
 static QString SCANNER_BAUD_RATE_CONTROL    = "/ScannerParameter/BaudRateControl";
 static QString SCANNER_DATA_BITS_CONTROL    = "/ScannerParameter/DataBitsControl";
@@ -29,11 +29,11 @@ static QString ROBOT_TYPE_ENABLE   = "/RobotParameter/RobotTypeEnable";
 static QString ROBOT_TYPE          = "/RobotParameter/Type_%1";
 static QString ROBOT_PRO_NUM       = "/RobotParameter/%1_Pro_Num";
 
-static int TYPE_TOTAL        = 20;
-static QString MAIN_UI_TYPE  = "/MainUIParameter/Index%1";
+static int TYPE_TOTAL              = 20;
+static QString MAIN_UI_TYPE        = "/MainUIParameter/Index%1";
 
-static QString ICT_LOCAL_IP     = "/ICT/IPaddress";
-static QString ICT_LOCAL_DRIVE  = "/ICT/Drive";
+static QString ICT_LOCAL_IP        = "/ICT/IPaddress";
+static QString ICT_LOCAL_DRIVE     = "/ICT/Drive";
 
 static QString ICT_LOCAL_SN_FILE_NAME       = "/ICT/SnFileName";
 static QString ICT_LOCAL_SN_NAME            = "/ICT/SnName";
@@ -45,11 +45,11 @@ static QString ICT_LOCAL_RESULT_FILE_NAME   = "/ICT/ResultFileName";
 static QString ICT_LOCAL_RESULT_NAME        = "/ICT/ResultName";
 //#define ICT_LOCAL_ERROR_FILE_NAME         "/ICT/ErrorFileName"
 //#define ICT_LOCAL_ERROR_NAME              "/ICT/ErrorName"
-static QString ICT_YELLOW_LIMIT       = "/ICT/YellowLimit";
-static QString ICT_RED_LIMIT          = "/ICT/RedLimit";
-static QString ICT_YIELD_BASE         = "/ICT/YieldBase";
-static QString ICT_YIELD_LIMIT        = "/ICT/YieldLimit";
-static QString ICT_TEST_TIMEOUT       = "/ICT/TestTimeout";
+static QString ICT_YELLOW_LIMIT             = "/ICT/YellowLimit";
+static QString ICT_RED_LIMIT                = "/ICT/RedLimit";
+static QString ICT_YIELD_BASE               = "/ICT/YieldBase";
+static QString ICT_YIELD_LIMIT              = "/ICT/YieldLimit";
+static QString ICT_TEST_TIMEOUT             = "/ICT/TestTimeout";
 
 static QString PREFIX = "@";
 static QString SUFFIX = "\n";
