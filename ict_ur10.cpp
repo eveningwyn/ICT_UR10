@@ -371,11 +371,11 @@ void ICT_UR10::robotConnected(QString IP, int Port)
         on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
         if(false==robotIsInit)
         {
-            if(QMessageBox::Yes==QMessageBox::warning(this,tr("安全提示"),tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
-                                                      QMessageBox::Yes|QMessageBox::No))
-            {
+//            if(QMessageBox::Yes==QMessageBox::warning(this,tr("安全提示"),tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
+//                                                      QMessageBox::Yes|QMessageBox::No))
+//            {
                 emit robotInit();
-            }
+//            }
         }
     }
 

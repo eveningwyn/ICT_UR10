@@ -66,28 +66,55 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 
 int ICT_Test_Obj::pc_ict_Ping()
 {
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+    QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
+    delete configRead;
+    QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
+    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(receive_path);
+
+    QFile file(ICT_path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        emit ict_Error_Msg(QString(tr("连接ICT测试机的本地文件失败!\n")));
+        ictStatusStr = tr("ICT:已断开");
+        emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
+        emit ictIsReady(false);
+        file.close();
+        count = 0;
+        return -1;
+    }
+    file.close();
+    if(0==count)
+    {
+        ictStatusStr = tr("ICT:已连接");
+        emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
+        emit ictIsReady(true);
+        count++;
+    }
     return 0;//调试用--------------------------------------------
 
-    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
-    delete configRead;
-    QString pingStr = "ping " + ict_ip_addr + " -n 1";
-    int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
-//    qDebug()<<"time_s1"<<time_s1;
+//    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+//    QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
+//    delete configRead;
+//    QString pingStr = "ping " + ict_ip_addr + " -n 1";
+//    int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
+////    qDebug()<<"time_s1"<<time_s1;
 
-    int ref = QProcess::execute(pingStr);
-//    qDebug()<<"ref"<<ref;
+//    int ref = QProcess::execute(pingStr);
+////    qDebug()<<"ref"<<ref;
 
-    int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
-//    qDebug()<<"time_s2"<<time_s2;
+//    int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
+////    qDebug()<<"time_s2"<<time_s2;
 
-    int time_offset = time_s2 - time_s1;
-//    qDebug()<<"time_offset"<<time_offset;
+//    int time_offset = time_s2 - time_s1;
+////    qDebug()<<"time_offset"<<time_offset;
 
-    if(0 == ref && 0 == time_offset)
-        return 0;
-    else
-        return -1;
+//    if(0 == ref && 0 == time_offset)
+//        return 0;
+//    else
+//        return -1;
 }
 
 void ICT_Test_Obj::init_ict()
@@ -106,6 +133,34 @@ void ICT_Test_Obj::init_ict()
     connect(testTimer,&QTimer::timeout,this,&ICT_Test_Obj::testTimeout);
     connect(hold_on_Timer,&QTimer::timeout,this,&ICT_Test_Obj::hold_on_Timeout);
     openTimer();
+    pc_ict_Ping();
+
+//    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+//    QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+//    QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+//    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
+//    delete configRead;
+//    QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
+//    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(receive_path);
+
+//    QFile file(ICT_path);
+//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        emit ict_Error_Msg(QString(tr("连接ICT测试机的本地文件失败!\n")));
+//        ictStatusStr = tr("ICT:已断开");
+//        emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
+//        emit ictIsReady(false);
+//        file.close();
+//        return ;
+//    }
+//    file.close();
+//    if(0==count)
+//    {
+//        ictStatusStr = tr("ICT:已连接");
+//        emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
+//        emit ictIsReady(true);
+//        count++;
+//    }
 }
 
 void ICT_Test_Obj::statusReadTimeout()
