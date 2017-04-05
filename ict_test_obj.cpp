@@ -20,9 +20,9 @@ ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 {
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
+    QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
-    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(fileName);
+    QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(fileName);
 
     QFile file(ICT_path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -46,9 +46,9 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 {
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
+    QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
-    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(fileName);
+    QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(fileName);
 
     QFile file(ICT_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -69,13 +69,13 @@ int ICT_Test_Obj::pc_ict_Ping()
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
     QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
-    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
+    QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
     QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
-    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(receive_path);
+    QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(receive_path);
 
     QFile file(ICT_path);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         emit ict_Error_Msg(QString(tr("连接ICT测试机的本地文件失败!\n")));
         ictStatusStr = tr("ICT:已断开");
@@ -354,12 +354,12 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
-        openTimer();
         setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
         testRunning = false;
         emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString(sn));
+        openTimer();
         return;
     }
     emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"

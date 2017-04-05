@@ -3,7 +3,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include "language.h"
-//#include <QThread>
+#include <QThread>
 
 #define TIMEOUT_SEC  1000
 
@@ -119,6 +119,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         {
             if(snResultTimer->isActive())
                 snResultTimer->stop();
+            infoLineReadyTimer->start(TIMEOUT_SEC);
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan error ACK")))
@@ -341,7 +342,6 @@ void RobotOnThread::scanDone()
     {
         snResultTimer->start(TIMEOUT_SEC);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
-        infromLineInfoToRobot();//告知流水线状态
     }
     else
     {
@@ -361,16 +361,16 @@ void RobotOnThread::scanError()
 
 void RobotOnThread::testResult(QString result)
 {
-    if("PASS"==result)
+    if(result.contains("PASS"))
     {
         testPass = true;
         emit recordTestResult(barcode,"PASS");
     }
     else
-        if("FAIL"==result)
+        if(result.contains("FAIL"))
         {
             testPass = false;
-            emit recordTestResult(barcode,"FAIL");
+            emit recordTestResult(barcode,result);
         }
     testDone();
 }
