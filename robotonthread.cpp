@@ -364,14 +364,13 @@ void RobotOnThread::testResult(QString result)
     if(result.contains("PASS"))
     {
         testPass = true;
-        emit recordTestResult(barcode,"PASS");
     }
     else
         if(result.contains("FAIL"))
         {
             testPass = false;
-            emit recordTestResult(barcode,result);
         }
+    emit recordTestResult(barcode,result);
     testDone();
 }
 
