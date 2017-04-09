@@ -12,7 +12,7 @@
 #include "debuglogindialog.h"
 #include "debugdialog.h"
 
-#define PRO_VERSION  "V1.00"
+#define PRO_VERSION  "V1.02"
 
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -500,7 +500,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         if(yellow_limit.toInt()<=failCount && red_limit.toInt()>failCount)
         {
             //打开三色灯_黄灯
-            emit light_Red_Green_Yellow_Buzzer("Red light open");
+            emit light_Red_Green_Yellow_Buzzer("Yellow light open");
             lightCount = 3;
         }
         else
@@ -508,8 +508,15 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
             if(red_limit.toInt()<=failCount)
             {
                 //打开三色灯_红灯
-                emit light_Red_Green_Yellow_Buzzer("Yellow light open");
+                emit light_Red_Green_Yellow_Buzzer("Red light open");
                 lightCount = 1;
+                if(QMessageBox::No==QMessageBox::warning(this,tr("测试提示"),QString(tr("目前已经连续测试NG %1PCS产品,请维护人员检查测试机是否异常!\n"
+                                                                                    "是否清零连续测试NG次数的统计？\n"
+                                                                                    "不清零请选择Yes,清零请选择No\n")).arg(failCount),
+                                                         QMessageBox::Yes|QMessageBox::No))
+                {
+                    failCount = 0;
+                }
             }
         }
     }
