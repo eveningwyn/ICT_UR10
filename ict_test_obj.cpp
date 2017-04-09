@@ -125,6 +125,7 @@ void ICT_Test_Obj::init_ict()
     statusReadTimer = new QTimer(this);
     testTimer = new QTimer(this);
     snTemp = "";
+    snCheckCount = -1;
     testResultTemp = "";
     testRunning = false;
     hold_on_Timer = new QTimer(this);
@@ -189,7 +190,7 @@ void ICT_Test_Obj::statusReadTimeout()
         QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
 
         /*获取SN check反馈*/
-        if(!snTemp.isEmpty())
+        if(!snTemp.isEmpty()&&0==snCheckCount)
         {
             QString sn_receiveStr = "";
             getIctInfo(receive_path, sn_receiveStr);
@@ -213,6 +214,7 @@ void ICT_Test_Obj::statusReadTimeout()
                             emit ict_Error_Msg(QString(tr("ICT回传SN Check结果格式异常：\n%1\n")).arg(sn_receiveStr));
                         }
                     }
+                    snCheckCount = 1;
                 }
                 else
                 {
@@ -222,7 +224,7 @@ void ICT_Test_Obj::statusReadTimeout()
             }
         }
         /*获取test result反馈*/
-        if(true==testRunning&&!snTemp.isEmpty())
+        if(true==testRunning&&!snTemp.isEmpty()&&1==snCheckCount)
         {
             QString testResultStr = "";
             getIctInfo(result_path, testResultStr);
@@ -254,6 +256,7 @@ void ICT_Test_Obj::statusReadTimeout()
                         emit ict_Error_Msg(QString(tr("Scan条码与ICT测试结果回传条码不一致：\n"
                                               "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(8)));
                     }
+                    snCheckCount = 2;
                 }
                 else
                 {
@@ -356,6 +359,7 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
 
         setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
+        snCheckCount = 0;
         testRunning = false;
         emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString(sn));
@@ -372,7 +376,7 @@ void ICT_Test_Obj::testTimeout()
     if(testTimer->isActive())
         testTimer->stop();
     emit ict_light_Red_Green_Yellow_Buzzer("Red light open");
-    emit setRunStatus(false);
+    emit ict_setRunStatus(false);
     emit ict_Error_Msg(tr("ICT测试机测试超时！\nRobot将会复位，请注意安全！\n"));
     emit ict_testTimeout();
 }
@@ -439,6 +443,7 @@ void ICT_Test_Obj::hold_on_Timeout()
         emit ictTestResult(testResultTemp);
         testResultTemp = "";
         snTemp = "";
+        snCheckCount = -1;
         testRunning = false;
         if(testTimer->isActive())
             testTimer->stop();

@@ -25,6 +25,7 @@ private:
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);
     void send_ictTestResult();
+    int snCheckCount;//用于限定软件只响应一次ICT命令
 
 signals:
     void ict_Error_Msg(QString errorMsg);
@@ -34,7 +35,7 @@ signals:
     void ict_Check_SN_Result(QString sn, bool checkPass);
     void openSwitch(QString str);
     void ict_light_Red_Green_Yellow_Buzzer(QString str);
-    void setRunStatus(bool isAuto);//设置允许状态
+    void ict_setRunStatus(bool isAuto);//设置允许状态
     void ict_testTimeout();
     void forShow_To_Comm(QString msg);//信息记录
 

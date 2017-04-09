@@ -135,6 +135,7 @@ private slots:
     void on_comboBoxTypeSelect_currentTextChanged(const QString &arg1);
     void on_actionICT_MES_triggered();
     void on_actionDebug_triggered();
+    void on_actionAbout_triggered();
 };
 
 #endif // ICT_UR10_H

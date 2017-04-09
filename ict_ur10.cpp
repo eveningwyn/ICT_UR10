@@ -12,6 +12,8 @@
 #include "debuglogindialog.h"
 #include "debugdialog.h"
 
+#define PRO_VERSION  "V1.00"
+
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
     QMainWindow(parent),
@@ -98,7 +100,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(ict,&ICT_Test_Obj::ict_Check_SN_Result,robot_on_thread,&RobotOnThread::snCheckResult);
     connect(ict,&ICT_Test_Obj::ict_light_Red_Green_Yellow_Buzzer,robot_on_thread,&RobotOnThread::set_light_Red_Green_Yellow_Buzzer);
     connect(ict,&ICT_Test_Obj::openSwitch,scan_on_thread,&ScannerOnThread::controlBoardWrite);
-    connect(ict,&ICT_Test_Obj::setRunStatus,this,&ICT_UR10::runStatus);
+    connect(ict,&ICT_Test_Obj::ict_setRunStatus,this,&ICT_UR10::runStatus);
     connect(ict,&ICT_Test_Obj::ict_testTimeout,robot_on_thread,&RobotOnThread::ict_testTimeout);
     connect(ict,&ICT_Test_Obj::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
 
@@ -676,4 +678,9 @@ void ICT_UR10::on_actionDebug_triggered()
         debugDlg.exec();
         emit robotSetAutoMode(true);
     }
+}
+
+void ICT_UR10::on_actionAbout_triggered()
+{
+    QMessageBox::about(this,tr("版本"),QString(tr("2017-04-09\n当前软件版本为：%1\n")).arg(PRO_VERSION));
 }
