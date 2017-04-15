@@ -56,6 +56,8 @@ private:
     bool ictIsReady;
     bool mainInitDone;
 
+    void checkErrorMsg(QString &errorMsgStr, uint &ALarmGrade);
+
     /*对话框*/
     CommunicationDialog *commDlg;
     LoginDialog *loginDlg;
@@ -102,6 +104,10 @@ signals:
     void manualSendMsg_controlBoard(QString sendMsg);
     void light_Red_Green_Yellow_Buzzer(QString str);
 
+    void ui_robot_start();
+    void ui_robot_pause();
+    void ui_robot_stop();
+
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态
     void update_Robot_Status(QString status);//更新robot连接状态
@@ -136,6 +142,10 @@ private slots:
     void on_actionICT_MES_triggered();
     void on_actionDebug_triggered();
     void on_actionAbout_triggered();
+    void on_pushButton_Auto_Debug_clicked();
+    void on_pushButton_Robot_start_clicked();
+    void on_pushButton_Robot_pause_clicked();
+    void on_pushButton_Robot_stop_clicked();
 };
 
 #endif // ICT_UR10_H

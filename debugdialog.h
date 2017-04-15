@@ -52,6 +52,12 @@ private slots:
 
     void on_pushButton_ClawClose_clicked();
 
+    void on_pushButton_robot_start_clicked();
+
+    void on_pushButton_robot_pause_clicked();
+
+    void on_pushButton_robot_stop_clicked();
+
 private:
     Ui::DebugDialog *ui;
     void closeEvent(QCloseEvent *event);

@@ -10,7 +10,7 @@
 #include <QRegExp>
 //#include <QDebug>
 
-#define HOLD_ON 15
+//#define HOLD_ON 15
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 {
@@ -430,8 +430,19 @@ void ICT_Test_Obj::send_ictTestResult()
     {
         testResultTemp = "PASS";
     }
+
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString vacuum_time = configRead->value(ICT_OPEN_WAIT_TIME).toString();
+    delete configRead;
+    if(0>=vacuum_time.toInt()||""==vacuum_time)
+    {
+        vacuum_time = "15";
+    }
     if(!hold_on_Timer->isActive())
-        hold_on_Timer->start(HOLD_ON*1000);
+    {
+//        hold_on_Timer->start(HOLD_ON*1000);
+        hold_on_Timer->start(vacuum_time.toInt()*1000);
+    }
 }
 
 void ICT_Test_Obj::hold_on_Timeout()

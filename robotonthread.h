@@ -14,6 +14,7 @@ public:
 
 private:
     TcpIpServer *robotServer;
+    TcpIpClient *robotClient;
     bool robotPortExist;
 
     QString forShowReceiveString(QString str);
@@ -38,6 +39,11 @@ private:
     bool lineSensor2;
     QTimer *infoLineReadyTimer;
     bool robotInitDone;
+
+    QTimer *robot_start_timer;
+    QTimer *robot_pause_timer;
+    QTimer *robot_stop_timer;
+    bool dashboard_enable;
 
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
@@ -85,6 +91,12 @@ public slots:
     void set_light_Red_Green_Yellow_Buzzer(QString msg);
     void lineSensorStatus(bool sensor1True,bool sensor2True);
     void ict_testTimeout();
+
+    void robot_start();
+    void robot_pause();
+    void robot_stop();
+    void robot_readData(int clientID,QString IP,int Port,QString msg);
+    void robot_clientDisConnect(int clientID,QString IP,int Port);
 
 private slots:
     void scanDone();

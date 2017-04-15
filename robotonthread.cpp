@@ -84,7 +84,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         robotInitDone = true;
         emit robot_Status(tr("机器人:初始化完成"));
         emit robotReady(true);
-        emit setRunStatus(false);
+        emit setRunStatus(robotAutoMode);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init done ACK"));
         return;
     }
@@ -234,12 +234,6 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return done ACK"));
         return;
     }
-    if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg(robot_pro_num+" ACK")))
-    {
-        if(setProtTimer->isActive())
-            setProtTimer->stop();
-        return;
-    }
     if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Auto mode ACK"))) ||
             (0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Debug mode ACK"))))
     {
@@ -272,7 +266,8 @@ void RobotOnThread::init_Robot()
     barcode = "";
     testPass = false;
     robot_pro_num = "";
-    robotAutoMode = true;//初始化为自动模式
+//    robotAutoMode = true;//初始化为自动模式
+    robotAutoMode = false;//初始化为手动模式
     robotPortExist = false;
 
     lineSensor1 = false;
@@ -280,6 +275,18 @@ void RobotOnThread::init_Robot()
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
+
+    robotClient = new TcpIpClient(this);
+    robotClient->prefix = "";
+    robotClient->suffix = "\n";
+    robot_start_timer = new QTimer(this);
+    robot_pause_timer = new QTimer(this);
+    robot_stop_timer = new QTimer(this);
+    dashboard_enable = false;
+
+    connect(robotClient,&TcpIpClient::readData,this,&RobotOnThread::robot_readData);
+    connect(robotClient,&TcpIpClient::cliendErrorMsg,this,&RobotOnThread::robot_Error_Msg);
+    connect(robotClient,&TcpIpClient::clientDisConnect,this,&RobotOnThread::robot_clientDisConnect);
 
     connect(robotServer,&TcpIpServer::errorMessage,this,&RobotOnThread::robot_Error_Msg);
     connect(robotServer,&TcpIpServer::clientConnect,this,&RobotOnThread::robotConnected);
@@ -294,12 +301,30 @@ void RobotOnThread::init_Robot()
     connect(setProtTimer,&QTimer::timeout,this,&RobotOnThread::setPro_Num_Timeout);
     connect(setRunModeTimer,&QTimer::timeout,this,&RobotOnThread::setRunModeTimeout);
     connect(infoLineReadyTimer,&QTimer::timeout,this,&RobotOnThread::infromLineInfoToRobot);
+    connect(robot_start_timer,&QTimer::timeout,this,&RobotOnThread::robot_start);
+    connect(robot_pause_timer,&QTimer::timeout,this,&RobotOnThread::robot_pause);
+    connect(robot_stop_timer,&QTimer::timeout,this,&RobotOnThread::robot_stop);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Robot
     QString ipAddress =configRead->value(SERVER_IP_ADDRESS).toString();
     quint16 port =(quint16) configRead->value(SERVER_PORT).toString().toInt();
+    QString robotIP = configRead->value(ROBOT_IP).toString();
+    delete configRead;
 
+    //客户端连接Robot服务器
+    if(!robotClient->newConnect(robotIP,29999))
+    {
+        emit robot_Status(tr("机器人:已断开"));
+        emit robot_Error_Msg(tr("Dashboard Server创建失败,请检查网络连接之后重启软件!\n"));
+        dashboard_enable = false;
+    }
+    else
+    {
+        dashboard_enable = true;
+        emit forShow_To_Comm(forShowString(QString(tr("Dashboard Server功能已开启!"))));
+    }
+    //开启服务器
     if(!robotServer->stratListen(ipAddress,port))
     {
         emit robot_Status(tr("机器人:已断开"));
@@ -311,7 +336,6 @@ void RobotOnThread::init_Robot()
         emit forShow_To_Comm(forShowString(QString(tr("PC服务器 %1 %2 Listening..."))
                                            .arg(ipAddress).arg(port)));
     }
-    delete configRead;
 }
 
 /*通讯协议处理部分-主动发送*/
@@ -402,26 +426,6 @@ void RobotOnThread::set_PC_Status(bool isReady)
     PC_Is_Ready = isReady;
 }
 
-void RobotOnThread::setPro_Num(QString pro_num)
-{
-    robot_pro_num = pro_num;
-    setPro_Num_Timeout();
-}
-
-void RobotOnThread::setPro_Num_Timeout()
-{
-    if(setProtTimer->isActive())
-        setProtTimer->stop();
-    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
-    if("true"==robotTypeEnable)
-    {
-        setProtTimer->start(TIMEOUT_SEC);
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg(robot_pro_num));
-    }
-    delete configRead;
-}
-
 void RobotOnThread::serverSendError()
 {
     initTimer->stop();
@@ -449,7 +453,7 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
     {
         robot_Init();//Debug模式切换到Auto模式后，Robot需复位
     }
-    setRunModeTimer->start(TIMEOUT_SEC);
+    setRunModeTimer->start(TIMEOUT_SEC + 200);
     if(true == robotInitDone)
     {
         if(true == robotAutoMode)
@@ -460,7 +464,7 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
         else
         {
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Debug mode"));
-            emit robot_Status(tr("机器人:手动模式..."));
+            emit robot_Status(tr("机器人:手动运行中..."));
         }
     }
 }
@@ -590,4 +594,118 @@ void RobotOnThread::infromLineInfoToRobot()
 void RobotOnThread::ict_testTimeout()
 {
     robot_Init();//ICT测试超时，robot复位
+}
+
+void RobotOnThread::robot_readData(int clientID, QString IP, int Port, QString msg)
+{
+    clientID = 0;
+    emit forShow_To_Comm(forShowReceiveString(QString("%1 %2:%3").arg(IP).arg(Port).arg(msg)));
+    if(0 <= msg.indexOf(QString("%1%2%3").arg(robotClient->prefix).arg("Starting program").arg(robotClient->suffix)))
+    {
+        if(robot_start_timer->isActive())
+            robot_start_timer->stop();
+        return;
+    }
+    if(0 <= msg.indexOf(QString("%1%2%3").arg(robotClient->prefix).arg("Pausing program").arg(robotClient->suffix)))
+    {
+        if(robot_pause_timer->isActive())
+            robot_pause_timer->stop();
+        return;
+    }
+    if(0 <= msg.indexOf(QString("%1%2%3").arg(robotClient->prefix).arg("Stopped").arg(robotClient->suffix)))
+    {
+        if(robot_stop_timer->isActive())
+            robot_stop_timer->stop();
+        return;
+    }
+    if(0 <= msg.indexOf(QString("%1Loading program: <%2.urp>%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
+    {
+        if(setProtTimer->isActive())
+            setProtTimer->stop();
+        return;
+    }
+    if(0 <= msg.indexOf(QString("%1File not found: <%2.urp>%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
+    {
+        if(setProtTimer->isActive())
+            setProtTimer->stop();
+        emit robot_Error_Msg(QString(tr("机器人加载程序%1.urp失败, 并未找到该程序!\n")).arg(robot_pro_num));
+        return;
+    }
+}
+
+void RobotOnThread::robot_start()
+{
+    if(false == dashboard_enable)
+    {
+        return;
+    }
+    if(robot_start_timer->isActive())
+        robot_start_timer->stop();
+    robot_start_timer->start(TIMEOUT_SEC);
+    QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("play").arg(robotClient->suffix);
+    robotClient->clientSendData(sendMsg);
+    emit forShow_To_Comm(forShowSendString(sendMsg));
+}
+
+void RobotOnThread::robot_pause()
+{
+    if(false == dashboard_enable)
+    {
+        return;
+    }
+    if(robot_pause_timer->isActive())
+        robot_pause_timer->stop();
+    robot_pause_timer->start(TIMEOUT_SEC);
+    QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("pause").arg(robotClient->suffix);
+    robotClient->clientSendData(sendMsg);
+    emit forShow_To_Comm(forShowSendString(sendMsg));
+}
+
+void RobotOnThread::robot_stop()
+{
+    if(false == dashboard_enable)
+    {
+        return;
+    }
+    if(robot_stop_timer->isActive())
+        robot_stop_timer->stop();
+    robot_stop_timer->start(TIMEOUT_SEC);
+    QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("stop").arg(robotClient->suffix);
+    robotClient->clientSendData(sendMsg);
+    emit forShow_To_Comm(forShowSendString(sendMsg));
+}
+
+void RobotOnThread::setPro_Num(QString pro_num)
+{
+    robot_pro_num = pro_num;
+    setPro_Num_Timeout();
+}
+
+void RobotOnThread::setPro_Num_Timeout()
+{
+    if(false == dashboard_enable)
+    {
+        return;
+    }
+    if(setProtTimer->isActive())
+        setProtTimer->stop();
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
+    delete configRead;
+    if("true"==robotTypeEnable)
+    {
+        setProtTimer->start(TIMEOUT_SEC);
+        QString sendMsg = QString("%1load <%2.urp>%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix);
+        robotClient->clientSendData(sendMsg);
+        emit forShow_To_Comm(forShowSendString(sendMsg));
+    }
+}
+
+void RobotOnThread::robot_clientDisConnect(int clientID, QString IP, int Port)
+{
+    clientID = 0;
+    IP = "";
+    Port = 0;
+    dashboard_enable = false;
+    emit forShow_To_Comm(forShowString(QString(tr("Dashboard Server功能已停止!"))));
 }

@@ -68,7 +68,14 @@ void ScannerOnThread::timerTimeOut()
         scantimer->stop();
 
     canScan = true;
-    if(3 > scanCount)//3次扫描机会
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString scan_times   = configRead->value(SCANNER_SCAN_TIMES).toString();
+    delete configRead;
+    if(0>=scan_times.toInt()||""==scan_times)
+    {
+        scan_times = "3";
+    }
+    if(scan_times.toInt() > scanCount)//3次扫描机会
     {
         scannerScanSN(auto_Scan);
         return;

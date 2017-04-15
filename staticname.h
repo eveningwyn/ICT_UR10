@@ -20,6 +20,7 @@ static QString SCANNER_BAUD_RATE_CONTROL    = "/ScannerParameter/BaudRateControl
 static QString SCANNER_DATA_BITS_CONTROL    = "/ScannerParameter/DataBitsControl";
 static QString SCANNER_PARITY_BITS_CONTROL  = "/ScannerParameter/ParityBitsControl";
 static QString SCANNER_STOP_BITS_CONTROL    = "/ScannerParameter/StopBitsControl";
+static QString SCANNER_SCAN_TIMES           = "/ScannerParameter/ScanTimes";
 
 static QString SERVER_IP_ADDRESS   = "/RobotParameter/IPaddress";
 static QString SERVER_PORT         = "/RobotParameter/Port";
@@ -50,6 +51,7 @@ static QString ICT_RED_LIMIT                = "/ICT/RedLimit";
 static QString ICT_YIELD_BASE               = "/ICT/YieldBase";
 static QString ICT_YIELD_LIMIT              = "/ICT/YieldLimit";
 static QString ICT_TEST_TIMEOUT             = "/ICT/TestTimeout";
+static QString ICT_OPEN_WAIT_TIME           = "/ICT/OpenWaitTime";
 
 static QString PREFIX = "@";
 static QString SUFFIX = "\n";

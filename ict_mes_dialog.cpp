@@ -26,6 +26,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     QString yield_base = configRead->value(ICT_YIELD_BASE).toString();
     QString yield_limit = configRead->value(ICT_YIELD_LIMIT).toString();
     QString test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString();
+    QString vacuum_time = configRead->value(ICT_OPEN_WAIT_TIME).toString();
     delete configRead;
     int flag = 0;
     if(""==driveName)
@@ -98,6 +99,11 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         test_timeout = "180";
         flag++;
     }
+    if(0>=vacuum_time.toInt()||""==vacuum_time)
+    {
+        vacuum_time = "15";
+        flag++;
+    }
     ui->lineEdit_ICT_DriveName->setText(driveName);
     ui->lineEdit_SN_FileName->setText(sn_file_name);
     ui->lineEdit_SN_Name->setText(sn_name);
@@ -112,6 +118,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     ui->lineEdit_Yield_base->setText(yield_base);
     ui->lineEdit_Yield_limit->setText(yield_limit);
     ui->lineEdit_testTimeout->setText(test_timeout);
+    ui->lineEdit_vacuum_Time->setText(vacuum_time);
     if(0<flag)
     {
         saveICTConfig();
@@ -172,5 +179,12 @@ void ICT_MES_Dialog::saveICTConfig()
     configWrite->setValue(ICT_YIELD_BASE,ui->lineEdit_Yield_base->text());
     configWrite->setValue(ICT_YIELD_LIMIT,ui->lineEdit_Yield_limit->text());
     configWrite->setValue(ICT_TEST_TIMEOUT,ui->lineEdit_testTimeout->text());
+    QString vacuum_time = ui->lineEdit_vacuum_Time->text();
+    if(0>=vacuum_time.toInt()||""==vacuum_time)
+    {
+        vacuum_time = "15";
+    }
+    ui->lineEdit_vacuum_Time->setText(vacuum_time);
+    configWrite->setValue(ICT_OPEN_WAIT_TIME,vacuum_time);
     delete configWrite;
 }

@@ -110,7 +110,8 @@ void RobotDialog::on_pushButtonAddType_clicked()
         return;
     }
     QString typeSet = ui->comboBoxType->currentText();
-    QString pro_numSet = ui->comboBoxPro_Num->currentText();
+//    QString pro_numSet = ui->comboBoxPro_Num->currentText();
+    QString pro_numSet = ui->lineEdit_Pro_Num->text();
     QString typeTemp;
     QString pro_numTemp;
     for(int i=0;i<rowCount;i++)
@@ -166,10 +167,10 @@ void RobotDialog::on_pushButtonDelType_clicked()
             QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
             configWrite->remove(QString(ROBOT_TYPE).arg(typeTemp));
             configWrite->remove(QString(ROBOT_PRO_NUM).arg(typeTemp));
+            delete configWrite;
 
             ui->tableWidgetRobotType->removeRow(row);
             ui->tableWidgetRobotType->setFocusPolicy(Qt::NoFocus);
-            delete configWrite;
 
             saveConfig();//重新保存配置
             QMessageBox::warning(this,tr("删除"),tr("删除成功！"),QMessageBox::Ok);

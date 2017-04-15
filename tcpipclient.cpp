@@ -77,12 +77,16 @@ void TcpIpClient::DisConnect()
     emit clientDisConnect(this->clientID,this->peerAddress().toString(),this->peerPort());
 }
 
-void TcpIpClient::newConnect(const QString address, quint16 port)
+bool TcpIpClient::newConnect(const QString address, quint16 port)
 {
 //    this->abort();//关闭已有连接
     this->connectToHost(QHostAddress(address),port);
     if (!this->waitForConnected(3000))
+    {
         emit cliendErrorMsg(this->errorString()+"\n");
+        return false;
+    }
+    return true;
 }
 
 void TcpIpClient::closeConnect()

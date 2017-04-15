@@ -159,3 +159,24 @@ void DebugDialog::runDone()
     ui->pushButton_cylinder_up->setDisabled(false);
     ui->pushButton_cylinder_down->setDisabled(false);
 }
+
+void DebugDialog::on_pushButton_robot_start_clicked()
+{
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    emit ptr->ui_robot_start();
+    ui->pushButton_robot_start->setDisabled(true);
+}
+
+void DebugDialog::on_pushButton_robot_pause_clicked()
+{
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    emit ptr->ui_robot_pause();
+    ui->pushButton_robot_start->setDisabled(false);
+}
+
+void DebugDialog::on_pushButton_robot_stop_clicked()
+{
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    emit ptr->ui_robot_stop();
+    ui->pushButton_robot_start->setDisabled(false);
+}

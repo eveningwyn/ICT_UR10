@@ -42,6 +42,7 @@ void ScannerDialog::initializeInfo()
     QString dataBits_control   = configRead->value(SCANNER_DATA_BITS_CONTROL).toString();
     QString parityBits_control = configRead->value(SCANNER_PARITY_BITS_CONTROL).toString();
     QString stopBits_control   = configRead->value(SCANNER_STOP_BITS_CONTROL).toString();
+    QString scan_times   = configRead->value(SCANNER_SCAN_TIMES).toString();
     delete configRead;
     int flag = 0;
     if(""==portName)
@@ -95,6 +96,11 @@ void ScannerDialog::initializeInfo()
         stopBits_control = "1";
         flag++;
     }
+    if(0>=scan_times.toInt()||""==scan_times)
+    {
+        scan_times = "3";
+        flag++;
+    }
 
     ui->comboBoxPortNum->addItem(portName);
     ui->comboBoxBaudBits->setItemText(0,baudRate);
@@ -106,6 +112,7 @@ void ScannerDialog::initializeInfo()
     ui->comboBoxDataBits_Control->setItemText(0,dataBits_control);
     ui->comboBoxParityBits_Control->setItemText(0,parityBits_control);
     ui->comboBoxStopBits_Control->setItemText(0,stopBits_control);
+    ui->lineEdit_scan_times->setText(scan_times);
 
     if(0<flag)
     {
@@ -165,6 +172,12 @@ void ScannerDialog::saveConfig()
     QString dataBits_control = ui->comboBoxDataBits_Control->currentText();
     QString parityBits_control = ui->comboBoxParityBits_Control->currentText();
     QString stopBits_control = ui->comboBoxStopBits_Control->currentText();
+    QString scan_times = ui->lineEdit_scan_times->text();
+    if(0>=scan_times.toInt()||""==scan_times)
+    {
+        scan_times = "3";
+    }
+    ui->lineEdit_scan_times->setText(scan_times);
 
     QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     configWrite->setValue(SCANNER_PORT_NAME, portName);
@@ -177,6 +190,7 @@ void ScannerDialog::saveConfig()
     configWrite->setValue(SCANNER_DATA_BITS_CONTROL, dataBits_control);
     configWrite->setValue(SCANNER_PARITY_BITS_CONTROL, parityBits_control);
     configWrite->setValue(SCANNER_STOP_BITS_CONTROL, stopBits_control);
+    configWrite->setValue(SCANNER_SCAN_TIMES, scan_times);
     delete configWrite;
 }
 
