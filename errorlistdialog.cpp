@@ -28,6 +28,8 @@ void ErrorListDialog::recordErrorMessage(QString errorMsg)
     ui->textBrowserErrorList->insertPlainText(errorMsg);
     ui->textBrowserErrorList->moveCursor(QTextCursor::End);
     saveErrorToFile(errorMsg);
+    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
+    ptr->UI_show_error(errorMsg);
 }
 
 void ErrorListDialog::closeEvent(QCloseEvent *event)

@@ -12,9 +12,13 @@
 #include "debuglogindialog.h"
 #include "debugdialog.h"
 #include <QRegExp>
+#include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.03"
-
+#define PRO_VERSION  "V1.04"
+void ICT_UR10::on_actionAbout_triggered()
+{
+    QMessageBox::about(this,NULL,QString(tr("ICT_UR10 version is %1.\n\nBuilt on 2017-04-17.\n")).arg(PRO_VERSION));
+}
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
     QMainWindow(parent),
@@ -22,6 +26,12 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->mainToolBar->setHidden(true);
+    this->setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);
+    this->setFixedSize(QApplication::desktop()->width(),QApplication::desktop()->height()-70);
+
+//    this->setFixedSize(QApplication::desktop()->availableGeometry().width(),QApplication::desktop()->availableGeometry().height());
+//    this->setFixedSize(QApplication::desktop()->screenGeometry().width(),QApplication::desktop()->screenGeometry().height());
+//    this->showMaximized();
 
     totalQty = 0;
     passQty = 0;
@@ -50,6 +60,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     /*状态初始化*/
     robotIsInit = false;
+    mainAutoMode = true;//初始化为自动模式
 
     /*实例化对话框类对象*/
     commDlg = new CommunicationDialog(this);
@@ -77,6 +88,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(scan_on_thread,&ScannerOnThread::scanError,robot_on_thread,&RobotOnThread::scanError);
     connect(scan_on_thread,&ScannerOnThread::scanResult,ict,&ICT_Test_Obj::ict_Check_SN);
     connect(scan_on_thread,&ScannerOnThread::lineSensorStatus,robot_on_thread,&RobotOnThread::lineSensorStatus);
+    connect(scan_on_thread,&ScannerOnThread::readSnDone,robot_on_thread,&RobotOnThread::readSnDone);
 
     connect(robot_on_thread,&RobotOnThread::robot_Status,this,&ICT_UR10::update_Robot_Status);
     connect(robot_on_thread,&RobotOnThread::robot_Error_Msg,this,&ICT_UR10::showErrorMessage);
@@ -91,6 +103,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::setRunStatus,this,&ICT_UR10::runStatus);
     connect(robot_on_thread,&RobotOnThread::cylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
     connect(robot_on_thread,&RobotOnThread::robot_catchFail,ict,&ICT_Test_Obj::catchFail);
+    connect(robot_on_thread,&RobotOnThread::change_auto_debug_label,this,&ICT_UR10::change_auto_debug_label);
 
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
@@ -354,6 +367,13 @@ void ICT_UR10::showErrorMessage(QString errorMsg)
                 QMessageBox::warning(this,tr("警告"),QString(tr("%1")).arg(errorStr),QMessageBox::Ok);
                 emit ui_robot_stop();
             }
+            else
+            {
+                if(10==alarmGrade)
+                {
+                    //10级别只暂停，不做其他处理
+                }
+            }
         }
     }
     else
@@ -387,13 +407,13 @@ void ICT_UR10::Enable()
 void ICT_UR10::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton button;
-    button = QMessageBox::warning(this,tr("退出应用"),tr("退出应用程序？"),QMessageBox::Yes|QMessageBox::No);
+    button = QMessageBox::warning(this,NULL,tr("退出当前应用程序?"),QMessageBox::Yes|QMessageBox::No);
 
-    if (button == QMessageBox::No)
+    if (QMessageBox::No == button)
     {
         event->ignore();  //ignore
     }
-    else if (button == QMessageBox::Yes)
+    else if (QMessageBox::Yes == button)
     {
         event->accept();  //accept
     }
@@ -412,16 +432,16 @@ void ICT_UR10::robotConnected(QString IP, int Port)
         emit robotPortExist(true);
         setRobotReady(true);
         ui->pushButton_Auto_Debug->setDisabled(false);
-        on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
+        ui->comboBox_Auto_Debug->setDisabled(false);
+//        on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
         if(false==robotIsInit)
         {
-//            if(QMessageBox::Yes==QMessageBox::warning(this,tr("安全提示"),tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
+//            if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
 //                                                      QMessageBox::Yes|QMessageBox::No))
 //            {
                 emit robotInit();
 //            }
         }
-        isAutoRun = true;
         on_pushButton_Auto_Debug_clicked();
     }
 
@@ -443,8 +463,12 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
         robotInitStatus(false);
         setRobotReady(false);
         ui->pushButton_Auto_Debug->setDisabled(true);
+        ui->comboBox_Auto_Debug->setDisabled(true);
+        ui->comboBox_Auto_Debug->setCurrentIndex(0);//Robot断开时将模式选项设置为手动模式
+        ui->label_Auto_Debug->setText(tr("调试状态..."));
+        ui->label_Auto_Debug->setStyleSheet("");
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已断开\n")).arg(IP).arg(Port));
-        QMessageBox::warning(this,"警告",QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port),QMessageBox::Ok);
         emit sendErrorMsg(QString(tr("机器人:%1 %2 已断开!\n")).arg(IP).arg(Port));
     }
 }
@@ -555,7 +579,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
                 //打开三色灯_红灯
                 emit light_Red_Green_Yellow_Buzzer("Red light open");
                 lightCount = 1;
-                if(QMessageBox::No==QMessageBox::warning(this,tr("测试提示"),QString(tr("目前已经连续测试NG %1PCS产品,请维护人员检查测试机是否异常!\n"
+                if(QMessageBox::No==QMessageBox::warning(this,NULL,QString(tr("目前已经连续测试NG %1PCS产品,请维护人员检查测试机是否异常!\n"
                                                                                     "是否清零连续测试NG次数的统计？\n"
                                                                                     "不清零请选择Yes,清零请选择No\n")).arg(failCount),
                                                          QMessageBox::Yes|QMessageBox::No))
@@ -586,7 +610,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
 
     if(yield_base.toInt() <= totalQtyTemp && yield_limit.toFloat() > yieldTemp)
     {
-        if(QMessageBox::Yes ==QMessageBox::warning(this,tr("测试良率警告"),
+        if(QMessageBox::Yes ==QMessageBox::warning(this,NULL,
                                                    QString(tr("已连续测试%1PCS产品，良率为%2%，良率值较低，请检查ICT测试机!\n"
                                                               "是否解除当前良率检测，重新统计？\n解除请选择Yes,不解除请选择No\n"))
                                                    .arg(totalQtyTemp).arg(yieldTemp*100),QMessageBox::Yes|QMessageBox::No))
@@ -693,7 +717,6 @@ void ICT_UR10::runStatus(bool isAuto)
     {
         ui->comboBoxTypeSelect->setDisabled(isAuto);
     }
-//    ui->pushButton_Auto_Debug->setDisabled(isAuto);
     if(tr("登出")==ui->actionLogin->text())
     {
         ui->actionScanner->setDisabled(isAuto);
@@ -703,10 +726,16 @@ void ICT_UR10::runStatus(bool isAuto)
 //        commDlg->disEnable(isAuto);
         errorDlg->disEnable(isAuto);
     }
+    ui->pushButton_Auto_Debug->setDisabled(isAuto);
 }
 
 void ICT_UR10::on_actionDebug_triggered()
 {
+    if(true==mainAutoMode||tr("自动状态...")==ui->label_Auto_Debug->text())
+    {
+        QMessageBox::warning(this,NULL,tr("注意：请连接Robot并切换到手动模式后,再重新进入Debug界面!"));
+        return;
+    }
     DebugLoginDialog debugLoginDlg;
     if(QDialog::Accepted==debugLoginDlg.exec())
     {
@@ -726,7 +755,7 @@ void ICT_UR10::on_actionDebug_triggered()
         connect(&debugDlg,&DebugDialog::ict_start_test,ict,&ICT_Test_Obj::testStart);
         connect(&debugDlg,&DebugDialog::debug_CylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
         connect(robot_on_thread,&RobotOnThread::debugRunDone,&debugDlg,&DebugDialog::runDone);
-//        emit robotSetAutoMode(false);
+        emit robotSetAutoMode(false);
         debugDlg.exec();
 //        emit robotSetAutoMode(true);
     }
@@ -734,19 +763,47 @@ void ICT_UR10::on_actionDebug_triggered()
 
 void ICT_UR10::on_pushButton_Auto_Debug_clicked()
 {
-    if(false == isAutoRun)
+//    if(false == isAutoRun)
+//    {
+//        QMessageBox::warning(this,NULL,tr("切换至自动模式,请注意人员与设备安全!"));
+//        isAutoRun = true;
+//        ui->pushButton_Auto_Debug->setText(tr("自动"));
+//    }
+//    else
+//    {
+//        isAutoRun = false;
+//        ui->pushButton_Auto_Debug->setText(tr("手动"));
+//    }
+//    emit robotSetAutoMode(isAutoRun);
+//    runStatus(isAutoRun);
+
+    if(true == isAutoRun)
     {
-        QMessageBox::warning(this,tr("提示"),tr("切换至自动模式,请注意人员与设备安全!"));
-        isAutoRun = true;
-        ui->pushButton_Auto_Debug->setText(tr("自动"));
+        return;
+    }
+    bool modeTemp = mainAutoMode;
+    if(tr("手动模式")==ui->comboBox_Auto_Debug->currentText())
+    {
+        mainAutoMode = false;
     }
     else
     {
-        isAutoRun = false;
-        ui->pushButton_Auto_Debug->setText(tr("手动"));
+        if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("请通过手动操作机器人控制面板，使得机器人安全回到初始位!\n"
+                                             "如果一定要进行此项操作,否则易出现安全问题!\n"
+                                             "未进行此项操作请选择Yes,已进行此项操作请选择No\n"),QMessageBox::Yes|QMessageBox::No))
+        {
+            ui->comboBox_Auto_Debug->setCurrentIndex(0);
+            return;
+        }
+        if(tr("自动模式")==ui->comboBox_Auto_Debug->currentText())
+        {
+            mainAutoMode = true;
+        }
     }
-    emit robotSetAutoMode(isAutoRun);
-    runStatus(isAutoRun);
+    if(modeTemp!=mainAutoMode)
+    {
+        emit robotSetAutoMode(mainAutoMode);
+    }
 }
 
 void ICT_UR10::on_pushButton_Robot_start_clicked()
@@ -761,7 +818,10 @@ void ICT_UR10::on_pushButton_Robot_pause_clicked()
 
 void ICT_UR10::on_pushButton_Robot_stop_clicked()
 {
-    emit ui_robot_stop();
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("是否停止机器人运行？"),QMessageBox::Yes|QMessageBox::No))
+    {
+        emit ui_robot_stop();
+    }
 }
 
 void ICT_UR10::checkErrorMsg(QString &errorMsgStr, uint &ALarmGrade)
@@ -790,7 +850,26 @@ void ICT_UR10::checkErrorMsg(QString &errorMsgStr, uint &ALarmGrade)
     errorFile.close();
 }
 
-void ICT_UR10::on_actionAbout_triggered()
+void ICT_UR10::change_auto_debug_label(QString labelStr)
 {
-    QMessageBox::about(this,tr("版本"),QString(tr("2017-04-15\n当前软件版本为：%1\n")).arg(PRO_VERSION));
+    ui->label_Auto_Debug->setText(labelStr);
+//    if(tr("登出")==ui->actionLogin->text())
+//    {
+//        ui->actionDebug->setDisabled(mainAutoMode);
+//    }
+    if(ui->label_Auto_Debug->text().contains(tr("调试状态")))
+    {
+        ui->label_Auto_Debug->setStyleSheet("");
+    }
+    else
+    {
+        ui->label_Auto_Debug->setStyleSheet("background-color: rgb(0, 255, 0)");
+    }
+}
+
+void ICT_UR10::UI_show_error(QString errorStr)
+{
+    ui->textBrowser_show_error->moveCursor(QTextCursor::End);
+    ui->textBrowser_show_error->insertPlainText(errorStr);
+    ui->textBrowser_show_error->moveCursor(QTextCursor::End);
 }

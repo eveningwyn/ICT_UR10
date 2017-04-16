@@ -54,7 +54,8 @@ private:
     bool scannerIsReady;
     bool robotIsReady;
     bool ictIsReady;
-    bool mainInitDone;
+//    bool mainInitDone;
+    bool mainAutoMode;
 
     void checkErrorMsg(QString &errorMsgStr, uint &ALarmGrade);
 
@@ -118,6 +119,8 @@ public slots:
     void setRobotReady(bool isReady);
     void setIctReady(bool isReady);
     void runStatus(bool isAuto);
+    void change_auto_debug_label(QString labelStr);
+    void UI_show_error(QString errorStr);
 
 private slots:
     void on_actionScanner_triggered();

@@ -301,7 +301,7 @@
    <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox_9">
      <property name="title">
-      <string>UR-启动_暂停_停止</string>
+      <string>Robot 控制命令</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_10">
       <item row="0" column="1">
@@ -338,13 +338,15 @@
           <height>45</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 0, 0);</string>
+        </property>
         <property name="text">
-         <string>停止</string>
+         <string>紧急停止</string>
         </property>
        </widget>
       </item>
      </layout>
-     <zorder>groupBox_3</zorder>
      <zorder>pushButton_robot_start</zorder>
      <zorder>pushButton_robot_pause</zorder>
      <zorder>pushButton_robot_stop</zorder>

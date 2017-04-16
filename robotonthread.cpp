@@ -84,7 +84,8 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         robotInitDone = true;
         emit robot_Status(tr("机器人:初始化完成"));
         emit robotReady(true);
-        emit setRunStatus(robotAutoMode);
+//        emit setRunStatus(robotAutoMode);
+        emit setRunStatus(false);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init done ACK"));
         return;
     }
@@ -115,11 +116,17 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             emit startScan(true);
             return;
         }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Read SN Done ACK")))
+        {
+            if(snReadTimer->isActive())
+                snReadTimer->stop();
+            return;
+        }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan done ACK")))
         {
             if(snResultTimer->isActive())
                 snResultTimer->stop();
-            infoLineReadyTimer->start(TIMEOUT_SEC);
+            //infoLineReadyTimer->start(TIMEOUT_SEC);
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan error ACK")))
@@ -239,6 +246,17 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
     {
         if(setRunModeTimer->isActive())
             setRunModeTimer->stop();
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Auto mode ACK")))
+        {
+            emit change_auto_debug_label(tr("自动状态..."));
+        }
+        else
+        {
+            if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Debug mode ACK")))
+            {
+                emit change_auto_debug_label(tr("调试状态..."));
+            }
+        }
         return;
     }
     if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line ready ACK"))) ||
@@ -253,6 +271,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
 void RobotOnThread::init_Robot()
 {
     initTimer = new QTimer(this);
+    snReadTimer = new QTimer(this);
     snResultTimer = new QTimer(this);
     scanErrorTimer = new QTimer(this);
     testResultTimer = new QTimer(this);
@@ -294,6 +313,7 @@ void RobotOnThread::init_Robot()
     connect(robotServer,&TcpIpServer::serverReadData,this,&RobotOnThread::robotReadData);
 
     connect(initTimer,&QTimer::timeout,this,&RobotOnThread::robot_Init);
+    connect(snReadTimer,&QTimer::timeout,this,&RobotOnThread::readSnDone);
     connect(snResultTimer,&QTimer::timeout,this,&RobotOnThread::scanDone);
     connect(scanErrorTimer,&QTimer::timeout,this,&RobotOnThread::scanError);
     connect(testResultTimer,&QTimer::timeout,this,&RobotOnThread::testDone);
@@ -346,6 +366,14 @@ void RobotOnThread::robot_Init()
         initTimer->stop();
     initTimer->start(TIMEOUT_SEC);
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init"));
+}
+
+void RobotOnThread::readSnDone()
+{
+    if(snReadTimer->isActive())
+        snReadTimer->stop();
+    snReadTimer->start(TIMEOUT_SEC);
+    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Read SN Done"));
 }
 
 void RobotOnThread::snCheckResult(QString sn,bool checkResult)
@@ -618,13 +646,13 @@ void RobotOnThread::robot_readData(int clientID, QString IP, int Port, QString m
             robot_stop_timer->stop();
         return;
     }
-    if(0 <= msg.indexOf(QString("%1Loading program: <%2.urp>%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
+    if(0 <= msg.indexOf(QString("%1Loading program: /programs/%2.urp%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
     {
         if(setProtTimer->isActive())
             setProtTimer->stop();
         return;
     }
-    if(0 <= msg.indexOf(QString("%1File not found: <%2.urp>%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
+    if(0 <= msg.indexOf(QString("%1File not found: /programs/%2.urp%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
     {
         if(setProtTimer->isActive())
             setProtTimer->stop();
@@ -677,6 +705,10 @@ void RobotOnThread::robot_stop()
 
 void RobotOnThread::setPro_Num(QString pro_num)
 {
+    if(""==pro_num)
+    {
+        return;
+    }
     robot_pro_num = pro_num;
     setPro_Num_Timeout();
 }
@@ -695,7 +727,7 @@ void RobotOnThread::setPro_Num_Timeout()
     if("true"==robotTypeEnable)
     {
         setProtTimer->start(TIMEOUT_SEC);
-        QString sendMsg = QString("%1load <%2.urp>%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix);
+        QString sendMsg = QString("%1load /programs/%2.urp%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix);
         robotClient->clientSendData(sendMsg);
         emit forShow_To_Comm(forShowSendString(sendMsg));
     }

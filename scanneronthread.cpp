@@ -32,6 +32,7 @@ void ScannerOnThread::scannerReadSN()
    {
        return;
    }
+   emit readSnDone();
    if(true == auto_Scan)
        emit scanResult(sn);
    scantimer->stop();

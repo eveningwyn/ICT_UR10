@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QRegExp>
+#include <QThread>
 //#include <QDebug>
 
 //#define HOLD_ON 15
@@ -342,6 +343,7 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
     snTemp.replace("\n","");
     if(false == ictEnable)
     {
+        QThread::msleep(2000);
         emit ict_Check_SN_Result(snTemp,true);
         snTemp = "";
         return;

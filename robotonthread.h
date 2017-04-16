@@ -23,6 +23,7 @@ private:
 
     void informationCheck(QString msg);
     QTimer *initTimer;
+    QTimer *snReadTimer;
     QTimer *snResultTimer;
     QTimer *scanErrorTimer;
     QTimer *testResultTimer;
@@ -61,6 +62,7 @@ signals:
     void cylinderUpDown(QString str);
     void robot_catchFail();
     void debugRunDone();
+    void change_auto_debug_label(QString labelStr);
 
 public slots:
     void init_Robot();//初始化服务器连接
@@ -97,6 +99,7 @@ public slots:
     void robot_stop();
     void robot_readData(int clientID,QString IP,int Port,QString msg);
     void robot_clientDisConnect(int clientID,QString IP,int Port);
+    void readSnDone();
 
 private slots:
     void scanDone();
