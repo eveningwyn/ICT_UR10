@@ -84,7 +84,6 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         robotInitDone = true;
         emit robot_Status(tr("机器人:初始化完成"));
         emit robotReady(true);
-//        emit setRunStatus(robotAutoMode);
         emit setRunStatus(false);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init done ACK"));
         return;
@@ -155,12 +154,12 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             {
                 emit cylinderUpDown(CONTROL_OUT1_OFF);
             }
+            emit setRunStatus(false);
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Sort complete ACK"));
+            emit sortComplete(testPass);//发出分拣完成信号
             checkPass = false;
             barcode = "";
             testPass = false;
-            emit setRunStatus(false);
-            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Sort complete ACK"));
-            emit sortComplete();//发出分拣完成信号-----------------未启用
             return;
         }
     }

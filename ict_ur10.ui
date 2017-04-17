@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
+    <width>1202</width>
     <height>600</height>
    </rect>
   </property>
@@ -563,6 +563,168 @@
          </layout>
         </widget>
        </item>
+       <item row="0" column="7" rowspan="2">
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="minimumSize">
+          <size>
+           <width>250</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>每小时UPH</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_UPH_Pass">
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>新宋体</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="statusTip">
+             <string>临时PASS数量</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_UPH_Fail">
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>新宋体</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="statusTip">
+             <string>临时PASS数量</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="minimumSize">
+             <size>
+              <width>70</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>UPH_Pass：</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="minimumSize">
+             <size>
+              <width>70</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>UPH_Fail：</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="minimumSize">
+             <size>
+              <width>70</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(85, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>UPH_合计：</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_UPH_Qty">
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>新宋体</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="statusTip">
+             <string>临时PASS数量</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="3">
+           <widget class="QLabel" name="label_UPH_time">
+            <property name="text">
+             <string>时间段：</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -599,7 +761,7 @@
       </property>
      </spacer>
     </item>
-    <item row="9" column="9">
+    <item row="9" column="10">
      <widget class="QGroupBox" name="groupBox_4">
       <property name="minimumSize">
        <size>
@@ -733,7 +895,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="8" rowspan="3" colspan="2">
+    <item row="0" column="9" rowspan="3" colspan="2">
      <widget class="QGroupBox" name="groupBox_5">
       <property name="minimumSize">
        <size>
@@ -800,17 +962,17 @@
       </layout>
      </widget>
     </item>
-    <item row="8" column="9">
+    <item row="8" column="10">
      <widget class="QTextBrowser" name="textBrowser_show_error"/>
     </item>
-    <item row="4" column="0" colspan="10">
+    <item row="4" column="0" colspan="11">
      <widget class="Line" name="line">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
-    <item row="8" column="0" colspan="9">
+    <item row="8" column="0" colspan="10">
      <widget class="QTableWidget" name="tableWidgetResultList">
       <property name="statusTip">
        <string>测试结果记录清单</string>
@@ -898,7 +1060,14 @@
       </column>
      </widget>
     </item>
-    <item row="9" column="8">
+    <item row="7" column="10">
+     <widget class="QLabel" name="labelResultList_2">
+      <property name="text">
+       <string>错误清单显示</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="9">
      <spacer name="horizontalSpacer_3">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -911,13 +1080,6 @@
       </property>
      </spacer>
     </item>
-    <item row="7" column="9">
-     <widget class="QLabel" name="labelResultList_2">
-      <property name="text">
-       <string>错误清单显示</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="mainMenuBar">
@@ -925,7 +1087,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>946</width>
+     <width>1202</width>
      <height>23</height>
     </rect>
    </property>

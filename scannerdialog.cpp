@@ -20,11 +20,11 @@ ScannerDialog::~ScannerDialog()
 }
 void ScannerDialog::on_pushButtonSetting_clicked()
 {
-    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存配置"),tr("请确认是否保存配置文件？"),
+    if(QMessageBox::Yes == QMessageBox::warning(this,NULL,tr("请确认是否保存配置文件？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
         saveConfig();
-        QMessageBox::warning(this,tr("保存配置"),tr("保存配置成功！\n"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("保存配置成功！\n"),QMessageBox::Ok);
     }
 }
 
@@ -117,7 +117,7 @@ void ScannerDialog::initializeInfo()
     if(0<flag)
     {
         saveConfig();
-        QMessageBox::warning(this,tr("提示"),tr("串口配置有部分参数已恢复默认设置，请检查参数配置！\n"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("串口配置有部分参数已恢复默认设置，请检查参数配置！\n"),QMessageBox::Ok);
     }
 }
 

@@ -313,7 +313,7 @@
          </size>
         </property>
         <property name="text">
-         <string>暂停</string>
+         <string>暂停运行</string>
         </property>
        </widget>
       </item>

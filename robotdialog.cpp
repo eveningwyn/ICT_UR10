@@ -67,7 +67,7 @@ void RobotDialog::initGetInfo()
     if(0<flag)
     {
         saveIPConfig();
-        QMessageBox::warning(this,tr("提示"),tr("IP地址和端口号有部分参数已恢复默认设置，请检查参数配置！\n"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("IP地址和端口号有部分参数已恢复默认设置，请检查参数配置！\n"),QMessageBox::Ok);
     }
 
     QString typeTemp = "";
@@ -93,11 +93,11 @@ void RobotDialog::initGetInfo()
 
 void RobotDialog::on_Setting_clicked()
 {
-    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存配置"),tr("确认保存配置参数？"),
+    if(QMessageBox::Yes == QMessageBox::warning(this,NULL,tr("确认保存配置参数？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
         saveIPConfig();
-        QMessageBox::warning(this,tr("保存配置"),tr("保存配置成功！\n"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("保存配置成功！\n"),QMessageBox::Ok);
     }
 }
 
@@ -106,7 +106,7 @@ void RobotDialog::on_pushButtonAddType_clicked()
     int rowCount = ui->tableWidgetRobotType->rowCount();//获取当前总行数
     if(rowCount > TYPE_TOTAL-1)
     {
-        QMessageBox::warning(this,tr("错误信息"),QString(tr("添加错误！\n只允许添加%1套产品类型！")).arg(TYPE_TOTAL),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,QString(tr("添加错误！\n只允许添加%1套产品类型！")).arg(TYPE_TOTAL),QMessageBox::Ok);
         return;
     }
     QString typeSet = ui->comboBoxType->currentText();
@@ -120,12 +120,12 @@ void RobotDialog::on_pushButtonAddType_clicked()
         pro_numTemp = ui->tableWidgetRobotType->item(i,1)->text();
         if(typeSet == typeTemp || pro_numSet == pro_numTemp)
         {
-            QMessageBox::warning(this,tr("错误信息"),tr("添加错误！\n这个参数在之前已经被添加！"),QMessageBox::Ok);
+            QMessageBox::warning(this,NULL,tr("添加错误！\n这个参数在之前已经被添加！"),QMessageBox::Ok);
             return;
         }
     }
 
-    if(QMessageBox::Yes == QMessageBox::warning(this,tr("新产品类型"),tr("请确认是否添加新的产品类型？"),
+    if(QMessageBox::Yes == QMessageBox::warning(this,NULL,tr("请确认是否添加新的产品类型？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
         isSave = false;
@@ -146,7 +146,7 @@ void RobotDialog::on_pushButtonDelType_clicked()
     }
     if(false==isSave)
     {
-        QMessageBox::warning(this,tr("错误信息"),tr("参数没有保存，无法删除信息！"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("参数没有保存，无法删除信息！"),QMessageBox::Ok);
         return;
     }
 
@@ -159,7 +159,7 @@ void RobotDialog::on_pushButtonDelType_clicked()
         {
             return;
         }
-        if(QMessageBox::Yes == QMessageBox::warning(this,tr("删除"),tr("请确认是否删除这个产品类型？"),
+        if(QMessageBox::Yes == QMessageBox::warning(this,NULL,tr("请确认是否删除这个产品类型？"),
                                                     QMessageBox::Yes|QMessageBox::No))
         {
             /**************删除本地配置文件的存储内容***************/
@@ -173,7 +173,7 @@ void RobotDialog::on_pushButtonDelType_clicked()
             ui->tableWidgetRobotType->setFocusPolicy(Qt::NoFocus);
 
             saveConfig();//重新保存配置
-            QMessageBox::warning(this,tr("删除"),tr("删除成功！"),QMessageBox::Ok);
+            QMessageBox::warning(this,NULL,tr("删除成功！"),QMessageBox::Ok);
         }
     }
 }
@@ -185,11 +185,11 @@ void RobotDialog::on_pushButtonSaveType_clicked()
         return;
     }
 
-    if(QMessageBox::Yes == QMessageBox::warning(this,tr("保存类型"),tr("请确认是否保存产品类型？"),
+    if(QMessageBox::Yes == QMessageBox::warning(this,NULL,tr("请确认是否保存产品类型？"),
                                                 QMessageBox::Yes|QMessageBox::No))
     {
         saveConfig();//保存配置
-        QMessageBox::warning(this,tr("保存类型"),tr("参数保存成功！"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("参数保存成功！"),QMessageBox::Ok);
     }
 }
 

@@ -27,7 +27,7 @@ void DebugLoginDialog::on_pushButton_Login_clicked()
     }
     else
     {
-        QMessageBox::warning(this,tr("错误"),tr("用户名或者密码输入错误！\n"),QMessageBox::Ok);
+        QMessageBox::warning(this,NULL,tr("用户名或者密码输入错误！\n"),QMessageBox::Ok);
         ui->lineEdit_UserID->clear();
         ui->lineEdit_PWD->clear();
         ui->lineEdit_UserID->setFocus();

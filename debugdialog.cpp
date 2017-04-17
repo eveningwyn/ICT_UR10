@@ -19,7 +19,7 @@ DebugDialog::~DebugDialog()
 
 void DebugDialog::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::warning(this,tr("安全提示"),tr("UR机器人需要复位，请注意人员和设备安全！\n"),QMessageBox::Ok);
+    QMessageBox::warning(this,NULL,tr("UR机器人需要复位，请注意人员和设备安全！\n"),QMessageBox::Ok);
     event->accept();  //accept
 }
 

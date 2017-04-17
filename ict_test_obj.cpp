@@ -136,33 +136,6 @@ void ICT_Test_Obj::init_ict()
     connect(hold_on_Timer,&QTimer::timeout,this,&ICT_Test_Obj::hold_on_Timeout);
     openTimer();
     pc_ict_Ping();
-
-//    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-//    QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-//    QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
-//    QString ict_ip_addr = configRead->value(ICT_LOCAL_DRIVE).toString();
-//    delete configRead;
-//    QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
-//    QString ICT_path = QString("%1:\\%2").arg(ict_ip_addr).arg(receive_path);
-
-//    QFile file(ICT_path);
-//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-//    {
-//        emit ict_Error_Msg(QString(tr("连接ICT测试机的本地文件失败!\n")));
-//        ictStatusStr = tr("ICT:已断开");
-//        emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
-//        emit ictIsReady(false);
-//        file.close();
-//        return ;
-//    }
-//    file.close();
-//    if(0==count)
-//    {
-//        ictStatusStr = tr("ICT:已连接");
-//        emit ict_Status(QString("%1,%2").arg(ictStatusStr).arg(ictEnableStr));
-//        emit ictIsReady(true);
-//        count++;
-//    }
 }
 
 void ICT_Test_Obj::statusReadTimeout()
@@ -355,12 +328,16 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
         QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
         QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+        //QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
+        //QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
         delete configRead;
         QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
+        //QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
 
         setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
+        //setIctInfo(result_path,"");
         snCheckCount = 0;
         testRunning = false;
         emit openSwitch(CONTROL_OUT2_ON);

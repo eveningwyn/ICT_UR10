@@ -38,7 +38,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
     if("scanner" == ui->comboBoxReceiver->currentText().toLower())
     {
         //ptr->manualStartScan(false);
-        QMessageBox::StandardButton rb = QMessageBox::warning(this,tr("提示"),
+        QMessageBox::StandardButton rb = QMessageBox::warning(this,NULL,
                                                               tr("在线扫描请选择Yes，离线扫描请选择No，取消请选择Cancel."),
                                                               QMessageBox::Cancel|QMessageBox::No|QMessageBox::Yes);
         if(rb==QMessageBox::Yes)
@@ -136,4 +136,5 @@ void CommunicationDialog::checkFileExist()
     {
         temp->mkdir(INFORMATION_FOLDER_NAME);
     }
+    delete temp;
 }

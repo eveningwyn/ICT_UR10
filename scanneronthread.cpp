@@ -186,8 +186,11 @@ void ScannerOnThread::controlBoardRead()
     if("@0!"==readStr)
     {
         //流水线已有载板
-        sensor1 = true;
-        sensor2 = true;
+        if(true==sensor2Temp && false==sensor1Temp)
+        {
+            sensor1 = true;
+            sensor2 = true;
+        }
     }
     else
     {
@@ -250,7 +253,7 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
     if(CONTROL_OUT2_ON==writeMsg)
     {
         if(!out2Timer->isActive())
-            out2Timer->start(100);
+            out2Timer->start(200);
         return;
     }
 }

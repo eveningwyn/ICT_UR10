@@ -61,7 +61,7 @@ void ErrorListDialog::on_pushButtonSaveErrorList_clicked()
 
 void ErrorListDialog::on_pushButtonClearErrorList_clicked()
 {
-    if(QMessageBox::Yes==QMessageBox::warning(this,tr("提示"),tr("请确认是否清空错误记录？"),QMessageBox::Yes|QMessageBox::No))
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("请确认是否清空错误记录？"),QMessageBox::Yes|QMessageBox::No))
         ui->textBrowserErrorList->clear();
 }
 
@@ -94,4 +94,5 @@ void ErrorListDialog::checkFileExist()
     {
         temp->mkdir(INFORMATION_FOLDER_NAME);
     }
+    delete temp;
 }

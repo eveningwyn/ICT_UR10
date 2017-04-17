@@ -5,7 +5,6 @@
 #include "robotdialog.h"
 #include <QSettings>
 #include <QMessageBox>
-#include <QDateTime>
 #include <QFile>
 #include <QDir>
 #include "language.h"
@@ -14,7 +13,7 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.04"
+#define PRO_VERSION  "V1.05"
 void ICT_UR10::on_actionAbout_triggered()
 {
     QMessageBox::about(this,NULL,QString(tr("ICT_UR10 version is %1.\n\nBuilt on 2017-04-17.\n")).arg(PRO_VERSION));
@@ -29,10 +28,6 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     this->setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);
     this->setFixedSize(QApplication::desktop()->width(),QApplication::desktop()->height()-70);
 
-//    this->setFixedSize(QApplication::desktop()->availableGeometry().width(),QApplication::desktop()->availableGeometry().height());
-//    this->setFixedSize(QApplication::desktop()->screenGeometry().width(),QApplication::desktop()->screenGeometry().height());
-//    this->showMaximized();
-
     totalQty = 0;
     passQty = 0;
     failQty = 0;
@@ -42,6 +37,11 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     passQtyTemp = 0;
     failQtyTemp = 0;
     yieldTemp = 0.00;
+    UPH_Qty = 0;
+    UPH_Pass = 0;
+    UPH_Fail = 0;
+//    UPH_timer = new QTimer(this);
+//    connect(UPH_timer,&QTimer::timeout,this,&ICT_UR10::UPH_timer_timeout);
 
     /*实例化scanner类，并移入子线程thread1中*/
     thread1 = new QThread;//实例化thread1线程对象
@@ -104,6 +104,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::cylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
     connect(robot_on_thread,&RobotOnThread::robot_catchFail,ict,&ICT_Test_Obj::catchFail);
     connect(robot_on_thread,&RobotOnThread::change_auto_debug_label,this,&ICT_UR10::change_auto_debug_label);
+    connect(robot_on_thread,&RobotOnThread::sortComplete,this,&ICT_UR10::UI_sortComplete);
 
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
@@ -427,6 +428,10 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     QString robotIP = configRead->value(ROBOT_IP).toString();
     if(robotIP==IP)
     {
+//        if(!UPH_timer->isActive())
+//            UPH_timer->start(1*60*60);
+        UPH_Time = QDateTime::currentDateTime();
+        ui->label_UPH_time->setText(QString(tr("%1~")).arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss")));
         configRead->setValue(ROBOT_PORT,QString("%1").arg(Port));
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
         emit robotPortExist(true);
@@ -458,6 +463,8 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
+//        if(UPH_timer->isActive())
+//            UPH_timer->stop();
         emit robotPortExist(false);
         runStatus(false);
         robotInitStatus(false);
@@ -564,9 +571,9 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     QString yield_base = configRead->value(ICT_YIELD_BASE).toString();
     QString yield_limit = configRead->value(ICT_YIELD_LIMIT).toString();
     delete configRead;
-    if(yellow_limit.toInt()<=failCount || red_limit.toInt()<=failCount)
+    if((uint) yellow_limit.toInt()<=failCount ||(uint) red_limit.toInt()<=failCount)
     {
-        if(yellow_limit.toInt()<=failCount && red_limit.toInt()>failCount)
+        if((uint) yellow_limit.toInt()<=failCount && (uint) red_limit.toInt()>failCount)
         {
             //打开三色灯_黄灯
             emit light_Red_Green_Yellow_Buzzer("Yellow light open");
@@ -574,7 +581,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         }
         else
         {
-            if(red_limit.toInt()<=failCount)
+            if((uint) red_limit.toInt()<=failCount)
             {
                 //打开三色灯_红灯
                 emit light_Red_Green_Yellow_Buzzer("Red light open");
@@ -608,7 +615,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         lightCount = 0;
     }
 
-    if(yield_base.toInt() <= totalQtyTemp && yield_limit.toFloat() > yieldTemp)
+    if((uint) yield_base.toInt() <= totalQtyTemp && (uint) yield_limit.toFloat() > yieldTemp)
     {
         if(QMessageBox::Yes ==QMessageBox::warning(this,NULL,
                                                    QString(tr("已连续测试%1PCS产品，良率为%2%，良率值较低，请检查ICT测试机!\n"
@@ -633,6 +640,7 @@ void ICT_UR10::newFile()
     {
         temp->mkdir(LOCAL_DATA_FOLDER_NAME);
     }
+    delete temp;
 }
 
 void ICT_UR10::update_Scanner_Status(QString status)
@@ -763,20 +771,6 @@ void ICT_UR10::on_actionDebug_triggered()
 
 void ICT_UR10::on_pushButton_Auto_Debug_clicked()
 {
-//    if(false == isAutoRun)
-//    {
-//        QMessageBox::warning(this,NULL,tr("切换至自动模式,请注意人员与设备安全!"));
-//        isAutoRun = true;
-//        ui->pushButton_Auto_Debug->setText(tr("自动"));
-//    }
-//    else
-//    {
-//        isAutoRun = false;
-//        ui->pushButton_Auto_Debug->setText(tr("手动"));
-//    }
-//    emit robotSetAutoMode(isAutoRun);
-//    runStatus(isAutoRun);
-
     if(true == isAutoRun)
     {
         return;
@@ -818,6 +812,7 @@ void ICT_UR10::on_pushButton_Robot_pause_clicked()
 
 void ICT_UR10::on_pushButton_Robot_stop_clicked()
 {
+    emit ui_robot_pause();
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("是否停止机器人运行？"),QMessageBox::Yes|QMessageBox::No))
     {
         emit ui_robot_stop();
@@ -872,4 +867,47 @@ void ICT_UR10::UI_show_error(QString errorStr)
     ui->textBrowser_show_error->moveCursor(QTextCursor::End);
     ui->textBrowser_show_error->insertPlainText(errorStr);
     ui->textBrowser_show_error->moveCursor(QTextCursor::End);
+}
+
+void ICT_UR10::UI_sortComplete(bool testResultPass)
+{
+    QDateTime curTime_temp = QDateTime::currentDateTime();
+    if(UPH_Time.toString("hh")!=curTime_temp.toString("hh"))
+    {
+        ui->label_UPH_time->setText(QString(tr("%1~%2:00:00")).arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss")).arg(curTime_temp.toString("yyyy/MM/dd hh")));
+        ui->label_UPH_Qty->setText(QString("%1").arg(UPH_Qty));
+        ui->label_UPH_Pass->setText(QString("%1").arg(UPH_Pass));
+        ui->label_UPH_Fail->setText(QString("%1").arg(UPH_Fail));
+        //保存测试结果到csv文件
+        QString UPH_List = QString("%1,%2:00:00,%3,%4,%5\n").arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss"))
+                .arg(curTime_temp.toString("yyyy/MM/dd hh")).arg(UPH_Pass).arg(UPH_Fail).arg(UPH_Qty);
+
+        newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹
+
+        QFile UPH_csvFile(QString("..\\ICT Data/ICT_UR10_UPH_%1.csv").arg(curTime_temp.toString("yyyyMMdd")));
+        if (UPH_csvFile.open(QIODevice::ReadWrite))
+        {
+            if(0 == UPH_csvFile.size())
+            {
+                UPH_csvFile.write(QString("StartTime,EndTime,PassQty,FailQty,UPH_Qty\n").toLatin1());
+            }
+            UPH_csvFile.seek(UPH_csvFile.size());
+            UPH_csvFile.write(UPH_List.toLatin1());
+            UPH_csvFile.close();
+        }
+
+        UPH_Qty = 0;
+        UPH_Pass = 0;
+        UPH_Fail = 0;
+        UPH_Time = QDateTime::currentDateTime();
+    }
+    if(true == testResultPass)
+    {
+        UPH_Pass++;
+    }
+    else
+    {
+        UPH_Fail++;
+    }
+    UPH_Qty = UPH_Pass + UPH_Fail;
 }

@@ -55,7 +55,7 @@ signals:
     void startScan(bool autoScan);//触发scanner线程开始扫描
     void forShow_To_Comm(QString msg);//通讯信息显示
     void startTest();//ICT开始测试启动信号
-    void sortComplete();//Robot分拣完成信号
+    void sortComplete(bool testResultPass);//Robot分拣完成信号
     void robotReady(bool isReady);
     void recordTestResult(QString sn, QString result);//记录测试信息
     void setRunStatus(bool isAuto);//设置允许状态

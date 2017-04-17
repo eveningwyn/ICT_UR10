@@ -14,6 +14,7 @@
 #include <QTimer>
 #include "ict_test_obj.h"
 #include "mescheckobj.h"
+#include <QDateTime>
 
 namespace Ui {
 class ICT_UR10;
@@ -75,17 +76,22 @@ private:
     QString forShowString(QString str);//将字符串添加时间戳
 
     /*生产看板*/
-    int totalQty;//测试总数量
-    int passQty;//Pass数量
-    int failQty;//Fail数量
+    uint totalQty;//测试总数量
+    uint passQty;//Pass数量
+    uint failQty;//Fail数量
     float yield;//良率
     void update_UI_show();//更新看板数据
-    int failCount;//连续fail计数
-    int totalQtyTemp;
-    int passQtyTemp;//Pass数量
-    int failQtyTemp;//Fail数量
+    uint failCount;//连续fail计数
+    uint totalQtyTemp;
+    uint passQtyTemp;//Pass数量
+    uint failQtyTemp;//Fail数量
     float yieldTemp;//良率
-    int lightCount;//0表示三色灯没有工作，1表示红灯点亮，2表示绿灯点亮，3表示黄灯点亮，4表示蜂鸣器工作
+    uint lightCount;//0表示三色灯没有工作，1表示红灯点亮，2表示绿灯点亮，3表示黄灯点亮，4表示蜂鸣器工作
+    uint UPH_Qty;
+    uint UPH_Pass;
+    uint UPH_Fail;
+//    QTimer *UPH_timer;
+    QDateTime UPH_Time;
 
 signals:
     void init_scanner_robot_ict_mes();//启动子线程的初始化
@@ -121,6 +127,7 @@ public slots:
     void runStatus(bool isAuto);
     void change_auto_debug_label(QString labelStr);
     void UI_show_error(QString errorStr);
+    void UI_sortComplete(bool testResultPass);//Robot分拣完成信号-槽
 
 private slots:
     void on_actionScanner_triggered();
@@ -149,6 +156,7 @@ private slots:
     void on_pushButton_Robot_start_clicked();
     void on_pushButton_Robot_pause_clicked();
     void on_pushButton_Robot_stop_clicked();
+//    void UPH_timer_timeout();
 };
 
 #endif // ICT_UR10_H
