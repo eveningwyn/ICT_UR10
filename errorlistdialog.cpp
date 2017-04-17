@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include "language.h"
+#include <QSettings>
 
 ErrorListDialog::ErrorListDialog(QWidget *parent) :
     QDialog(parent),
@@ -73,9 +74,13 @@ void ErrorListDialog::disEnable(bool disable)
 
 void ErrorListDialog::saveErrorToFile(QString errorMsg)
 {
-    checkFileExist();
     QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
-    QFile file(QString(ERROR_FILE_NAME).arg(date));
+    checkFileExist(INFORMATION_FOLDER_NAME);
+    checkFileExist(QString("%1/%2").arg(INFORMATION_FOLDER_NAME).arg(date));
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString logIndex = configRead->value(LOG_INDEX).toString();
+    delete configRead;
+    QFile file(QString(ERROR_FILE_NAME).arg(date).arg(logIndex));
     if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
         QTextStream out(&file);
@@ -86,13 +91,16 @@ void ErrorListDialog::saveErrorToFile(QString errorMsg)
     }
 }
 
-void ErrorListDialog::checkFileExist()
+void ErrorListDialog::checkFileExist(QString fileName)
 {
     QDir *temp = new QDir;
-    bool fileExist = temp->exists(INFORMATION_FOLDER_NAME);
+    bool fileExist = temp->exists(fileName);
     if(!fileExist)
     {
-        temp->mkdir(INFORMATION_FOLDER_NAME);
+        temp->mkdir(fileName);
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        configRead->setValue(LOG_INDEX,"0");
+        delete configRead;
     }
     delete temp;
 }

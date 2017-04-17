@@ -9,9 +9,6 @@
 #include <QSettings>
 #include <QRegExp>
 #include <QThread>
-//#include <QDebug>
-
-//#define HOLD_ON 15
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 {
@@ -94,28 +91,7 @@ int ICT_Test_Obj::pc_ict_Ping()
         emit ictIsReady(true);
         count++;
     }
-    return 0;//调试用--------------------------------------------
-
-//    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-//    QString ict_ip_addr = configRead->value(ICT_LOCAL_IP).toString();
-//    delete configRead;
-//    QString pingStr = "ping " + ict_ip_addr + " -n 1";
-//    int time_s1 = QDateTime::currentDateTime().toString("ss").toInt();
-////    qDebug()<<"time_s1"<<time_s1;
-
-//    int ref = QProcess::execute(pingStr);
-////    qDebug()<<"ref"<<ref;
-
-//    int time_s2 = QDateTime::currentDateTime().toString("ss").toInt();
-////    qDebug()<<"time_s2"<<time_s2;
-
-//    int time_offset = time_s2 - time_s1;
-////    qDebug()<<"time_offset"<<time_offset;
-
-//    if(0 == ref && 0 == time_offset)
-//        return 0;
-//    else
-//        return -1;
+    return 0;
 }
 
 void ICT_Test_Obj::init_ict()
@@ -328,16 +304,12 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
         QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
         QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
-        //QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
-        //QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
         delete configRead;
         QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
-        //QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
 
         setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
-        //setIctInfo(result_path,"");
         snCheckCount = 0;
         testRunning = false;
         emit openSwitch(CONTROL_OUT2_ON);
@@ -419,7 +391,6 @@ void ICT_Test_Obj::send_ictTestResult()
     }
     if(!hold_on_Timer->isActive())
     {
-//        hold_on_Timer->start(HOLD_ON*1000);
         hold_on_Timer->start(vacuum_time.toInt()*1000);
     }
 }

@@ -13,7 +13,6 @@
 #include <QThread>
 #include <QTimer>
 #include "ict_test_obj.h"
-#include "mescheckobj.h"
 #include <QDateTime>
 
 namespace Ui {

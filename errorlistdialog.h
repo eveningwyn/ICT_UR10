@@ -21,7 +21,7 @@ private:
     Ui::ErrorListDialog *ui;
     void closeEvent(QCloseEvent *event);
     void saveErrorToFile(QString errorMsg);
-    void checkFileExist();
+    void checkFileExist(QString fileName);
 
 public slots:
     void recordErrorMessage(QString errorMsg);//错误记录清单

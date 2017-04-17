@@ -13,10 +13,10 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.05"
+#define PRO_VERSION  "V1.06"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("ICT_UR10 version is %1.\n\nBuilt on 2017-04-17.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("ICT_UR10 version is %1.\n\nBuilt on 2017-04-18.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -40,8 +40,6 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     UPH_Qty = 0;
     UPH_Pass = 0;
     UPH_Fail = 0;
-//    UPH_timer = new QTimer(this);
-//    connect(UPH_timer,&QTimer::timeout,this,&ICT_UR10::UPH_timer_timeout);
 
     /*实例化scanner类，并移入子线程thread1中*/
     thread1 = new QThread;//实例化thread1线程对象
@@ -428,8 +426,6 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     QString robotIP = configRead->value(ROBOT_IP).toString();
     if(robotIP==IP)
     {
-//        if(!UPH_timer->isActive())
-//            UPH_timer->start(1*60*60);
         UPH_Time = QDateTime::currentDateTime();
         ui->label_UPH_time->setText(QString(tr("%1~")).arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss")));
         configRead->setValue(ROBOT_PORT,QString("%1").arg(Port));
@@ -438,18 +434,12 @@ void ICT_UR10::robotConnected(QString IP, int Port)
         setRobotReady(true);
         ui->pushButton_Auto_Debug->setDisabled(false);
         ui->comboBox_Auto_Debug->setDisabled(false);
-//        on_comboBoxTypeSelect_currentTextChanged(ui->comboBoxTypeSelect->currentText());
         if(false==robotIsInit)
         {
-//            if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("是否让机器人进行初始化操作？\n在选择“Yes”之前，请确认机器人周边环境安全！"),
-//                                                      QMessageBox::Yes|QMessageBox::No))
-//            {
                 emit robotInit();
-//            }
         }
         on_pushButton_Auto_Debug_clicked();
     }
-
     delete configRead;
 }
 
@@ -463,8 +453,6 @@ void ICT_UR10::robotDisconnected(QString IP, int Port)
     delete configRead;
     if(robotIP==IP && robotPort==QString("%1").arg(Port))
     {
-//        if(UPH_timer->isActive())
-//            UPH_timer->stop();
         emit robotPortExist(false);
         runStatus(false);
         robotInitStatus(false);
@@ -677,7 +665,6 @@ void ICT_UR10::PC_Status()
 void ICT_UR10::setScannerReady(bool isReady)
 {
     scannerIsReady = isReady;
-//    scannerIsReady = true;//调试用-------------------------------------------
     PC_Status();
 }
 
@@ -690,19 +677,16 @@ void ICT_UR10::setRobotReady(bool isReady)
 void ICT_UR10::setIctReady(bool isReady)
 {
     ictIsReady = isReady;
-//    ictIsReady = true;//调试用-------------------------------------------
     PC_Status();
 }
 
 void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
 {
-//    if(true == robotIsReady)
-//    {
-        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(arg1)).toString();
-        delete configRead;
-        emit setType_Pro(pro_num);
-//    }
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(arg1)).toString();
+    delete configRead;
+    emit setType_Pro(pro_num);
+
 }
 
 void ICT_UR10::runStatus(bool isAuto)
@@ -871,6 +855,10 @@ void ICT_UR10::UI_show_error(QString errorStr)
 
 void ICT_UR10::UI_sortComplete(bool testResultPass)
 {
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString logIndex = configRead->value(LOG_INDEX).toString();
+    configRead->setValue(LOG_INDEX,QString("%1").arg(logIndex.toInt()+1));
+    delete configRead;
     QDateTime curTime_temp = QDateTime::currentDateTime();
     if(UPH_Time.toString("hh")!=curTime_temp.toString("hh"))
     {

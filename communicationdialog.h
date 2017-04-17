@@ -28,7 +28,7 @@ private:
     Ui::CommunicationDialog *ui;
     void closeEvent(QCloseEvent *event);
     void saveInfoToFile(QString msg);
-    void checkFileExist();
+    void checkFileExist(QString fileName);
 };
 
 #endif // COMMUNICATIONDIALOG_H

@@ -39,7 +39,6 @@ SOURCES += main.cpp\
     robotonthread.cpp \
     serialportobj.cpp \
     ict_test_obj.cpp \
-    mescheckobj.cpp \
     ict_mes_dialog.cpp \
     debugdialog.cpp \
     debuglogindialog.cpp
@@ -58,7 +57,6 @@ HEADERS  += ict_ur10.h \
     serialportobj.h \
     language.h \
     ict_test_obj.h \
-    mescheckobj.h \
     ict_mes_dialog.h \
     debugdialog.h \
     debuglogindialog.h

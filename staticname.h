@@ -68,9 +68,10 @@ static QString PREFIX_COMMAND_SUFFIX = "@%1\n";
 //#define CHECKIN              "CheckIn"
 //#define TESTRESULT           "TestResult"
 
-static QString INFORMATION_FILE_NAME   = "..\\log/Info_Log_%1.txt";
-static QString ERROR_FILE_NAME         = "..\\log/Error_Log_%1.txt";
+static QString INFORMATION_FILE_NAME   = "..\\log/%1/Info_Log_%2.txt";
+static QString ERROR_FILE_NAME         = "..\\log/%1/Error_Log_%2.txt";
 static QString INFORMATION_FOLDER_NAME = "..\\log";
+static QString LOG_INDEX               = "/LOG/LogIndex";
 
 static QString CONTROL_CHECK     = "ck";
 static QString CONTROL_OUT1_ON   = "on";
