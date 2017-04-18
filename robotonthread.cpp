@@ -391,7 +391,7 @@ void RobotOnThread::scanDone()
         snResultTimer->stop();
     if(true == checkPass)
     {
-        snResultTimer->start(TIMEOUT_SEC);
+        snResultTimer->start(TIMEOUT_SEC*2);
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
     }
     else
@@ -406,7 +406,7 @@ void RobotOnThread::scanError()
 {
     if(scanErrorTimer->isActive())
         scanErrorTimer->stop();
-    scanErrorTimer->start(TIMEOUT_SEC);
+    scanErrorTimer->start(TIMEOUT_SEC*2);
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
 }
 

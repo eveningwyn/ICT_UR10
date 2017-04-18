@@ -918,6 +918,12 @@
            <height>50</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <family>新宋体</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
          <item>
           <property name="text">
            <string>手动模式</string>

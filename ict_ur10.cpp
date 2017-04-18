@@ -13,7 +13,7 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.06"
+#define PRO_VERSION  "V1.06d"
 void ICT_UR10::on_actionAbout_triggered()
 {
     QMessageBox::about(this,NULL,QString(tr("ICT_UR10 version is %1.\n\nBuilt on 2017-04-18.\n")).arg(PRO_VERSION));
@@ -719,6 +719,7 @@ void ICT_UR10::runStatus(bool isAuto)
         errorDlg->disEnable(isAuto);
     }
     ui->pushButton_Auto_Debug->setDisabled(isAuto);
+    ui->comboBox_Auto_Debug->setDisabled(isAuto);
 }
 
 void ICT_UR10::on_actionDebug_triggered()
@@ -778,7 +779,7 @@ void ICT_UR10::on_pushButton_Auto_Debug_clicked()
             mainAutoMode = true;
         }
     }
-    if(modeTemp!=mainAutoMode)
+    if(modeTemp!=mainAutoMode||false==mainAutoMode)
     {
         emit robotSetAutoMode(mainAutoMode);
     }

@@ -302,13 +302,13 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
         QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
-        QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-        QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+        //QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+        //QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
         delete configRead;
-        QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
+        //QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
-        setIctInfo(receive_path,"");
+        //setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
         snCheckCount = 0;
         testRunning = false;
