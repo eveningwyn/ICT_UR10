@@ -13,10 +13,10 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.06d"
+#define PRO_VERSION  "V1.07"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("ICT_UR10 version is %1.\n\nBuilt on 2017-04-18.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-20.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -49,12 +49,14 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     /*实例化robot类，并移入子线程thread2中*/
     thread2 = new QThread;//实例化thread2线程对象
     robot_on_thread = new RobotOnThread;//实例化robot处理类对象
-    robot_on_thread->moveToThread(thread2);//将robot处理类对象放在线程中
+    //robot_on_thread->moveToThread(thread2);//将robot处理类对象放在线程中
+    robot_on_thread->moveToThread(thread1);//将robot处理类对象放在线程中
 
     /*实例化ICT类，并移入子线程thread3中*/
     thread3 = new QThread;//实例化thread3线程对象
     ict = new ICT_Test_Obj;
-    ict->moveToThread(thread3);//将ict处理类对象放在线程中
+    //ict->moveToThread(thread3);//将ict处理类对象放在线程中
+    ict->moveToThread(thread1);//将ict处理类对象放在线程中
 
     /*状态初始化*/
     robotIsInit = false;
@@ -135,6 +137,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::ui_robot_start,robot_on_thread,&RobotOnThread::robot_start);
     connect(this,&ICT_UR10::ui_robot_pause,robot_on_thread,&RobotOnThread::robot_pause);
     connect(this,&ICT_UR10::ui_robot_stop,robot_on_thread,&RobotOnThread::robot_stop);
+    connect(this,&ICT_UR10::robotPortExist,scan_on_thread,&ScannerOnThread::robot_Connected);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -180,12 +183,14 @@ void ICT_UR10::on_actionRobot_triggered()
     if("false"==robotTypeEnable.toLower())
     {
         ui->comboBoxTypeSelect->setDisabled(true);
+        ui->pushButtonTypeSelect->setDisabled(true);
     }
     else
     {
         if("true"==robotTypeEnable.toLower())
         {
             ui->comboBoxTypeSelect->setDisabled(false);
+            ui->pushButtonTypeSelect->setDisabled(false);
         }
     }
     delete configRead;
@@ -281,6 +286,7 @@ void ICT_UR10::init_UI()
     if("false"==robotTypeEnable)
     {
         ui->comboBoxTypeSelect->setDisabled(true);
+        ui->pushButtonTypeSelect->setDisabled(true);
     }
     delete configRead;
 
@@ -680,14 +686,13 @@ void ICT_UR10::setIctReady(bool isReady)
     PC_Status();
 }
 
-void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
-{
-    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(arg1)).toString();
-    delete configRead;
-    emit setType_Pro(pro_num);
-
-}
+//void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
+//{
+//    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+//    QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(arg1)).toString();
+//    delete configRead;
+//    emit setType_Pro(pro_num);
+//}
 
 void ICT_UR10::runStatus(bool isAuto)
 {
@@ -708,6 +713,7 @@ void ICT_UR10::runStatus(bool isAuto)
     if("true"==robotTypeEnable)
     {
         ui->comboBoxTypeSelect->setDisabled(isAuto);
+        ui->pushButtonTypeSelect->setDisabled(isAuto);
     }
     if(tr("登出")==ui->actionLogin->text())
     {
@@ -899,4 +905,16 @@ void ICT_UR10::UI_sortComplete(bool testResultPass)
         UPH_Fail++;
     }
     UPH_Qty = UPH_Pass + UPH_Fail;
+}
+
+void ICT_UR10::on_pushButtonTypeSelect_clicked()
+{
+    if(QMessageBox::No==QMessageBox::warning(this,NULL,tr("当前操作容易造成误操作,非专业人员禁止操作!\n是否停止切换程序号?"),QMessageBox::Yes|QMessageBox::No))
+    {
+        QString currType = ui->comboBoxTypeSelect->currentText();
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(currType)).toString();
+        delete configRead;
+        emit setType_Pro(pro_num);
+    }
 }

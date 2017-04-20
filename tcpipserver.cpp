@@ -1,5 +1,6 @@
 ﻿#include "tcpipserver.h"
 #include "staticname.h"
+#include <QException>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)
@@ -60,17 +61,24 @@ void TcpIpServer::disConnect(int clientID,QString IP,int Port)
 //指定客户端连接发消息
 void TcpIpServer::sendData(quint16 port, QString sendMsg)
 {
-    QByteArray sendByte = sendMsg.toLatin1();
-    for (int i=0;i<clientSocketID.count();i++)
+    try
     {
-        if (clientSocketList[i]->peerPort()==port)
+        QByteArray sendByte = sendMsg.toLatin1();
+        for (int i=0;i<clientSocketID.count();i++)
         {
-            clientSocketList[i]->write(sendByte);
-            return;
+            if (clientSocketList[i]->peerPort()==port)
+            {
+                clientSocketList[i]->write(sendByte);
+                return;
+            }
         }
+    //    emit sendError();
+        emit errorMessage(tr("The port number does not exist!\n"));
     }
-//    emit sendError();
-    emit errorMessage(tr("The port number does not exist!\n"));
+    catch(QException /*&ex*/)
+    {
+        emit errorMessage(tr("TcpIpServer Class error！"));
+    }
 }
 
 bool TcpIpServer::stratListen(QString address,quint16 port)

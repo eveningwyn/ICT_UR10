@@ -456,6 +456,7 @@ void RobotOnThread::set_PC_Status(bool isReady)
 void RobotOnThread::serverSendError()
 {
     initTimer->stop();
+    snReadTimer->stop();
     snResultTimer->stop();
     scanErrorTimer->stop();
     testResultTimer->stop();
@@ -474,6 +475,12 @@ void RobotOnThread::setRunModeTimeout()
 
 void RobotOnThread::setRobotRunMode(bool autoMode)
 {
+    snReadTimer->stop();
+    snResultTimer->stop();
+    scanErrorTimer->stop();
+    testResultTimer->stop();
+    returnResultTimer->stop();
+
     bool modeTemp = robotAutoMode;
     robotAutoMode = autoMode;
     if(false == modeTemp && true == robotAutoMode)
@@ -499,6 +506,15 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
 void RobotOnThread::setrobotPortExist(bool robot_exist)
 {
     robotPortExist = robot_exist;
+    if(false == robot_exist)
+    {
+        serverSendError();
+        PC_Is_Ready = false;
+        checkPass = false;
+        barcode = "";
+        testPass = false;
+        robotAutoMode = false;//初始化为手动模式
+    }
     emit robot_catchFail();//Robot断开，让ICT复位
 }
 
@@ -662,12 +678,12 @@ void RobotOnThread::robot_readData(int clientID, QString IP, int Port, QString m
 
 void RobotOnThread::robot_start()
 {
+    if(robot_start_timer->isActive())
+        robot_start_timer->stop();
     if(false == dashboard_enable)
     {
         return;
     }
-    if(robot_start_timer->isActive())
-        robot_start_timer->stop();
     robot_start_timer->start(TIMEOUT_SEC);
     QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("play").arg(robotClient->suffix);
     robotClient->clientSendData(sendMsg);
@@ -676,12 +692,12 @@ void RobotOnThread::robot_start()
 
 void RobotOnThread::robot_pause()
 {
+    if(robot_pause_timer->isActive())
+        robot_pause_timer->stop();
     if(false == dashboard_enable)
     {
         return;
     }
-    if(robot_pause_timer->isActive())
-        robot_pause_timer->stop();
     robot_pause_timer->start(TIMEOUT_SEC);
     QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("pause").arg(robotClient->suffix);
     robotClient->clientSendData(sendMsg);
@@ -690,12 +706,12 @@ void RobotOnThread::robot_pause()
 
 void RobotOnThread::robot_stop()
 {
+    if(robot_stop_timer->isActive())
+        robot_stop_timer->stop();
     if(false == dashboard_enable)
     {
         return;
     }
-    if(robot_stop_timer->isActive())
-        robot_stop_timer->stop();
     robot_stop_timer->start(TIMEOUT_SEC);
     QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("stop").arg(robotClient->suffix);
     robotClient->clientSendData(sendMsg);
@@ -714,12 +730,12 @@ void RobotOnThread::setPro_Num(QString pro_num)
 
 void RobotOnThread::setPro_Num_Timeout()
 {
+    if(setProtTimer->isActive())
+        setProtTimer->stop();
     if(false == dashboard_enable)
     {
         return;
     }
-    if(setProtTimer->isActive())
-        setProtTimer->stop();
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString robotTypeEnable = configRead->value(ROBOT_TYPE_ENABLE).toString();
     delete configRead;

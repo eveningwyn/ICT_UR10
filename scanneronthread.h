@@ -31,6 +31,7 @@ private:
     bool sensor1;
     bool sensor2;
     bool cylinderUp;
+    uint control_out2_count;
 
 signals:
     void scanResult(QString sn);//传送SN信息
@@ -49,6 +50,7 @@ public slots:
     void controlBoardRead();
     void controlBoardWrite(QString writeMsg);
     void checkSensor();
+    void robot_Connected(bool conn);
 
 private slots:
     void timerTimeOut();//扫描超时处理

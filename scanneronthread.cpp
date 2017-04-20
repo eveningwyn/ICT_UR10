@@ -119,6 +119,7 @@ void ScannerOnThread::init_Scanner()
     out1Timer = new QTimer(this);
     out2Timer = new QTimer(this);
     scanCount = 0;
+    control_out2_count = 0;
     prefix = "";
     suffix = "\r\n";
     connect(scanner,&SerialPortObj::serialReadReady,this,&ScannerOnThread::scannerReadSN);
@@ -253,7 +254,19 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
     if(CONTROL_OUT2_ON==writeMsg)
     {
         if(!out2Timer->isActive())
-            out2Timer->start(200);
+            out2Timer->start(100);
+        control_out2_count++;
+        return;
+    }
+    if(CONTROL_OUT2_OFF==writeMsg)
+    {
+        control_out2_count++;
+        if(2!=control_out2_count && 3!=control_out2_count)
+        {
+            if(out2Timer->isActive())
+                out2Timer->stop();
+            control_out2_count = 0;
+        }
         return;
     }
 }
@@ -270,8 +283,16 @@ void ScannerOnThread::out1TimerTimeOut()
 
 void ScannerOnThread::out2TimerTimeOut()
 {
-    if(out2Timer->isActive())
-        out2Timer->stop();
+    if(1==control_out2_count)
+    {
+        controlBoardWrite(CONTROL_OUT2_ON);
+        return;
+    }
+    if(2!=control_out2_count)
+    {
+        if(out2Timer->isActive())
+            out2Timer->stop();
+    }
     controlBoardWrite(CONTROL_OUT2_OFF);
 }
 
@@ -284,5 +305,17 @@ void ScannerOnThread::checkSensor()
     else
     {
         checkSensorTimer->start(500);
+    }
+}
+
+void ScannerOnThread::robot_Connected(bool conn)//V.106e版本引入，Robot连接或断开之后，关闭阻挡气缸
+{
+    controlBoardWrite(CONTROL_OUT1_OFF);
+    control_out2_count = 0;
+    if(true == conn)
+    {
+    }
+    else
+    {
     }
 }
