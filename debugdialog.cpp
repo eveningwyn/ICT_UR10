@@ -25,6 +25,7 @@ void DebugDialog::closeEvent(QCloseEvent *event)
 
 void DebugDialog::on_pushButton_moveToScan_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit moveToScan();
 }
 
@@ -49,21 +50,25 @@ void DebugDialog::on_pushButton_Scan_clicked()
 
 void DebugDialog::on_pushButton_pickUp_Carrier_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit fixturePickup();
 }
 
 void DebugDialog::on_pushButton_place_Carrier_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit fixturePlace();
 }
 
 void DebugDialog::on_pushButton_place_ICT_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit ictPlace();
 }
 
 void DebugDialog::on_pushButton_pickUp_ICT_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit ictPickup();
 }
 
@@ -85,11 +90,13 @@ void DebugDialog::on_pushButton_ICT_Run_clicked()
 
 void DebugDialog::on_pushButton_place_OK_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit placeOKPos();
 }
 
 void DebugDialog::on_pushButton_place_NG_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit placeNGPos();
 }
 
@@ -107,6 +114,7 @@ void DebugDialog::on_pushButton_cylinder_down_clicked()
 
 void DebugDialog::on_pushButton_return_clicked()
 {
+    if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
     emit returnSafePos();
 }
 

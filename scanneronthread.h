@@ -41,7 +41,7 @@ signals:
     void scannerIsReady(bool isReady);
     void scanError();
     void lineSensorStatus(bool sensor1True,bool sensor2True);
-    void readSnDone();
+    void readSnDone(bool readed);
 
 public slots:
     void init_Scanner();//初始化串口

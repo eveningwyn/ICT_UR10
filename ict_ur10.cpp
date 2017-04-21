@@ -13,10 +13,10 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.07"
+#define PRO_VERSION  "V1.08b (No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-20.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-21.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -49,14 +49,14 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     /*实例化robot类，并移入子线程thread2中*/
     thread2 = new QThread;//实例化thread2线程对象
     robot_on_thread = new RobotOnThread;//实例化robot处理类对象
-    //robot_on_thread->moveToThread(thread2);//将robot处理类对象放在线程中
-    robot_on_thread->moveToThread(thread1);//将robot处理类对象放在线程中
+    robot_on_thread->moveToThread(thread2);//将robot处理类对象放在线程中
+    //robot_on_thread->moveToThread(thread1);//将robot处理类对象放在线程中
 
     /*实例化ICT类，并移入子线程thread3中*/
     thread3 = new QThread;//实例化thread3线程对象
     ict = new ICT_Test_Obj;
-    //ict->moveToThread(thread3);//将ict处理类对象放在线程中
-    ict->moveToThread(thread1);//将ict处理类对象放在线程中
+    ict->moveToThread(thread3);//将ict处理类对象放在线程中
+    //ict->moveToThread(thread1);//将ict处理类对象放在线程中
 
     /*状态初始化*/
     robotIsInit = false;
@@ -501,10 +501,17 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     }
     testCount++;
 
+
+    QString pro_type = ui->comboBoxTypeSelect->currentText();
+    if(pro_type.isEmpty())
+    {
+        pro_type = "Default";
+    }
+
     ui->tableWidgetResultList->setRowCount(ui->tableWidgetResultList->rowCount() + 1);
     QDateTime time = QDateTime::currentDateTime();
     int row = ui->tableWidgetResultList->rowCount() - 1;
-    ui->tableWidgetResultList->setItem(row,0,new QTableWidgetItem(ui->comboBoxTypeSelect->currentText()));
+    ui->tableWidgetResultList->setItem(row,0,new QTableWidgetItem(pro_type));
     ui->tableWidgetResultList->setItem(row,1,new QTableWidgetItem(time.toString("yyyyMMdd")));
     ui->tableWidgetResultList->setItem(row,2,new QTableWidgetItem(time.toString("hh:mm:ss")));
     ui->tableWidgetResultList->setItem(row,3,new QTableWidgetItem(sn));
@@ -541,7 +548,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     ui->tableWidgetResultList->scrollToBottom();
 
     //保存测试结果到csv文件
-    QString datalist = QString("%1,%2,%3,%4,%5,%6,%7\n").arg(ui->comboBoxTypeSelect->currentText()).arg(time.toString("yyyyMMdd"))
+    QString datalist = QString("%1,%2,%3,%4,%5,%6,%7\n").arg(pro_type).arg(time.toString("yyyyMMdd"))
             .arg(time.toString("hh:mm:ss")).arg(sn).arg(result).arg(failCode).arg(totalQty);
 
     newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹

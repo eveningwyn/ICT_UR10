@@ -328,7 +328,7 @@ void ICT_Test_Obj::testTimeout()
         testTimer->stop();
     emit ict_light_Red_Green_Yellow_Buzzer("Red light open");
     emit ict_setRunStatus(false);
-    emit ict_Error_Msg(tr("ICT测试机测试超时！\nRobot将会复位，请注意安全！\n"));
+    emit ict_Error_Msg(tr("ICT测试机测试超时!\nRobot需要会复位，请注意安全!\n请清空ICT内部板子!\n"));
     emit ict_testTimeout();
 }
 

@@ -32,9 +32,11 @@ void ScannerOnThread::scannerReadSN()
    {
        return;
    }
-   emit readSnDone();
    if(true == auto_Scan)
+   {
+       emit readSnDone(true);
        emit scanResult(sn);
+   }
    scantimer->stop();
    scanner->clearBuffer();
    canScan = true;
@@ -86,7 +88,10 @@ void ScannerOnThread::timerTimeOut()
     scanCount = 0;
     emit scanner_Error_Msg(tr("扫描条码超时!\n"));
     if(true == auto_Scan)
+    {
+        emit readSnDone(false);
         emit scanError();
+    }
 }
 
 QString ScannerOnThread::forShowReceiveString(QString str)

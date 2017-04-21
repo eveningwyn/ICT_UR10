@@ -5,7 +5,7 @@
 #include "language.h"
 #include <QThread>
 
-#define TIMEOUT_SEC  1000
+#define TIMEOUT_SEC  1100
 
 RobotOnThread::RobotOnThread(QObject *parent) : QObject(parent)
 {
@@ -115,21 +115,27 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             emit startScan(true);
             return;
         }
-        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Read SN Done ACK")))
+        if((0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Read SN Done ACK")))
+                ||(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("No Read ACK"))))
         {
+            scanDoneState = true;
+            snCheckDoneState = false;
             if(snReadTimer->isActive())
                 snReadTimer->stop();
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan done ACK")))
         {
+            scanDoneState = false;
+            snCheckDoneState = true;
             if(snResultTimer->isActive())
                 snResultTimer->stop();
-            //infoLineReadyTimer->start(TIMEOUT_SEC);
             return;
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Scan error ACK")))
         {
+            scanDoneState = false;
+            snCheckDoneState = true;
             if(scanErrorTimer->isActive())
                 scanErrorTimer->stop();
             emit setRunStatus(false);
@@ -280,6 +286,7 @@ void RobotOnThread::init_Robot()
     infoLineReadyTimer = new QTimer(this);
 
     PC_Is_Ready = false;
+    readedSN = false;
     checkPass = false;
     barcode = "";
     testPass = false;
@@ -312,7 +319,7 @@ void RobotOnThread::init_Robot()
     connect(robotServer,&TcpIpServer::serverReadData,this,&RobotOnThread::robotReadData);
 
     connect(initTimer,&QTimer::timeout,this,&RobotOnThread::robot_Init);
-    connect(snReadTimer,&QTimer::timeout,this,&RobotOnThread::readSnDone);
+    connect(snReadTimer,&QTimer::timeout,this,&RobotOnThread::readSnDoneTimeout);
     connect(snResultTimer,&QTimer::timeout,this,&RobotOnThread::scanDone);
     connect(scanErrorTimer,&QTimer::timeout,this,&RobotOnThread::scanError);
     connect(testResultTimer,&QTimer::timeout,this,&RobotOnThread::testDone);
@@ -367,12 +374,27 @@ void RobotOnThread::robot_Init()
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init"));
 }
 
-void RobotOnThread::readSnDone()
+void RobotOnThread::readSnDone(bool readed)
+{
+    readedSN = readed;
+    readSnDoneTimeout();
+}
+
+void RobotOnThread::readSnDoneTimeout()
 {
     if(snReadTimer->isActive())
         snReadTimer->stop();
-    snReadTimer->start(TIMEOUT_SEC);
-    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Read SN Done"));
+    snReadTimer->start(TIMEOUT_SEC+50);
+    if(true == readedSN)
+    {
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Read SN Done"));
+    }
+    else
+    {
+//        snReadTimer->stop();//调试用----------------------------------
+//        scanDoneState = true;//调试用---------------------------------
+        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("No Read"));
+    }
 }
 
 void RobotOnThread::snCheckResult(QString sn,bool checkResult)
@@ -391,8 +413,12 @@ void RobotOnThread::scanDone()
         snResultTimer->stop();
     if(true == checkPass)
     {
-        snResultTimer->start(TIMEOUT_SEC*2);
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
+        snResultTimer->start(TIMEOUT_SEC*1.7);
+        if(true==scanDoneState)
+        {
+            if(!snReadTimer->isActive())
+                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan done"));
+        }
     }
     else
     {
@@ -406,8 +432,12 @@ void RobotOnThread::scanError()
 {
     if(scanErrorTimer->isActive())
         scanErrorTimer->stop();
-    scanErrorTimer->start(TIMEOUT_SEC*2);
-    robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
+    scanErrorTimer->start(TIMEOUT_SEC*1.7);
+    if(true==scanDoneState)
+    {
+        if(!snReadTimer->isActive())
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
+    }
 }
 
 void RobotOnThread::testResult(QString result)
@@ -429,14 +459,17 @@ void RobotOnThread::testDone()
 {
     if(testResultTimer->isActive())
         testResultTimer->stop();
-    testResultTimer->start(TIMEOUT_SEC);
-    if(true == testPass)
+    testResultTimer->start(TIMEOUT_SEC+135);
+    if(true==snCheckDoneState)
     {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Pass done"));
-    }
-    else
-    {
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fail done"));
+        if(true == testPass)
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Pass done"));
+        }
+        else
+        {
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Fail done"));
+        }
     }
 }
 
@@ -444,7 +477,7 @@ void RobotOnThread::roborReturn()
 {
     if(returnResultTimer->isActive())
         returnResultTimer->stop();
-    returnResultTimer->start(TIMEOUT_SEC);
+    returnResultTimer->start(TIMEOUT_SEC+90);
     robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot return"));
 }
 
@@ -487,7 +520,7 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
     {
         robot_Init();//Debug模式切换到Auto模式后，Robot需复位
     }
-    setRunModeTimer->start(TIMEOUT_SEC + 200);
+    setRunModeTimer->start(TIMEOUT_SEC + 205);
     if(true == robotInitDone)
     {
         if(true == robotAutoMode)
@@ -505,6 +538,8 @@ void RobotOnThread::setRobotRunMode(bool autoMode)
 
 void RobotOnThread::setrobotPortExist(bool robot_exist)
 {
+    scanDoneState = false;
+    snCheckDoneState = false;
     robotPortExist = robot_exist;
     if(false == robot_exist)
     {
@@ -619,24 +654,37 @@ void RobotOnThread::lineSensorStatus(bool sensor1True, bool sensor2True)
 
 void RobotOnThread::infromLineInfoToRobot()
 {
+    bool timerIsActive = true;
+    if(!initTimer->isActive() && !snReadTimer->isActive()
+            && !snResultTimer->isActive() && !scanErrorTimer->isActive()
+            && !testResultTimer->isActive() && !returnResultTimer->isActive()
+            && !setRunModeTimer->isActive())
+    {
+        timerIsActive = false;
+    }
+
     if(infoLineReadyTimer->isActive())
         infoLineReadyTimer->stop();
-    infoLineReadyTimer->start(TIMEOUT_SEC);
-    if(true == lineSensor1 && true == lineSensor2)
+    infoLineReadyTimer->start(TIMEOUT_SEC+333);
+    if((true==snCheckDoneState||true==scanDoneState)&&(false==timerIsActive))
     {
-        //告知Robot流水线已准备好
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
-    }
-    else
-    {
-        //告知Robot流水线未准备好
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
+        if(true == lineSensor1 && true == lineSensor2)
+        {
+            //告知Robot流水线已准备好
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+        }
+        else
+        {
+            //告知Robot流水线未准备好
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
+        }
     }
 }
 
 void RobotOnThread::ict_testTimeout()
 {
-    robot_Init();//ICT测试超时，robot复位
+//    robot_Init();//ICT测试超时，robot复位
+    robot_stop();//ICT测试超时，断开Robot连接
 }
 
 void RobotOnThread::robot_readData(int clientID, QString IP, int Port, QString msg)
@@ -684,7 +732,7 @@ void RobotOnThread::robot_start()
     {
         return;
     }
-    robot_start_timer->start(TIMEOUT_SEC);
+    robot_start_timer->start(TIMEOUT_SEC+77);
     QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("play").arg(robotClient->suffix);
     robotClient->clientSendData(sendMsg);
     emit forShow_To_Comm(forShowSendString(sendMsg));
@@ -698,7 +746,7 @@ void RobotOnThread::robot_pause()
     {
         return;
     }
-    robot_pause_timer->start(TIMEOUT_SEC);
+    robot_pause_timer->start(TIMEOUT_SEC+33);
     QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("pause").arg(robotClient->suffix);
     robotClient->clientSendData(sendMsg);
     emit forShow_To_Comm(forShowSendString(sendMsg));
@@ -712,7 +760,7 @@ void RobotOnThread::robot_stop()
     {
         return;
     }
-    robot_stop_timer->start(TIMEOUT_SEC);
+    robot_stop_timer->start(TIMEOUT_SEC+11);
     QString sendMsg = QString("%1%2%3").arg(robotClient->prefix).arg("stop").arg(robotClient->suffix);
     robotClient->clientSendData(sendMsg);
     emit forShow_To_Comm(forShowSendString(sendMsg));

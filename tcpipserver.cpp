@@ -61,24 +61,24 @@ void TcpIpServer::disConnect(int clientID,QString IP,int Port)
 //指定客户端连接发消息
 void TcpIpServer::sendData(quint16 port, QString sendMsg)
 {
-    try
+    QByteArray sendByte = sendMsg.toLatin1();
+    for (int i=0;i<clientSocketID.count();i++)
     {
-        QByteArray sendByte = sendMsg.toLatin1();
-        for (int i=0;i<clientSocketID.count();i++)
+        if (clientSocketList[i]->peerPort()==port)
         {
-            if (clientSocketList[i]->peerPort()==port)
+            try
             {
                 clientSocketList[i]->write(sendByte);
-                return;
             }
+            catch(QException /*&ex*/)
+            {
+                emit errorMessage(tr("TcpIpServer error!\n请将此信息反馈给开发人员."));
+            }
+            return;
         }
-    //    emit sendError();
-        emit errorMessage(tr("The port number does not exist!\n"));
     }
-    catch(QException /*&ex*/)
-    {
-        emit errorMessage(tr("TcpIpServer Class error！"));
-    }
+//    emit sendError();
+    emit errorMessage(tr("The port number does not exist!\n"));
 }
 
 bool TcpIpServer::stratListen(QString address,quint16 port)

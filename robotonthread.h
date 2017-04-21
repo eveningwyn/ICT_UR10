@@ -46,6 +46,10 @@ private:
     QTimer *robot_stop_timer;
     bool dashboard_enable;
 
+    bool readedSN;
+    bool scanDoneState;
+    bool snCheckDoneState;
+
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
     void robot_Error_Msg(QString errorMsg);//更新错误信号
@@ -99,7 +103,8 @@ public slots:
     void robot_stop();
     void robot_readData(int clientID,QString IP,int Port,QString msg);
     void robot_clientDisConnect(int clientID,QString IP,int Port);
-    void readSnDone();
+    void readSnDoneTimeout();
+    void readSnDone(bool readed);
 
 private slots:
     void scanDone();
