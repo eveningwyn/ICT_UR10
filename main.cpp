@@ -3,6 +3,11 @@
 //#include <qapplication.h>
 //  #include <stdio.h>
 //  #include <stdlib.h>
+#include <QException>
+#include <Windows.h>
+#include <DbgHelp.h>
+#include <QMessageBox>
+
 
 void outputMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -33,14 +38,40 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
     QString current_date = QString("(%1)").arg(current_date_time);
     QString message = QString("%1 %2 %3 %4").arg(text).arg(context_info).arg(msg).arg(current_date);
 
-    QFile file("log.txt");
+    QFile file("..\\log/crash-log.txt");
     file.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream text_stream(&file);
-    text_stream << message << "\r\n";
-    file.flush();
-    file.close();
-
+    {
+        QTextStream text_stream(&file);
+        text_stream << message << "\r\n";
+        file.flush();
+        file.close();
+    }
     mutex.unlock();
+}
+
+long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
+{
+    //这里弹出一个错误对话框并退出程序
+    EXCEPTION_RECORD* record = pException->ExceptionRecord;
+    QString errCode(QString::number(record->ExceptionCode,16));
+    QString errAdr(QString::number((uint)record->ExceptionAddress,16));
+    //QString errMod;
+
+    //Create the dump file
+    HANDLE hDumpFile = CreateFile((LPCWSTR)QString("..//log/crash.dmp").utf16(),
+                                  GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(hDumpFile != INVALID_HANDLE_VALUE)
+    {
+        MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+        dumpInfo.ExceptionPointers = pException;
+        dumpInfo.ThreadId = GetCurrentThreadId();
+        dumpInfo.ClientPointers = TRUE;
+        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
+        CloseHandle(hDumpFile);
+    }
+    QMessageBox::critical(NULL,"Crash",QString("Error Code: %1\nError Addr: %2\n")
+                          .arg(errCode).arg(errAdr),QMessageBox::Ok);
+    return EXCEPTION_EXECUTE_HANDLER;
 }
 
 int main(int argc, char *argv[])
@@ -48,9 +79,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     //注册MessageHandler
     qInstallMessageHandler(outputMessage);
+    SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
     ICT_UR10 w;
     w.show();
-//    qDebug("This is a debug message");
+//    int aa =1;
+//    int bb=0;
+//    int c =aa/bb;
 
     return a.exec();
 }

@@ -72,7 +72,7 @@ void TcpIpServer::sendData(quint16 port, QString sendMsg)
             }
             catch(QException /*&ex*/)
             {
-                emit errorMessage(tr("TcpIpServer error!\n请将此信息反馈给开发人员."));
+                qDebug("please return this error feedback to the developers");
             }
             return;
         }

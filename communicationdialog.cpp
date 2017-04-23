@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <QSettings>
+#include <QException>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -38,7 +39,6 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 
     if("scanner" == ui->comboBoxReceiver->currentText().toLower())
     {
-        //ptr->manualStartScan(false);
         QMessageBox::StandardButton rb = QMessageBox::warning(this,NULL,
                                                               tr("在线扫描请选择Yes，离线扫描请选择No，取消请选择Cancel."),
                                                               QMessageBox::Cancel|QMessageBox::No|QMessageBox::Yes);
@@ -76,7 +76,14 @@ void CommunicationDialog::on_pushButtonSend_clicked()
 
 void CommunicationDialog::forShowInfo(QString msg)
 {
-    saveInfoToFile(msg);
+    try
+    {
+        saveInfoToFile(msg);
+    }
+    catch(QException /*&ex*/)
+    {
+        qDebug("please return this error feedback to the developers");
+    }
     if((!(ui->checkBoxShowInfo->isChecked())) || "UI clear...\n"==msg)
     {
         ui->textBrowserCommunication->clear();
@@ -116,21 +123,31 @@ void CommunicationDialog::on_comboBoxReceiver_currentTextChanged(const QString &
 
 void CommunicationDialog::saveInfoToFile(QString msg)
 {
-    QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
-    checkFileExist(INFORMATION_FOLDER_NAME);
-    checkFileExist(QString("%1/%2").arg(INFORMATION_FOLDER_NAME).arg(date));
-    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-    QString logIndex = configRead->value(LOG_INDEX).toString();
-    delete configRead;
-    QFile file(QString(INFORMATION_FILE_NAME).arg(date).arg(logIndex));
-    if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
+    static QMutex comm_mutex;
+    comm_mutex.lock();
+    try
     {
-        QTextStream out(&file);
-        QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
-        out << msg;
-        QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
-        file.close();
+        QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
+        checkFileExist(INFORMATION_FOLDER_NAME);
+        checkFileExist(QString("%1/%2").arg(INFORMATION_FOLDER_NAME).arg(date));
+        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        QString logIndex = configRead->value(LOG_INDEX).toString();
+        delete configRead;
+        QFile file(QString(INFORMATION_FILE_NAME).arg(date).arg(logIndex));
+        if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
+        {
+            QTextStream out(&file);
+            QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
+            out << msg;
+            QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+            file.close();
+        }
     }
+    catch(QException /*&ex*/)
+    {
+        qDebug("please return this error feedback to the developers");
+    }
+    comm_mutex.unlock();
 }
 
 void CommunicationDialog::checkFileExist(QString fileName)
