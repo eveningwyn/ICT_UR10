@@ -80,7 +80,7 @@ void CommunicationDialog::forShowInfo(QString msg)
     {
         saveInfoToFile(msg);
     }
-    catch(QException /*&ex*/)
+    catch(...)
     {
         qDebug("please return this error feedback to the developers");
     }
@@ -143,7 +143,7 @@ void CommunicationDialog::saveInfoToFile(QString msg)
             file.close();
         }
     }
-    catch(QException /*&ex*/)
+    catch(...)
     {
         qDebug("please return this error feedback to the developers");
     }

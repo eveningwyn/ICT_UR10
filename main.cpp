@@ -1,6 +1,5 @@
 ﻿#include "ict_ur10.h"
 #include <QApplication>
-//#include <qapplication.h>
 //  #include <stdio.h>
 //  #include <stdlib.h>
 #include <QException>
@@ -80,11 +79,17 @@ int main(int argc, char *argv[])
     //注册MessageHandler
     qInstallMessageHandler(outputMessage);
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
+
+//    try
+//    {
+
+//    }
+//    catch(...)/*QException ex*/
+//    {
+//        qDebug("ex.what()");
+//    }
     ICT_UR10 w;
     w.show();
-//    int aa =1;
-//    int bb=0;
-//    int c =aa/bb;
 
     return a.exec();
 }

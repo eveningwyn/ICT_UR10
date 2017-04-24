@@ -43,7 +43,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
         }
         return;
     }
-    catch(QException /*&ex*/)
+    catch(...)
     {
         qDebug("please return this error feedback to the developers");
     }
@@ -71,7 +71,7 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
         file.close();
         return;
     }
-    catch(QException /*&ex*/)
+    catch(...)
     {
         qDebug("please return this error feedback to the developers");
     }

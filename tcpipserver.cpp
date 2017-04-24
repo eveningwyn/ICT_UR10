@@ -70,7 +70,7 @@ void TcpIpServer::sendData(quint16 port, QString sendMsg)
             {
                 clientSocketList[i]->write(sendByte);
             }
-            catch(QException /*&ex*/)
+            catch(...)
             {
                 qDebug("please return this error feedback to the developers");
             }

@@ -391,9 +391,9 @@ void RobotOnThread::readSnDoneTimeout()
     }
     else
     {
-//        snReadTimer->stop();//调试用----------------------------------
-//        scanDoneState = true;//调试用---------------------------------
-        robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("No Read"));
+        snReadTimer->stop();//调试用----------------------------------
+        scanDoneState = true;//调试用---------------------------------
+        //robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("No Read"));
     }
 }
 
