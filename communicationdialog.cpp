@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QException>
+#include <QMutex>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -30,8 +31,7 @@ void CommunicationDialog::on_pushButtonSend_clicked()
         return;
     }
 
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    if(true == ptr->isAutoRun)
+    if(true == ((ICT_UR10*)parentWidget())->isAutoRun)
     {
         ui->lineEditSendData->clear();
         return;//如果正在自动运行中，则取消发送
@@ -44,13 +44,13 @@ void CommunicationDialog::on_pushButtonSend_clicked()
                                                               QMessageBox::Cancel|QMessageBox::No|QMessageBox::Yes);
         if(rb==QMessageBox::Yes)
         {
-            ptr->manualStartScan(true);
+            ((ICT_UR10*)parentWidget())->manualStartScan(true);
         }
         else
         {
             if(rb==QMessageBox::No)
             {
-                ptr->manualStartScan(false);
+                ((ICT_UR10*)parentWidget())->manualStartScan(false);
             }
         }
     }
@@ -62,13 +62,13 @@ void CommunicationDialog::on_pushButtonSend_clicked()
             suffix.replace("\\r","\r");
             suffix.replace("\\n","\n");
             str += suffix;
-            ptr->manualSendMsg_robot(str);
+            ((ICT_UR10*)parentWidget())->manualSendMsg_robot(str);
         }
         else
         {
             if("controlboard" == ui->comboBoxReceiver->currentText().toLower())
             {
-                emit ptr->manualSendMsg_controlBoard(str);
+                emit ((ICT_UR10*)parentWidget())->manualSendMsg_controlBoard(str);
             }
         }
     }
@@ -84,19 +84,19 @@ void CommunicationDialog::forShowInfo(QString msg)
     {
         qDebug("please return this error feedback to the developers");
     }
-    if((!(ui->checkBoxShowInfo->isChecked())) || "UI clear...\n"==msg)
+    if((!(ui->checkBoxShowInfo->isChecked())) || "UI clear...\n"==msg || msg.contains("PC status?"))
     {
         ui->textBrowserCommunication->clear();
     }
     ui->textBrowserCommunication->moveCursor(QTextCursor::End);
     ui->textBrowserCommunication->insertPlainText(msg);
     ui->textBrowserCommunication->moveCursor(QTextCursor::End);
+    ((ICT_UR10*)parentWidget())->UI_show_error(msg);
 }
 
 void CommunicationDialog::closeEvent(QCloseEvent *event)
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    ptr->commDlgIsShow = false;
+    ((ICT_UR10*)parentWidget())->commDlgIsShow = false;
 //        close();
     event->accept();  //accept
 }

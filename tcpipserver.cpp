@@ -1,6 +1,7 @@
 ﻿#include "tcpipserver.h"
 #include "staticname.h"
 #include <QException>
+//#include <QMutex>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)
@@ -13,19 +14,20 @@ TcpIpServer::TcpIpServer(QObject *parent):
 
 void TcpIpServer::incomingConnection(qintptr socketDescriptor)
 {
-    TcpIpClient *clientSocket=new TcpIpClient;
+    TcpIpClient *clientSocket = new TcpIpClient;
     if (!clientSocket->setSocketDescriptor(socketDescriptor))
     {
         emit errorMessage(clientSocket->errorString()+"\n");
+        delete clientSocket;
         return;
     }
     clientSocket->clientID = socketDescriptor;//配置客户端对象ID
     clientSocket->prefix = this->prefix;
     clientSocket->suffix = this->suffix;
 
-    connect(clientSocket,SIGNAL(readData(int,QString,int,QString)),this,SLOT(serverReadMsg(int,QString,int,QString)));
-    connect(clientSocket,SIGNAL(clientDisConnect(int,QString,int)),this,SLOT(disConnect(int,QString,int)));
-    connect(clientSocket,SIGNAL(cliendErrorMsg(QString)),this,SIGNAL(errorMessage(QString)));
+    connect(clientSocket,&TcpIpClient::readData,this,&TcpIpServer::serverReadMsg);
+    connect(clientSocket,&TcpIpClient::clientDisConnect,this,&TcpIpServer::disConnect);
+    connect(clientSocket,&TcpIpClient::cliendErrorMsg,this,&TcpIpServer::errorMessage);
 
     emit clientConnect(clientSocket->peerAddress().toString(),clientSocket->peerPort());//发送已连接的客户端信息
 
@@ -35,7 +37,7 @@ void TcpIpServer::incomingConnection(qintptr socketDescriptor)
 
 void TcpIpServer::serverReadMsg(int clientID,QString IP,int Port,QString readMsg)
 {
-    clientID = 0;//此处不需此参数
+    //clientID = 0;//此处不需此参数
     emit serverReadData(IP,Port,readMsg);
 }
 
@@ -50,6 +52,7 @@ void TcpIpServer::disConnect(int clientID,QString IP,int Port)
         {}
         if (clientSocketID[i]==clientID)
         {
+            clientSocketList[i] = NULL;
             clientSocketList.removeAt(i);//从列表中移除该连接
             emit clientDisconnected(IP,Port);
             break;

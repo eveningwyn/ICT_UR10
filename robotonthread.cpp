@@ -3,9 +3,10 @@
 #include <QDateTime>
 #include <QSettings>
 #include "language.h"
-#include <QThread>
+//#include <QThread>
+#include <QMutex>
 
-#define TIMEOUT_SEC  1100
+#define TIMEOUT_SEC  1700
 
 RobotOnThread::RobotOnThread(QObject *parent) : QObject(parent)
 {
@@ -52,6 +53,9 @@ void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
 
 void RobotOnThread::robotSendMsg(QString sendMsg)
 {
+    static QMutex robot_mutex;
+    robot_mutex.lock();
+
     if(true == robotPortExist)
     {
         sendMsg.replace(SUFFIX,"");
@@ -68,6 +72,8 @@ void RobotOnThread::robotSendMsg(QString sendMsg)
         serverSendError();
         emit forShow_To_Comm(forShowSendString(tr("发送中断，Robot未连接！")));
     }
+
+    robot_mutex.unlock();
 }
 
 void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的数据
@@ -689,24 +695,33 @@ void RobotOnThread::ict_testTimeout()
 
 void RobotOnThread::robot_readData(int clientID, QString IP, int Port, QString msg)
 {
-    clientID = 0;
+    //clientID = 0;
     emit forShow_To_Comm(forShowReceiveString(QString("%1 %2:%3").arg(IP).arg(Port).arg(msg)));
     if(0 <= msg.indexOf(QString("%1%2%3").arg(robotClient->prefix).arg("Starting program").arg(robotClient->suffix)))
     {
         if(robot_start_timer->isActive())
             robot_start_timer->stop();
+        emit dashboard(1,tr("已启动"));
+        emit dashboard(2,tr("暂停运行"));
+        emit dashboard(3,tr("停止运行"));
         return;
     }
     if(0 <= msg.indexOf(QString("%1%2%3").arg(robotClient->prefix).arg("Pausing program").arg(robotClient->suffix)))
     {
         if(robot_pause_timer->isActive())
             robot_pause_timer->stop();
+        emit dashboard(1,tr("启动"));
+        emit dashboard(2,tr("已暂停"));
+        emit dashboard(3,tr("停止运行"));
         return;
     }
     if(0 <= msg.indexOf(QString("%1%2%3").arg(robotClient->prefix).arg("Stopped").arg(robotClient->suffix)))
     {
         if(robot_stop_timer->isActive())
             robot_stop_timer->stop();
+        emit dashboard(1,tr("启动"));
+        emit dashboard(2,tr("暂停运行"));
+        emit dashboard(3,tr("已停止"));
         return;
     }
     if(0 <= msg.indexOf(QString("%1Loading program: /programs/%2.urp%3").arg(robotClient->prefix).arg(robot_pro_num).arg(robotClient->suffix)))
@@ -798,9 +813,9 @@ void RobotOnThread::setPro_Num_Timeout()
 
 void RobotOnThread::robot_clientDisConnect(int clientID, QString IP, int Port)
 {
-    clientID = 0;
-    IP = "";
-    Port = 0;
+    //clientID = 0;
+    //IP = "";
+    //Port = 0;
     dashboard_enable = false;
     emit forShow_To_Comm(forShowString(QString(tr("Dashboard Server功能已停止!"))));
 }

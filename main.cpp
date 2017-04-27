@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <DbgHelp.h>
 #include <QMessageBox>
+#include <QtConcurrent/QtConcurrent>
 
 
 void outputMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -51,9 +52,9 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
 long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
 {
     //这里弹出一个错误对话框并退出程序
-    EXCEPTION_RECORD* record = pException->ExceptionRecord;
-    QString errCode(QString::number(record->ExceptionCode,16));
-    QString errAdr(QString::number((uint)record->ExceptionAddress,16));
+//    EXCEPTION_RECORD* record = pException->ExceptionRecord;
+//    QString errCode(QString::number(record->ExceptionCode,16));
+//    QString errAdr(QString::number((uint)record->ExceptionAddress,16));
     //QString errMod;
 
     //Create the dump file
@@ -68,8 +69,9 @@ long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
         MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
         CloseHandle(hDumpFile);
     }
-    QMessageBox::critical(NULL,"Crash",QString("Error Code: %1\nError Addr: %2\n")
-                          .arg(errCode).arg(errAdr),QMessageBox::Ok);
+//    qCritical("this is error!");
+//    QMessageBox::critical(NULL,"Crash",QString("Error Code: %1\nError Addr: %2\n")
+//                          .arg(errCode).arg(errAdr),QMessageBox::Ok);
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
@@ -80,14 +82,6 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(outputMessage);
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
 
-//    try
-//    {
-
-//    }
-//    catch(...)/*QException ex*/
-//    {
-//        qDebug("ex.what()");
-//    }
     ICT_UR10 w;
     w.show();
 

@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include "language.h"
 #include <QSettings>
+#include <QMutex>
 
 ErrorListDialog::ErrorListDialog(QWidget *parent) :
     QDialog(parent),
@@ -29,14 +30,12 @@ void ErrorListDialog::recordErrorMessage(QString errorMsg)
     ui->textBrowserErrorList->insertPlainText(errorMsg);
     ui->textBrowserErrorList->moveCursor(QTextCursor::End);
     saveErrorToFile(errorMsg);
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    ptr->UI_show_error(errorMsg);
+//    ((ICT_UR10*)parentWidget())->UI_show_error(errorMsg);
 }
 
 void ErrorListDialog::closeEvent(QCloseEvent *event)
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    ptr->errorDlgIsShow = false;
+    ((ICT_UR10*)parentWidget())->errorDlgIsShow = false;
 //        close();
     event->accept();  //accept
 }
@@ -74,6 +73,8 @@ void ErrorListDialog::disEnable(bool disable)
 
 void ErrorListDialog::saveErrorToFile(QString errorMsg)
 {
+    static QMutex error_mutex;
+    error_mutex.lock();
     QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
     checkFileExist(INFORMATION_FOLDER_NAME);
     checkFileExist(QString("%1/%2").arg(INFORMATION_FOLDER_NAME).arg(date));
@@ -89,6 +90,7 @@ void ErrorListDialog::saveErrorToFile(QString errorMsg)
         QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
         file.close();
     }
+    error_mutex.unlock();
 }
 
 void ErrorListDialog::checkFileExist(QString fileName)

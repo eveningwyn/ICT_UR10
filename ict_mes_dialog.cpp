@@ -101,7 +101,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
     }
     if(0>=vacuum_time.toInt()||""==vacuum_time)
     {
-        vacuum_time = "15";
+        vacuum_time = "8";
         flag++;
     }
     ui->lineEdit_ICT_DriveName->setText(driveName);
@@ -124,8 +124,7 @@ ICT_MES_Dialog::ICT_MES_Dialog(QWidget *parent) :
         saveICTConfig();
         QMessageBox::warning(this,tr("提示"),tr("ICT有部分参数已恢复默认设置，请检查ICT参数配置！\n"),QMessageBox::Ok);
     }
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    ui->checkBox_ICT_Enable->setChecked(ptr->ictEnable);
+    ui->checkBox_ICT_Enable->setChecked(((ICT_UR10*)parentWidget())->ictEnable);
     on_checkBox_ICT_Enable_clicked();
 }
 
@@ -145,7 +144,6 @@ void ICT_MES_Dialog::on_pushButton_Save_ICT_Config_clicked()
 
 void ICT_MES_Dialog::on_checkBox_ICT_Enable_clicked()
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
     if(!ui->checkBox_ICT_Enable->isChecked())
     {
         if(QMessageBox::Yes==QMessageBox::warning(this,tr("ICT"),tr("是否停止使用ICT？\n非调试人员请勿动！"),QMessageBox::Yes|QMessageBox::No))
@@ -157,8 +155,8 @@ void ICT_MES_Dialog::on_checkBox_ICT_Enable_clicked()
             ui->checkBox_ICT_Enable->setChecked(true);
         }
     }
-    ptr->ictEnable = (ui->checkBox_ICT_Enable->isChecked());
-    emit ptr->set_ict_Enable(ui->checkBox_ICT_Enable->isChecked());
+    ((ICT_UR10*)parentWidget())->ictEnable = (ui->checkBox_ICT_Enable->isChecked());
+    emit ((ICT_UR10*)parentWidget())->set_ict_Enable(ui->checkBox_ICT_Enable->isChecked());
 }
 
 void ICT_MES_Dialog::saveICTConfig()
@@ -182,7 +180,7 @@ void ICT_MES_Dialog::saveICTConfig()
     QString vacuum_time = ui->lineEdit_vacuum_Time->text();
     if(0>=vacuum_time.toInt()||""==vacuum_time)
     {
-        vacuum_time = "15";
+        vacuum_time = "8";
     }
     ui->lineEdit_vacuum_Time->setText(vacuum_time);
     configWrite->setValue(ICT_OPEN_WAIT_TIME,vacuum_time);

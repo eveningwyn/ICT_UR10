@@ -4,6 +4,7 @@
 #include "ict_ur10.h"
 #include <QMessageBox>
 #include "language.h"
+#include <QMutex>
 
 DebugDialog::DebugDialog(QWidget *parent) :
     QDialog(parent),
@@ -31,19 +32,18 @@ void DebugDialog::on_pushButton_moveToScan_clicked()
 
 void DebugDialog::on_pushButton_Scan_clicked()
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
     QMessageBox::StandardButton rb = QMessageBox::warning(this,tr("提示"),
                                                           tr("在线扫描请选择Yes，离线扫描请选择No，取消请选择Cancel."),
                                                           QMessageBox::Cancel|QMessageBox::No|QMessageBox::Yes);
     if(rb==QMessageBox::Yes)
     {
-        ptr->manualStartScan(true);
+        ((ICT_UR10*)parentWidget())->manualStartScan(true);
     }
     else
     {
         if(rb==QMessageBox::No)
         {
-            ptr->manualStartScan(false);
+            ((ICT_UR10*)parentWidget())->manualStartScan(false);
         }
     }
 }
@@ -51,25 +51,25 @@ void DebugDialog::on_pushButton_Scan_clicked()
 void DebugDialog::on_pushButton_pickUp_Carrier_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit fixturePickup();
+        emit fixturePickup();
 }
 
 void DebugDialog::on_pushButton_place_Carrier_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit fixturePlace();
+        emit fixturePlace();
 }
 
 void DebugDialog::on_pushButton_place_ICT_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit ictPlace();
+        emit ictPlace();
 }
 
 void DebugDialog::on_pushButton_pickUp_ICT_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit ictPickup();
+        emit ictPickup();
 }
 
 void DebugDialog::on_pushButton_ICTClose_clicked()
@@ -91,13 +91,13 @@ void DebugDialog::on_pushButton_ICT_Run_clicked()
 void DebugDialog::on_pushButton_place_OK_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit placeOKPos();
+        emit placeOKPos();
 }
 
 void DebugDialog::on_pushButton_place_NG_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit placeNGPos();
+        emit placeNGPos();
 }
 
 void DebugDialog::on_pushButton_cylinder_up_clicked()
@@ -115,7 +115,7 @@ void DebugDialog::on_pushButton_cylinder_down_clicked()
 void DebugDialog::on_pushButton_return_clicked()
 {
     if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("当前操作有危险,确认当前操作?"),QMessageBox::Yes|QMessageBox::No))
-    emit returnSafePos();
+        emit returnSafePos();
 }
 
 void DebugDialog::on_pushButton_ClawOpen_clicked()
@@ -170,21 +170,43 @@ void DebugDialog::runDone()
 
 void DebugDialog::on_pushButton_robot_start_clicked()
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    emit ptr->ui_robot_start();
+    emit ((ICT_UR10*)parentWidget())->ui_robot_start();
 //    ui->pushButton_robot_start->setDisabled(true);
 }
 
 void DebugDialog::on_pushButton_robot_pause_clicked()
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    emit ptr->ui_robot_pause();
+    emit ((ICT_UR10*)parentWidget())->ui_robot_pause();
 //    ui->pushButton_robot_start->setDisabled(false);
 }
 
 void DebugDialog::on_pushButton_robot_stop_clicked()
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    emit ptr->ui_robot_stop();
+    emit ((ICT_UR10*)parentWidget())->ui_robot_stop();
 //    ui->pushButton_robot_start->setDisabled(false);
+}
+
+void DebugDialog::Debug_dashboard(int index, QString showStr)
+{
+    static QMutex DebugUI_mutex;
+    DebugUI_mutex.lock();
+    if(1==index)//更改启动按钮文字显示
+    {
+        ui->pushButton_robot_start->setText(showStr);
+    }
+    else
+    {
+        if(2==index)//更改暂停按钮文字显示
+        {
+            ui->pushButton_robot_pause->setText(showStr);
+        }
+        else
+        {
+            if(3==index)//更改停止按钮文字显示
+            {
+                ui->pushButton_robot_stop->setText(showStr);
+            }
+        }
+    }
+    DebugUI_mutex.unlock();
 }

@@ -3,7 +3,8 @@
 #include <QSettings>
 #include <QDateTime>
 #include "language.h"
-#include <QThread>
+//#include <QThread>
+#include <QMutex>
 
 ScannerOnThread::ScannerOnThread(QObject *parent) : QObject(parent)
 {
@@ -238,10 +239,15 @@ void ScannerOnThread::controlBoardRead()
 }
 
 void ScannerOnThread::controlBoardWrite(QString writeMsg)
-{//writeMsg == ck,查询传感器状态 //writeMsg == on,气缸上升 //writeMsg == of,气缸下降
+{
+    static QMutex controlBoard_mutex;
+    controlBoard_mutex.lock();
+
+    //writeMsg == ck,查询传感器状态 //writeMsg == on,气缸上升 //writeMsg == of,气缸下降
     controlBoard->serialPortWrite("#"+writeMsg+"*");
     if(CONTROL_CHECK==writeMsg)
     {
+        controlBoard_mutex.unlock();
         return;
     }
     emit forShow_To_Comm(forShowString(QString(tr("Send_to_ControlBoard:#%1*\n")).arg(writeMsg)));
@@ -249,11 +255,13 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
     if(CONTROL_OUT1_ON==writeMsg)
     {
         cylinderUp = true;
+        controlBoard_mutex.unlock();
         return;
     }
     if(CONTROL_OUT1_OFF==writeMsg)
     {
         cylinderUp = false;
+        controlBoard_mutex.unlock();
         return;
     }
     if(CONTROL_OUT2_ON==writeMsg)
@@ -261,6 +269,7 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
         if(!out2Timer->isActive())
             out2Timer->start(100);
         control_out2_count++;
+        controlBoard_mutex.unlock();
         return;
     }
     if(CONTROL_OUT2_OFF==writeMsg)
@@ -272,6 +281,7 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
                 out2Timer->stop();
             control_out2_count = 0;
         }
+        controlBoard_mutex.unlock();
         return;
     }
 }
@@ -313,7 +323,7 @@ void ScannerOnThread::checkSensor()
     }
 }
 
-void ScannerOnThread::robot_Connected(bool conn)//V.106e版本引入，Robot连接或断开之后，关闭阻挡气缸
+void ScannerOnThread::robot_Connected(bool conn)
 {
     controlBoardWrite(CONTROL_OUT1_OFF);
     control_out2_count = 0;

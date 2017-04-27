@@ -12,11 +12,12 @@
 #include "debugdialog.h"
 #include <QRegExp>
 #include <QDesktopWidget>
+#include <QMutex>
 
-#define PRO_VERSION  "V1.08c (not No Read)"
+#define PRO_VERSION  "V1.09 (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-24.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-28.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -105,6 +106,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::robot_catchFail,ict,&ICT_Test_Obj::catchFail);
     connect(robot_on_thread,&RobotOnThread::change_auto_debug_label,this,&ICT_UR10::change_auto_debug_label);
     connect(robot_on_thread,&RobotOnThread::sortComplete,this,&ICT_UR10::UI_sortComplete);
+    connect(robot_on_thread,&RobotOnThread::dashboard,this,&ICT_UR10::UI_dashboard);
 
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
@@ -761,6 +763,7 @@ void ICT_UR10::on_actionDebug_triggered()
         connect(&debugDlg,&DebugDialog::ict_start_test,ict,&ICT_Test_Obj::testStart);
         connect(&debugDlg,&DebugDialog::debug_CylinderUpDown,scan_on_thread,&ScannerOnThread::controlBoardWrite);
         connect(robot_on_thread,&RobotOnThread::debugRunDone,&debugDlg,&DebugDialog::runDone);
+        connect(robot_on_thread,&RobotOnThread::dashboard,&debugDlg,&DebugDialog::Debug_dashboard);
         emit robotSetAutoMode(false);
         debugDlg.exec();
 //        emit robotSetAutoMode(true);
@@ -862,6 +865,10 @@ void ICT_UR10::change_auto_debug_label(QString labelStr)
 
 void ICT_UR10::UI_show_error(QString errorStr)
 {
+    if(errorStr.contains("PC status?"))
+    {
+        ui->textBrowser_show_error->clear();
+    }
     ui->textBrowser_show_error->moveCursor(QTextCursor::End);
     ui->textBrowser_show_error->insertPlainText(errorStr);
     ui->textBrowser_show_error->moveCursor(QTextCursor::End);
@@ -924,4 +931,29 @@ void ICT_UR10::on_pushButtonTypeSelect_clicked()
         delete configRead;
         emit setType_Pro(pro_num);
     }
+}
+
+void ICT_UR10::UI_dashboard(int index, QString showStr)
+{
+    static QMutex MainUI_mutex;
+    MainUI_mutex.lock();
+    if(1==index)//更改启动按钮文字显示
+    {
+        ui->pushButton_Robot_start->setText(showStr);
+    }
+    else
+    {
+        if(2==index)//更改暂停按钮文字显示
+        {
+            ui->pushButton_Robot_pause->setText(showStr);
+        }
+        else
+        {
+            if(3==index)//更改停止按钮文字显示
+            {
+                ui->pushButton_Robot_stop->setText(showStr);
+            }
+        }
+    }
+    MainUI_mutex.unlock();
 }

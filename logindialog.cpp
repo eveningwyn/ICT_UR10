@@ -2,7 +2,6 @@
 #include "ui_logindialog.h"
 #include "staticname.h"
 #include "ict_ur10.h"
-#include "language.h"
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -20,8 +19,7 @@ void LoginDialog::on_pushButtonLogin_clicked()
 {
     if(USER_ID==ui->lineEditUserID->text().trimmed() && PASSWORD==ui->lineEditPassword->text())
     {
-        ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-        ptr->Enable();
+        ((ICT_UR10*)parentWidget())->Enable();
         ui->lineEditUserID->clear();
         ui->lineEditPassword->clear();
         ui->lineEditUserID->setFocus();
@@ -36,8 +34,7 @@ void LoginDialog::on_pushButtonCancel_clicked()
 
 void LoginDialog::closeEvent(QCloseEvent *event)
 {
-    ICT_UR10 *ptr = (ICT_UR10*)parentWidget();
-    ptr->loginDlgIsShow = false;
+    ((ICT_UR10*)parentWidget())->loginDlgIsShow = false;
     ui->lineEditUserID->clear();
     ui->lineEditPassword->clear();
     ui->lineEditUserID->setFocus();

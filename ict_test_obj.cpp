@@ -4,7 +4,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
-#include <QProcess>
 #include <QDateTime>
 #include <QSettings>
 #include <QRegExp>
@@ -410,7 +409,7 @@ void ICT_Test_Obj::send_ictTestResult()
     delete configRead;
     if(0>=vacuum_time.toInt()||""==vacuum_time)
     {
-        vacuum_time = "15";
+        vacuum_time = "8";
     }
     if(!hold_on_Timer->isActive())
     {

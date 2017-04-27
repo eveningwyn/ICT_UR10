@@ -18,6 +18,7 @@ public:
 
 public slots:
     void runDone();
+    void Debug_dashboard(int index,QString showStr);
 
 private slots:
     void on_pushButton_moveToScan_clicked();

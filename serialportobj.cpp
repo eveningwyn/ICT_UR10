@@ -5,7 +5,8 @@ SerialPortObj::SerialPortObj(QObject *parent) : QObject(parent)
 {
     serial = new QSerialPort(this);
     byteRead = "";
-    connect(serial,SIGNAL(readyRead()),this,SIGNAL(serialReadReady()));
+
+    connect(serial,&QSerialPort::readyRead,this,&SerialPortObj::serialReadReady);
 }
 
 SerialPortObj::~SerialPortObj()

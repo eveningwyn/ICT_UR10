@@ -127,6 +127,7 @@ public slots:
     void change_auto_debug_label(QString labelStr);
     void UI_show_error(QString errorStr);
     void UI_sortComplete(bool testResultPass);//Robot分拣完成信号-槽
+    void UI_dashboard(int index,QString showStr);
 
 private slots:
     void on_actionScanner_triggered();

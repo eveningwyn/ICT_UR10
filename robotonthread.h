@@ -67,6 +67,7 @@ signals:
     void robot_catchFail();
     void debugRunDone();
     void change_auto_debug_label(QString labelStr);
+    void dashboard(int index,QString showStr);
 
 public slots:
     void init_Robot();//初始化服务器连接
