@@ -26,6 +26,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->mainToolBar->setHidden(true);
+
     this->setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);
     this->setFixedSize(QApplication::desktop()->width(),QApplication::desktop()->height()-70);
 

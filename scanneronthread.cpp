@@ -284,6 +284,7 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
         controlBoard_mutex.unlock();
         return;
     }
+    controlBoard_mutex.unlock();
 }
 
 void ScannerOnThread::out1TimerTimeOut()

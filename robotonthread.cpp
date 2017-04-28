@@ -428,7 +428,7 @@ void RobotOnThread::scanDone()
     }
     else
     {
-        barcode = "";
+//        barcode = "";
         scanError();
         return;
     }
@@ -441,6 +441,7 @@ void RobotOnThread::scanError()
     scanErrorTimer->start(TIMEOUT_SEC*1.7);
     if(true==scanDoneState)
     {
+        barcode = "";
         if(!snReadTimer->isActive())
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Scan error"));
     }
@@ -672,7 +673,7 @@ void RobotOnThread::infromLineInfoToRobot()
     if(infoLineReadyTimer->isActive())
         infoLineReadyTimer->stop();
     infoLineReadyTimer->start(TIMEOUT_SEC+333);
-    if((true==snCheckDoneState||true==scanDoneState)&&(false==timerIsActive))
+    if((true==snCheckDoneState || true==scanDoneState) && (false==timerIsActive))
     {
         if(true == lineSensor1 && true == lineSensor2)
         {

@@ -9,6 +9,7 @@
 #include <QRegExp>
 #include <QThread>
 #include <QException>
+#include <QMutex>
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 {
@@ -17,6 +18,8 @@ ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 
 void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 {
+    static QMutex ict_get_mutex;
+    ict_get_mutex.lock();
     try
     {
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
@@ -30,6 +33,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
             emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件(%1)失败!\n")).arg(fileName));
             if(statusReadTimer->isActive())
                 statusReadTimer->stop();
+            ict_get_mutex.unlock();
             return ;
         }
         QTextStream in_out(&file);
@@ -40,16 +44,20 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
         {
             setIctInfo(fileName,"");
         }
+        ict_get_mutex.unlock();
         return;
     }
     catch(...)
     {
         qDebug("please return this error feedback to the developers");
     }
+    ict_get_mutex.unlock();
 }
 
 void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 {
+    static QMutex ict_set_mutex;
+    ict_set_mutex.lock();
     try
     {
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
@@ -61,6 +69,7 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         {
             emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件(%1)失败!\n")).arg(fileName));
+            ict_set_mutex.unlock();
             return ;
         }
         QTextStream out(&file);
@@ -68,12 +77,14 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
         out << writeMsg;
         QApplication::restoreOverrideCursor();//鼠标指针恢复原来的状态
         file.close();
+        ict_set_mutex.unlock();
         return;
     }
     catch(...)
     {
         qDebug("please return this error feedback to the developers");
     }
+    ict_set_mutex.unlock();
 }
 
 int ICT_Test_Obj::pc_ict_Ping()
@@ -248,7 +259,7 @@ void ICT_Test_Obj::statusReadTimeout()
 void ICT_Test_Obj::openTimer()
 {
     if(!statusReadTimer->isActive())
-        statusReadTimer->start(500);
+        statusReadTimer->start(800);
 }
 
 void ICT_Test_Obj::testStart()//ict开始测试
@@ -316,13 +327,9 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
         QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
-        //QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-        //QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
         delete configRead;
-        //QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
-        //setIctInfo(receive_path,"");
         setIctInfo(sn_path,sn);
         snCheckCount = 0;
         testRunning = false;
