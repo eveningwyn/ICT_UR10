@@ -32,6 +32,7 @@ private:
     bool sensor2;
     bool cylinderUp;
     uint control_out2_count;
+    bool not_DUT_board;
 
 signals:
     void scanResult(QString sn);//传送SN信息

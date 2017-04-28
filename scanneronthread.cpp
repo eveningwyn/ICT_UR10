@@ -141,6 +141,7 @@ void ScannerOnThread::init_Scanner()
     sensor1 = false;
     sensor2 = false;
     cylinderUp = false;
+    not_DUT_board = false;
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Scanner
@@ -193,10 +194,11 @@ void ScannerOnThread::controlBoardRead()
     if("@0!"==readStr)
     {
         //流水线已有载板
-        if(true==sensor2Temp && false==sensor1Temp)
+        if(true==sensor2Temp && false==sensor1Temp && true==not_DUT_board)
         {
             sensor1 = true;
             sensor2 = true;
+            not_DUT_board = false;
         }
     }
     else
@@ -206,6 +208,7 @@ void ScannerOnThread::controlBoardRead()
             //流水线正在上载板
             sensor1 = false;
             sensor2 = true;
+            not_DUT_board = false;
         }
         else
         {
@@ -214,14 +217,19 @@ void ScannerOnThread::controlBoardRead()
                 //流水线正在出载板，
                 sensor1 = true;
                 sensor2 = false;
+                not_DUT_board = false;
             }
             else
             {
                 if("@3!"==readStr)
                 {
                     //流水线无载板，可操作气缸
-                    sensor1 = false;
-                    sensor2 = false;
+                    if(false==sensor2Temp && true==sensor1Temp)
+                    {
+                        sensor1 = false;
+                        sensor2 = false;
+                        not_DUT_board = true;
+                    }
                 }
             }
         }
@@ -233,7 +241,7 @@ void ScannerOnThread::controlBoardRead()
         emit lineSensorStatus(sensor1,sensor2);
         if(false==sensor1)
         {
-            out1Timer->start(1000);
+            out1Timer->start(885);
         }
     }
 }
@@ -328,6 +336,7 @@ void ScannerOnThread::robot_Connected(bool conn)
 {
     controlBoardWrite(CONTROL_OUT1_OFF);
     control_out2_count = 0;
+    not_DUT_board = false;
     if(true == conn)
     {
     }
