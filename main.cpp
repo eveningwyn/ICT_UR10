@@ -31,6 +31,7 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
 
     case QtFatalMsg:
         text = QString("Fatal:");
+        break;
     }
 
     QString context_info = QString("File:(%1) Line:(%2)").arg(QString(context.file)).arg(context.line);
@@ -56,22 +57,28 @@ long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
 //    QString errCode(QString::number(record->ExceptionCode,16));
 //    QString errAdr(QString::number((uint)record->ExceptionAddress,16));
     //QString errMod;
+//    qCritical("this is error!");
+//    QMessageBox::critical(NULL,"Crash",QString("Error Code: %1\nError Addr: %2\n")
+//                          .arg(errCode).arg(errAdr),QMessageBox::Ok);
+
+
 
     //Create the dump file
+//    HANDLE hDumpFile = CreateFile((LPCWSTR)QString("..//log/crash.dmp").utf16(),
+//                                  GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     HANDLE hDumpFile = CreateFile((LPCWSTR)QString("..//log/crash.dmp").utf16(),
-                                  GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                                  GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if(hDumpFile != INVALID_HANDLE_VALUE)
     {
         MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
         dumpInfo.ExceptionPointers = pException;
         dumpInfo.ThreadId = GetCurrentThreadId();
-        dumpInfo.ClientPointers = TRUE;
-        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
+//        dumpInfo.ClientPointers = TRUE;
+        dumpInfo.ClientPointers = FALSE;
+//        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
+        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),hDumpFile, MiniDumpWithFullMemory, &dumpInfo, NULL, NULL);
         CloseHandle(hDumpFile);
     }
-//    qCritical("this is error!");
-//    QMessageBox::critical(NULL,"Crash",QString("Error Code: %1\nError Addr: %2\n")
-//                          .arg(errCode).arg(errAdr),QMessageBox::Ok);
     return EXCEPTION_EXECUTE_HANDLER;
 }
 

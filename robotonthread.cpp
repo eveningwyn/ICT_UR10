@@ -39,6 +39,8 @@ QString RobotOnThread::forShowString(QString str)
 
 void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
 {
+    static QMutex robot_read_mutex;
+    robot_read_mutex.lock();
     emit forShow_To_Comm(forShowReceiveString(QString("%1 %2:%3").arg(IP).arg(Port).arg(readMsg)));
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
@@ -49,12 +51,13 @@ void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
     {
         informationCheck(readMsg);//根据协议处理接收的数据
     }
+    robot_read_mutex.unlock();
 }
 
 void RobotOnThread::robotSendMsg(QString sendMsg)
 {
-    static QMutex robot_mutex;
-    robot_mutex.lock();
+    static QMutex robot_send_mutex;
+    robot_send_mutex.lock();
 
     if(true == robotPortExist)
     {
@@ -73,7 +76,7 @@ void RobotOnThread::robotSendMsg(QString sendMsg)
         emit forShow_To_Comm(forShowSendString(tr("发送中断，Robot未连接！")));
     }
 
-    robot_mutex.unlock();
+    robot_send_mutex.unlock();
 }
 
 void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的数据
