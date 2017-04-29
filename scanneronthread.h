@@ -32,6 +32,8 @@ private:
     bool sensor2;
     bool cylinderUp;
     uint control_out2_count;
+    uint control_out1_count;
+    QTimer *control_out1_timer;
     bool not_DUT_board;
 
 signals:
@@ -52,6 +54,7 @@ public slots:
     void controlBoardWrite(QString writeMsg);
     void checkSensor();
     void robot_Connected(bool conn);
+    void control_out1_timer_timeout();
 
 private slots:
     void timerTimeOut();//扫描超时处理

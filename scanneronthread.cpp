@@ -126,6 +126,8 @@ void ScannerOnThread::init_Scanner()
     out2Timer = new QTimer(this);
     scanCount = 0;
     control_out2_count = 0;
+    control_out1_count = 0;
+    control_out1_timer = new QTimer(this);
     prefix = "";
     suffix = "\r\n";
     connect(scanner,&SerialPortObj::serialReadReady,this,&ScannerOnThread::scannerReadSN);
@@ -134,6 +136,7 @@ void ScannerOnThread::init_Scanner()
     connect(checkSensorTimer,&QTimer::timeout,this,&ScannerOnThread::checkSensor);
     connect(out1Timer,&QTimer::timeout,this,&ScannerOnThread::out1TimerTimeOut);
     connect(out2Timer,&QTimer::timeout,this,&ScannerOnThread::out2TimerTimeOut);
+    connect(control_out1_timer,&QTimer::timeout,this,&ScannerOnThread::control_out1_timer_timeout);
 
     canScan = true;
     canRead = false;
@@ -177,14 +180,14 @@ void ScannerOnThread::init_Scanner()
     {
         emit forShow_To_Comm(forShowString(QString(tr("IO控制板:%1 已连接\n")).arg(portName_Control)));
         controlBoardWrite(CONTROL_OUT1_OFF);
-        checkSensor();//连接控制板之后，查询一次流水线Sensor状态
+        //checkSensor();//连接控制板之后，查询一次流水线Sensor状态
     }
 
     delete configRead;
 }
 
 void ScannerOnThread::controlBoardRead()
-{
+{//靠近阻挡气缸的传感器为1，远离阻挡气缸的传感器为2
     bool sensor1Temp = sensor1;
     bool sensor2Temp = sensor2;
     QString readStr;
@@ -206,9 +209,11 @@ void ScannerOnThread::controlBoardRead()
         if("@1!"==readStr)
         {
             //流水线正在上载板
-            sensor1 = false;
-            sensor2 = true;
-            not_DUT_board = false;
+            if(false==sensor2Temp && false==sensor1Temp && true==not_DUT_board)
+            {
+                sensor1 = false;
+                sensor2 = true;
+            }
         }
         else
         {
@@ -217,7 +222,7 @@ void ScannerOnThread::controlBoardRead()
                 //流水线正在出载板，
                 sensor1 = true;
                 sensor2 = false;
-                not_DUT_board = false;
+                //not_DUT_board = false;
             }
             else
             {
@@ -268,6 +273,14 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
     }
     if(CONTROL_OUT1_OFF==writeMsg)
     {
+        control_out1_count++;
+        if(3>=control_out1_count)
+        {
+            if(!control_out1_timer->isActive())
+            {
+                control_out1_timer->start(967);
+            }
+        }
         cylinderUp = false;
         controlBoard_mutex.unlock();
         return;
@@ -328,7 +341,7 @@ void ScannerOnThread::checkSensor()
     }
     else
     {
-        checkSensorTimer->start(500);
+        checkSensorTimer->start(557);
     }
 }
 
@@ -336,11 +349,28 @@ void ScannerOnThread::robot_Connected(bool conn)
 {
     controlBoardWrite(CONTROL_OUT1_OFF);
     control_out2_count = 0;
+    control_out1_count = 0;
     not_DUT_board = false;
     if(true == conn)
     {
+        checkSensor();
     }
     else
     {
+        checkSensorTimer->stop();
     }
+}
+
+void ScannerOnThread::control_out1_timer_timeout()
+{
+    if(3<=control_out1_count)
+    {
+        if(control_out1_timer->isActive())
+        {
+            control_out1_timer->stop();
+        }
+        control_out1_count = 0;
+        return;
+    }
+    controlBoardWrite(CONTROL_OUT1_OFF);
 }
