@@ -347,6 +347,7 @@ void ScannerOnThread::checkSensor()
 
 void ScannerOnThread::robot_Connected(bool conn)
 {
+    controlBoard->clearBuffer();
     controlBoardWrite(CONTROL_OUT1_OFF);
     control_out2_count = 0;
     control_out1_count = 0;

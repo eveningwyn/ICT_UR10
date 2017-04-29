@@ -274,18 +274,13 @@ void ICT_Test_Obj::testStart()//ict开始测试
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
         QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
-        //QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
-        //QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
         int test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString().toInt();
         delete configRead;
 
-        //QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
         QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
         //启动ICT测试
-        //setIctInfo(result_path,"");
         setIctInfo(run_path,"RUN");
         testRunning = true;
-//        emit openSwitch(CONTROL_OUT2_ON);
         emit forShow_To_Comm(forShowSendString("RUN"));
         if(!testTimer->isActive())
             testTimer->start(test_timeout*1000);//测试超时判断

@@ -14,10 +14,10 @@
 #include <QDesktopWidget>
 #include <QMutex>
 
-#define PRO_VERSION  "V1.09b (not No Read)"
+#define PRO_VERSION  "V1.09c (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-29.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-30.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :

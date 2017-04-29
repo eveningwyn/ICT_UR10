@@ -658,6 +658,8 @@ void RobotOnThread::lineSensorStatus(bool sensor1True, bool sensor2True)
     lineSensor1 = sensor2True;
     if(sensorTemp1!=lineSensor1 || sensorTemp2!=lineSensor2)
     {
+        if(infoLineReadyTimer->isActive())
+            infoLineReadyTimer->stop();
         infromLineInfoToRobot();
     }
 }
