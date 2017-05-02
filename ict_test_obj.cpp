@@ -60,24 +60,40 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
     ict_set_mutex.lock();
     try
     {
+        //qDebug("action 1");//--------------------------
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
         delete configRead;
         QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(fileName);
+        //qDebug("action 2");//--------------------------
 
         QFile file(ICT_path);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         {
+            qDebug("setIctInfo_file open error");
             emit ict_Error_Msg(QString(tr("打开ICT测试机的本地文件(%1)失败!\n")).arg(fileName));
             ict_set_mutex.unlock();
             return ;
         }
+        //qDebug("action 3");//--------------------------
         QTextStream out(&file);
-        QApplication::setOverrideCursor(Qt::WaitCursor);//鼠标指针变为等待状态
+//        QApplication::setOverrideCursor(Qt::WaitCursor);//鼠标指针变为等待状态
+        //qDebug("action 4");//--------------------------
         out << writeMsg;
-        QApplication::restoreOverrideCursor();//鼠标指针恢复原来的状态
+        //qDebug("action 5");//--------------------------
+//        QApplication::restoreOverrideCursor();//鼠标指针恢复原来的状态
+        //qDebug("action 6");//--------------------------
+
+        if(!file.flush())
+        {
+            qDebug("setIctInfo_file flush error");
+        }
+
+        //qDebug("action 7");//--------------------------
         file.close();
-        QThread::msleep(100);//-----------------
+        //qDebug("action 8");//--------------------------
+        QThread::msleep(100);
+        //qDebug("action 9");//--------------------------
         ict_set_mutex.unlock();
         return;
     }
@@ -95,15 +111,12 @@ int ICT_Test_Obj::pc_ict_Ping()
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-    //QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
     QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
-    //QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
     QString receive_path = QString("%1/%2").arg(receive_file_name).arg("Ping.txt");
     QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(receive_path);
 
     QFile file(ICT_path);
-//    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         emit ict_Error_Msg(QString(tr("连接ICT测试机的本地文件失败!\n")));
@@ -114,6 +127,10 @@ int ICT_Test_Obj::pc_ict_Ping()
         count = 0;
         ict_ping_mutex.unlock();
         return -1;
+    }
+    if(!file.flush())
+    {
+        qDebug("pc_ict_Ping_file flush error");
     }
     file.close();
     if(0==count)
@@ -363,12 +380,14 @@ void ICT_Test_Obj::catchFail()//Robot抓取失败
     //复位ICT测试
     snCheckCount = -1;
     setIctInfo(run_path,"CATCHFAIL");
+    //qDebug("action catchFail()1");//--------------------------
     setIctInfo(receive_path,"");
+    //qDebug("action catchFail()2");//--------------------------
     setIctInfo(result_path,"");
+    //qDebug("action catchFail()3");//--------------------------
     emit forShow_To_Comm(forShowSendString("CATCHFAIL"));
     return;
 }
-
 
 QString ICT_Test_Obj::forShowSendString(QString str)
 {

@@ -152,7 +152,6 @@ private slots:
 
     void robotDisconnected(QString IP,int Port);
 
-//    void on_comboBoxTypeSelect_currentTextChanged(const QString &arg1);
     void on_actionICT_MES_triggered();
     void on_actionDebug_triggered();
     void on_actionAbout_triggered();

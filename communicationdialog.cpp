@@ -137,9 +137,13 @@ void CommunicationDialog::saveInfoToFile(QString msg)
         if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
         {
             QTextStream out(&file);
-            QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
+//            QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
             out << msg;
-            QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+//            QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+            if(!file.flush())
+            {
+                qDebug("commuincation_file flush error");
+            }
             file.close();
         }
         QThread::msleep(20);

@@ -16,7 +16,7 @@
 #define PRO_VERSION  "V1.09c (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-04-30.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-02.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -493,14 +493,13 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         result = "FAIL";
     }
     ui->lineEditResult->setText(result.toUpper());
-    if(100<=testCount)
+    if(99<=testCount)
     {
         ui->tableWidgetResultList->clearContents();
         ui->tableWidgetResultList->setRowCount(0);
         testCount = 0;
     }
     testCount++;
-
 
     QString pro_type = ui->comboBoxTypeSelect->currentText();
     if(pro_type.isEmpty())
@@ -692,14 +691,6 @@ void ICT_UR10::setIctReady(bool isReady)
     ictIsReady = isReady;
     PC_Status();
 }
-
-//void ICT_UR10::on_comboBoxTypeSelect_currentTextChanged(const QString &arg1)
-//{
-//    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-//    QString pro_num = configRead->value(QString(ROBOT_PRO_NUM).arg(arg1)).toString();
-//    delete configRead;
-//    emit setType_Pro(pro_num);
-//}
 
 void ICT_UR10::runStatus(bool isAuto)
 {

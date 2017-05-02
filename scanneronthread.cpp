@@ -272,11 +272,11 @@ void ScannerOnThread::controlBoardWrite(QString writeMsg)
     if(CONTROL_OUT1_OFF==writeMsg)
     {
         control_out1_count++;
-        if(3>=control_out1_count)
+        if(2>=control_out1_count)
         {
             if(!control_out1_timer->isActive())
             {
-                control_out1_timer->start(967);
+                control_out1_timer->start(243);
             }
         }
         cylinderUp = false;
@@ -362,7 +362,7 @@ void ScannerOnThread::robot_Connected(bool conn)
 
 void ScannerOnThread::control_out1_timer_timeout()
 {
-    if(3<=control_out1_count)
+    if(2<=control_out1_count)
     {
         if(control_out1_timer->isActive())
         {

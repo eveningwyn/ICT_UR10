@@ -50,9 +50,13 @@ void ErrorListDialog::on_pushButtonSaveErrorList_clicked()
         if(file.open(QFile::WriteOnly | QIODevice::Text))
         {
             QTextStream out(&file);
-            QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
+//            QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
             out << ui->textBrowserErrorList->toPlainText();
-            QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+//            QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+            if(!file.flush())
+            {
+                qDebug("on_pushButtonSaveErrorList_clicked_file flush error");
+            }
             file.close();
         }
     }
@@ -83,9 +87,13 @@ void ErrorListDialog::saveErrorToFile(QString errorMsg)
     if(file.open(QFile::WriteOnly | QIODevice::Text | QIODevice::Append))
     {
         QTextStream out(&file);
-        QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
+//        QApplication::setOverrideCursor(Qt::WaitCursor);    // 鼠标指针变为等待状态
         out << errorMsg;
-        QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+//        QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
+        if(!file.flush())
+        {
+            qDebug("saveErrorToFile_file flush error");
+        }
         file.close();
     }
     error_mutex.unlock();
