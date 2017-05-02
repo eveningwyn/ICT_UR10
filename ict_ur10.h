@@ -14,6 +14,7 @@
 #include <QTimer>
 #include "ict_test_obj.h"
 #include <QDateTime>
+#include <QMutex>
 
 namespace Ui {
 class ICT_UR10;
@@ -91,6 +92,9 @@ private:
     uint UPH_Fail;
 //    QTimer *UPH_timer;
     QDateTime UPH_Time;
+
+
+    QMutex MainUI_mutex;
 
 signals:
     void init_scanner_robot_ict_mes();//启动子线程的初始化

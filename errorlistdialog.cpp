@@ -8,7 +8,6 @@
 #include <QMessageBox>
 #include "language.h"
 #include <QSettings>
-#include <QMutex>
 
 ErrorListDialog::ErrorListDialog(QWidget *parent) :
     QDialog(parent),
@@ -73,7 +72,6 @@ void ErrorListDialog::disEnable(bool disable)
 
 void ErrorListDialog::saveErrorToFile(QString errorMsg)
 {
-    static QMutex error_mutex;
     error_mutex.lock();
     QString date = QDateTime::currentDateTime().toString("yyyyMMdd");
     checkFileExist(INFORMATION_FOLDER_NAME);
@@ -100,9 +98,9 @@ void ErrorListDialog::checkFileExist(QString fileName)
     if(!fileExist)
     {
         temp->mkdir(fileName);
-        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        configRead->setValue(LOG_INDEX,"0");
-        delete configRead;
+        QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        configWrite->setValue(LOG_INDEX,"0");
+        delete configWrite;
     }
     delete temp;
 }

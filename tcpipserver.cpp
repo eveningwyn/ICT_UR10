@@ -1,7 +1,6 @@
 ﻿#include "tcpipserver.h"
 #include "staticname.h"
 #include <QException>
-//#include <QMutex>
 
 TcpIpServer::TcpIpServer(QObject *parent):
     QTcpServer(parent)

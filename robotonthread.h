@@ -4,6 +4,7 @@
 #include <QObject>
 #include "tcpipserver.h"
 #include <QTimer>
+#include <QMutex>
 
 
 class RobotOnThread : public QObject
@@ -36,8 +37,8 @@ private:
     QString robot_pro_num;
     bool robotAutoMode;
     QTimer *setRunModeTimer;
-    bool lineSensor1;
-    bool lineSensor2;
+    volatile bool lineSensor1;
+    volatile bool lineSensor2;
     QTimer *infoLineReadyTimer;
     bool robotInitDone;
 
@@ -49,6 +50,9 @@ private:
     bool readedSN;
     bool scanDoneState;
     bool snCheckDoneState;
+
+    QMutex robot_read_mutex;
+    QMutex robot_send_mutex;
 
 signals:
     void robot_Status(QString status);//更新连接状态给主界面

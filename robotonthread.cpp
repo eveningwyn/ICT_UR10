@@ -4,7 +4,6 @@
 #include <QSettings>
 #include "language.h"
 //#include <QThread>
-#include <QMutex>
 
 #define TIMEOUT_SEC  1700
 
@@ -39,7 +38,6 @@ QString RobotOnThread::forShowString(QString str)
 
 void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
 {
-    static QMutex robot_read_mutex;
     robot_read_mutex.lock();
     emit forShow_To_Comm(forShowReceiveString(QString("%1 %2:%3").arg(IP).arg(Port).arg(readMsg)));
 
@@ -56,7 +54,6 @@ void RobotOnThread::robotReadData(QString IP, int Port, QString readMsg)
 
 void RobotOnThread::robotSendMsg(QString sendMsg)
 {
-    static QMutex robot_send_mutex;
     robot_send_mutex.lock();
 
     if(true == robotPortExist)

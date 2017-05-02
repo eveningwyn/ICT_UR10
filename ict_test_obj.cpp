@@ -9,7 +9,6 @@
 #include <QRegExp>
 #include <QThread>
 #include <QException>
-#include <QMutex>
 
 ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 {
@@ -18,7 +17,7 @@ ICT_Test_Obj::ICT_Test_Obj(QObject *parent) : QObject(parent)
 
 void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 {
-    static QMutex ict_get_mutex;
+//    static QMutex ict_get_mutex;
     ict_get_mutex.lock();
     try
     {
@@ -44,6 +43,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
         {
             setIctInfo(fileName,"");
         }
+        QThread::msleep(100);//-----------------
         ict_get_mutex.unlock();
         return;
     }
@@ -56,7 +56,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
 
 void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 {
-    static QMutex ict_set_mutex;
+//    static QMutex ict_set_mutex;
     ict_set_mutex.lock();
     try
     {
@@ -77,6 +77,7 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
         out << writeMsg;
         QApplication::restoreOverrideCursor();//鼠标指针恢复原来的状态
         file.close();
+        QThread::msleep(100);//-----------------
         ict_set_mutex.unlock();
         return;
     }
@@ -89,16 +90,21 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
 
 int ICT_Test_Obj::pc_ict_Ping()
 {
+//    static QMutex ict_ping_mutex;
+    ict_ping_mutex.lock();
+
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-    QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+    //QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
     QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
     delete configRead;
-    QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
+    //QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
+    QString receive_path = QString("%1/%2").arg(receive_file_name).arg("Ping.txt");
     QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(receive_path);
 
     QFile file(ICT_path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         emit ict_Error_Msg(QString(tr("连接ICT测试机的本地文件失败!\n")));
         ictStatusStr = tr("ICT:已断开");
@@ -106,6 +112,7 @@ int ICT_Test_Obj::pc_ict_Ping()
         emit ictIsReady(false);
         file.close();
         count = 0;
+        ict_ping_mutex.unlock();
         return -1;
     }
     file.close();
@@ -116,6 +123,7 @@ int ICT_Test_Obj::pc_ict_Ping()
         emit ictIsReady(true);
         count++;
     }
+    ict_ping_mutex.unlock();
     return 0;
 }
 
@@ -165,7 +173,7 @@ void ICT_Test_Obj::statusReadTimeout()
         QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
 
         /*获取SN check反馈*/
-        if(!snTemp.isEmpty()&&0==snCheckCount)
+        if(!snTemp.isEmpty() && 0==snCheckCount)
         {
             QString sn_receiveStr = "";
             getIctInfo(receive_path, sn_receiveStr);
@@ -199,7 +207,7 @@ void ICT_Test_Obj::statusReadTimeout()
             }
         }
         /*获取test result反馈*/
-        if(true==testRunning&&!snTemp.isEmpty()&&1==snCheckCount)
+        if(true==testRunning && !snTemp.isEmpty() && 1==snCheckCount)
         {
             QString testResultStr = "";
             getIctInfo(result_path, testResultStr);
@@ -239,7 +247,6 @@ void ICT_Test_Obj::statusReadTimeout()
                 }
             }
         }
-
         return;
     }
 
@@ -269,26 +276,20 @@ void ICT_Test_Obj::testStart()//ict开始测试
         send_ictTestResult();
         return;
     }
-    if(0 == pc_ict_Ping())
-    {
-        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
-        QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
-        int test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString().toInt();
-        delete configRead;
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
+    QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
+    int test_timeout = configRead->value(ICT_TEST_TIMEOUT).toString().toInt();
+    delete configRead;
 
-        QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
-        //启动ICT测试
-        setIctInfo(run_path,"RUN");
-        testRunning = true;
-        emit forShow_To_Comm(forShowSendString("RUN"));
-        if(!testTimer->isActive())
-            testTimer->start(test_timeout*1000);//测试超时判断
-        return;
-    }
-    emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
-                          "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
-    return ;
+    QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
+    //启动ICT测试
+    setIctInfo(run_path,"RUN");
+    testRunning = true;
+    emit forShow_To_Comm(forShowSendString("RUN"));
+    if(!testTimer->isActive())
+        testTimer->start(test_timeout*1000);//测试超时判断
+    return;
 }
 
 void ICT_Test_Obj::set_ictEnable(bool enable)
@@ -317,25 +318,19 @@ void ICT_Test_Obj::ict_Check_SN(QString sn)//将SN传递给ICT作SN Check
         snTemp = "";
         return;
     }
-    if(0 == pc_ict_Ping())
-    {
-        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
-        QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
-        delete configRead;
-        QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString sn_file_name = configRead->value(ICT_LOCAL_SN_FILE_NAME).toString();
+    QString sn_name = configRead->value(ICT_LOCAL_SN_NAME).toString();
+    delete configRead;
+    QString sn_path = QString("%1/%2").arg(sn_file_name).arg(sn_name);
 
-        setIctInfo(sn_path,sn);
-        snCheckCount = 0;
-        testRunning = false;
-        emit openSwitch(CONTROL_OUT2_ON);
-        emit forShow_To_Comm(forShowSendString(sn));
-        openTimer();
-        return;
-    }
-    emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
-                          "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
-    return ;
+    setIctInfo(sn_path,sn);
+    snCheckCount = 0;
+    testRunning = false;
+    emit openSwitch(CONTROL_OUT2_ON);
+    emit forShow_To_Comm(forShowSendString(sn));
+    openTimer();
+    return;
 }
 
 void ICT_Test_Obj::testTimeout()
@@ -354,30 +349,24 @@ void ICT_Test_Obj::catchFail()//Robot抓取失败
     {
         return;
     }
-    if(0 == pc_ict_Ping())
-    {
-        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
-        QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
-        QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
-        QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
-        QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
-        QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
-        delete configRead;
-        QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
-        QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
-        QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
-        //复位ICT测试
-        snCheckCount = -1;
-        setIctInfo(run_path,"CATCHFAIL");
-        setIctInfo(receive_path,"");
-        setIctInfo(result_path,"");
-        emit forShow_To_Comm(forShowSendString("CATCHFAIL"));
-        return;
-    }
-    emit ict_Error_Msg(tr("与ICT测试机的网络PING失败！\n"
-                          "请检查本机与ICT的网线连接以及IP地址是否正确！\n"));
-    return ;
+    QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    QString run_file_name = configRead->value(ICT_LOCAL_RUN_FILE_NAME).toString();
+    QString run_name = configRead->value(ICT_LOCAL_RUN_NAME).toString();
+    QString receive_file_name = configRead->value(ICT_LOCAL_RECEIVE_FILE_NAME).toString();
+    QString receive_name = configRead->value(ICT_LOCAL_RECEIVE_NAME).toString();
+    QString result_file_name = configRead->value(ICT_LOCAL_RESULT_FILE_NAME).toString();
+    QString result_name = configRead->value(ICT_LOCAL_RESULT_NAME).toString();
+    delete configRead;
+    QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
+    QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
+    QString run_path = QString("%1/%2").arg(run_file_name).arg(run_name);
+    //复位ICT测试
+    snCheckCount = -1;
+    setIctInfo(run_path,"CATCHFAIL");
+    setIctInfo(receive_path,"");
+    setIctInfo(result_path,"");
+    emit forShow_To_Comm(forShowSendString("CATCHFAIL"));
+    return;
 }
 
 

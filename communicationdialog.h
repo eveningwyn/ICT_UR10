@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QMutex>
 
 namespace Ui {
 class CommunicationDialog;
@@ -29,6 +30,7 @@ private:
     void closeEvent(QCloseEvent *event);
     void saveInfoToFile(QString msg);
     void checkFileExist(QString fileName);
+    QMutex comm_mutex;
 };
 
 #endif // COMMUNICATIONDIALOG_H

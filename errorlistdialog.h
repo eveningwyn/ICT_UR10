@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QMutex>
 
 namespace Ui {
 class ErrorListDialog;
@@ -22,6 +23,8 @@ private:
     void closeEvent(QCloseEvent *event);
     void saveErrorToFile(QString errorMsg);
     void checkFileExist(QString fileName);
+
+    QMutex error_mutex;
 
 public slots:
     void recordErrorMessage(QString errorMsg);//错误记录清单

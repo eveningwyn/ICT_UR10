@@ -4,7 +4,6 @@
 #include <QDateTime>
 #include "language.h"
 //#include <QThread>
-#include <QMutex>
 
 ScannerOnThread::ScannerOnThread(QObject *parent) : QObject(parent)
 {
@@ -253,7 +252,6 @@ void ScannerOnThread::controlBoardRead()
 
 void ScannerOnThread::controlBoardWrite(QString writeMsg)
 {
-    static QMutex controlBoard_mutex;
     controlBoard_mutex.lock();
 
     //writeMsg == ck,查询传感器状态 //writeMsg == on,气缸上升 //writeMsg == of,气缸下降

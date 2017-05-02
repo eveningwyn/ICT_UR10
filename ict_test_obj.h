@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QMutex>
 
 class ICT_Test_Obj : public QObject
 {
@@ -19,13 +20,17 @@ private:
     QString ictEnableStr;
     QString snTemp;
     QString testResultTemp;
-    bool testRunning;
+    volatile bool testRunning;
     QTimer *testTimer;
     QTimer *hold_on_Timer;
     QString forShowReceiveString(QString str);
     QString forShowSendString(QString str);
     void send_ictTestResult();
-    int snCheckCount;//用于限定软件只响应一次ICT命令
+    volatile int snCheckCount;//用于限定软件只响应一次ICT命令
+
+    QMutex ict_get_mutex;
+    QMutex ict_set_mutex;
+    QMutex ict_ping_mutex;
 
 signals:
     void ict_Error_Msg(QString errorMsg);

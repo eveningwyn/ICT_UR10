@@ -12,7 +12,6 @@
 #include "debugdialog.h"
 #include <QRegExp>
 #include <QDesktopWidget>
-#include <QMutex>
 
 #define PRO_VERSION  "V1.09c (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
@@ -934,7 +933,6 @@ void ICT_UR10::on_pushButtonTypeSelect_clicked()
 
 void ICT_UR10::UI_dashboard(int index, QString showStr)
 {
-    static QMutex MainUI_mutex;
     MainUI_mutex.lock();
     if(1==index)//更改启动按钮文字显示
     {

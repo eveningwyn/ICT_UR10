@@ -4,6 +4,7 @@
 #include <QObject>
 #include "serialportobj.h"
 #include <QTimer>
+#include <QMutex>
 
 class ScannerOnThread : public QObject
 {
@@ -28,13 +29,15 @@ private:
     QTimer *checkSensorTimer;
     QTimer *out1Timer;
     QTimer *out2Timer;
-    bool sensor1;
-    bool sensor2;
+    volatile bool sensor1;
+    volatile bool sensor2;
     bool cylinderUp;
     uint control_out2_count;
     uint control_out1_count;
     QTimer *control_out1_timer;
     bool not_DUT_board;
+
+    QMutex controlBoard_mutex;
 
 signals:
     void scanResult(QString sn);//传送SN信息

@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QException>
-#include <QMutex>
+#include <QThread>
 
 CommunicationDialog::CommunicationDialog(QWidget *parent) :
     QDialog(parent),
@@ -123,7 +123,7 @@ void CommunicationDialog::on_comboBoxReceiver_currentTextChanged(const QString &
 
 void CommunicationDialog::saveInfoToFile(QString msg)
 {
-    static QMutex comm_mutex;
+//    static QMutex comm_mutex;
     comm_mutex.lock();
     try
     {
@@ -142,6 +142,7 @@ void CommunicationDialog::saveInfoToFile(QString msg)
             QApplication::restoreOverrideCursor();              // 鼠标指针恢复原来的状态
             file.close();
         }
+        QThread::msleep(20);
     }
     catch(...)
     {
@@ -157,9 +158,9 @@ void CommunicationDialog::checkFileExist(QString fileName)
     if(!fileExist)
     {
         temp->mkdir(fileName);
-        QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
-        configRead->setValue(LOG_INDEX,"0");
-        delete configRead;
+        QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+        configWrite->setValue(LOG_INDEX,"0");
+        delete configWrite;
     }
     delete temp;
 }
