@@ -92,7 +92,8 @@ private:
     uint UPH_Fail;
 //    QTimer *UPH_timer;
     QDateTime UPH_Time;
-
+    QString UPH_TimeStr;
+    void UPH_Update_Infor(bool read_True, QString &timeStr, QString &end_timeStr, uint &passQ, uint &failQ, uint &tempQty);
 
     QMutex MainUI_mutex;
 

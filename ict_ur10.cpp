@@ -16,7 +16,7 @@
 #define PRO_VERSION  "V1.09c (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-02.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-03.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -41,6 +41,9 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     UPH_Qty = 0;
     UPH_Pass = 0;
     UPH_Fail = 0;
+    UPH_TimeStr = "";
+    QString UPH_end_TimeStr = "";
+    UPH_Update_Infor(true,UPH_TimeStr,UPH_end_TimeStr,UPH_Pass,UPH_Fail,UPH_Qty);
 
     /*实例化scanner类，并移入子线程thread1中*/
     thread1 = new QThread;//实例化thread1线程对象
@@ -433,7 +436,11 @@ void ICT_UR10::robotConnected(QString IP, int Port)
     if(robotIP==IP)
     {
         UPH_Time = QDateTime::currentDateTime();
-        ui->label_UPH_time->setText(QString(tr("%1~")).arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss")));
+        if(""==UPH_TimeStr)
+        {
+            UPH_TimeStr = UPH_Time.toString("yyyy/MM/dd hh");
+        }
+        ui->label_UPH_time->setText(QString(tr("%1H~")).arg(UPH_Time.toString("yyyy/MM/dd hh")));
         configRead->setValue(ROBOT_PORT,QString("%1").arg(Port));
         statusBarLabel_Robot->setText(QString(tr("机器人:%1 %2 已连接")).arg(IP).arg(Port));
         emit robotPortExist(true);
@@ -870,14 +877,15 @@ void ICT_UR10::UI_sortComplete(bool testResultPass)
     configRead->setValue(LOG_INDEX,QString("%1").arg(logIndex.toInt()+1));
     delete configRead;
     QDateTime curTime_temp = QDateTime::currentDateTime();
-    if(UPH_Time.toString("hh")!=curTime_temp.toString("hh"))
+
+    if(UPH_TimeStr!=curTime_temp.toString("yyyy/MM/dd hh"))
     {
-        ui->label_UPH_time->setText(QString(tr("%1~%2:00:00")).arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss")).arg(curTime_temp.toString("yyyy/MM/dd hh")));
+        ui->label_UPH_time->setText(QString(tr("%1H~%2H")).arg(UPH_TimeStr).arg(curTime_temp.toString("yyyy/MM/dd hh")));
         ui->label_UPH_Qty->setText(QString("%1").arg(UPH_Qty));
         ui->label_UPH_Pass->setText(QString("%1").arg(UPH_Pass));
         ui->label_UPH_Fail->setText(QString("%1").arg(UPH_Fail));
         //保存测试结果到csv文件
-        QString UPH_List = QString("%1,%2:00:00,%3,%4,%5\n").arg(UPH_Time.toString("yyyy/MM/dd hh:mm:ss"))
+        QString UPH_List = QString("%1,%2,%3,%4,%5\n").arg(UPH_TimeStr)
                 .arg(curTime_temp.toString("yyyy/MM/dd hh")).arg(UPH_Pass).arg(UPH_Fail).arg(UPH_Qty);
 
         newFile();//检查本地数据文件夹是否存在，如果不存在则新建文件夹
@@ -898,6 +906,7 @@ void ICT_UR10::UI_sortComplete(bool testResultPass)
         UPH_Pass = 0;
         UPH_Fail = 0;
         UPH_Time = QDateTime::currentDateTime();
+        UPH_TimeStr = UPH_Time.toString("yyyy/MM/dd hh");
     }
     if(true == testResultPass)
     {
@@ -908,6 +917,8 @@ void ICT_UR10::UI_sortComplete(bool testResultPass)
         UPH_Fail++;
     }
     UPH_Qty = UPH_Pass + UPH_Fail;
+    QString end_time = curTime_temp.toString("yyyy/MM/dd hh");
+    UPH_Update_Infor(false,UPH_TimeStr,end_time,UPH_Pass,UPH_Fail,UPH_Qty);
 }
 
 void ICT_UR10::on_pushButtonTypeSelect_clicked()
@@ -944,4 +955,45 @@ void ICT_UR10::UI_dashboard(int index, QString showStr)
         }
     }
     MainUI_mutex.unlock();
+}
+
+void ICT_UR10::UPH_Update_Infor(bool read_True, QString &timeStr, QString &end_timeStr, uint &passQ, uint &failQ, uint &tempQty)
+{
+    QString UPH_fileName = QString("UPH_Record.txt");
+    QFile uph_file(UPH_fileName);
+    QTextStream uph_file_in_out(&uph_file);
+    if(true==read_True)
+    {
+        if(uph_file.open(QFile::ReadOnly | QIODevice::Text))
+        {
+            QString strTemp = uph_file_in_out.readAll();
+            QRegExp uphRE("(.*),(.*),(.*),(.*),(.*)");
+            if(0 <= strTemp.indexOf(uphRE))
+            {
+                timeStr = uphRE.cap(1);
+                end_timeStr = uphRE.cap(2);
+                passQ = uphRE.cap(3).toInt();
+                failQ = uphRE.cap(4).toInt();
+                tempQty = uphRE.cap(5).toInt();
+            }
+//            if(!uph_file.flush())
+//            {
+//                qDebug("UPH_Update_Infor_file flush error");
+//            }
+            uph_file.close();
+        }
+    }
+    else
+    {
+        if(uph_file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QString uph_Str_temp = QString("%1,%2,%3,%4,%5\n").arg(timeStr).arg(end_timeStr).arg(passQ).arg(failQ).arg(tempQty);
+            uph_file_in_out << uph_Str_temp;
+            if(!uph_file.flush())
+            {
+                qDebug("UPH_Update_Infor_file flush error");
+            }
+            uph_file.close();
+        }
+    }
 }
