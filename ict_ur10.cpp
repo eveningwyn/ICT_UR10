@@ -13,10 +13,10 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.09c (not No Read)"
+#define PRO_VERSION  "V1.10 (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-03.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-15.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :

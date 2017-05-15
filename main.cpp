@@ -7,7 +7,8 @@
 #include <DbgHelp.h>
 #include <QMessageBox>
 #include <QtConcurrent/QtConcurrent>
-
+#include <QPixmap>
+#include <QSplashScreen>
 
 void outputMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -85,12 +86,20 @@ long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QPixmap pixmap(":/res/Industrial_robot_128px_532261_easyicon.net.png");
+    QSplashScreen splash(pixmap);
+    splash.show();
+    a.processEvents();
+
     //注册MessageHandler
     qInstallMessageHandler(outputMessage);
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
 
     ICT_UR10 w;
     w.show();
+
+    splash.finish(&w);
 
     return a.exec();
 }
