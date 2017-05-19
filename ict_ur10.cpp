@@ -16,7 +16,7 @@
 #define PRO_VERSION  "V1.10 (not No Read)"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-15.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-17.\n")).arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -731,6 +731,10 @@ void ICT_UR10::runStatus(bool isAuto)
     }
     ui->pushButton_Auto_Debug->setDisabled(isAuto);
     ui->comboBox_Auto_Debug->setDisabled(isAuto);
+    if(true == isAuto)
+    {
+        ui->comboBox_Auto_Debug->setCurrentIndex(1);
+    }
 }
 
 void ICT_UR10::on_actionDebug_triggered()
@@ -779,16 +783,20 @@ void ICT_UR10::on_pushButton_Auto_Debug_clicked()
     }
     else
     {
-        if(QMessageBox::Yes==QMessageBox::warning(this,NULL,tr("请通过手动操作机器人控制面板，使得机器人安全回到初始位!\n"
-                                             "如果一定要进行此项操作,否则易出现安全问题!\n"
-                                             "未进行此项操作请选择Yes,已进行此项操作请选择No\n"),QMessageBox::Yes|QMessageBox::No))
+        QMessageBox::StandardButton rb = QMessageBox::warning(this,NULL,tr("请通过手动操作机器人控制面板，使得机器人安全回到初始位!\n"
+                                                                           "如果一定要进行此项操作,否则易出现安全问题!\n"
+                                                                           "未进行此项操作请选择Yes,已进行此项操作请选择No\n"),QMessageBox::Yes|QMessageBox::No);
+        if(QMessageBox::No==rb)
+        {
+            if(tr("自动模式")==ui->comboBox_Auto_Debug->currentText())
+            {
+                mainAutoMode = true;
+            }
+        }
+        else
         {
             ui->comboBox_Auto_Debug->setCurrentIndex(0);
             return;
-        }
-        if(tr("自动模式")==ui->comboBox_Auto_Debug->currentText())
-        {
-            mainAutoMode = true;
         }
     }
     if(modeTemp!=mainAutoMode||false==mainAutoMode)
