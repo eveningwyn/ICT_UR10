@@ -218,7 +218,7 @@ void ScannerOnThread::controlBoardRead()
         {
             if("@2!"==readStr)
             {
-                //流水线正在出载板，
+                //流水线正在出载板
                 sensor1 = true;
                 sensor2 = false;
                 //not_DUT_board = false;
@@ -238,8 +238,8 @@ void ScannerOnThread::controlBoardRead()
             }
         }
     }
-    //流水线状态改变时发送信号
 
+    //流水线状态改变时发送信号
     if(sensor1Temp != sensor1 || sensor2Temp != sensor2)
     {
         emit lineSensorStatus(sensor1,sensor2);

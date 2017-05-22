@@ -39,6 +39,7 @@ private:
     QTimer *setRunModeTimer;
     volatile bool lineSensor1;
     volatile bool lineSensor2;
+    bool robotGetLineState;
     QTimer *infoLineReadyTimer;
     bool robotInitDone;
 

@@ -162,6 +162,8 @@ private slots:
     void on_pushButton_Robot_stop_clicked();
 //    void UPH_timer_timeout();
     void on_pushButtonTypeSelect_clicked();
+    void on_pushButton_cylinder_up_clicked();
+    void on_pushButton_cylinder_down_clicked();
 };
 
 #endif // ICT_UR10_H

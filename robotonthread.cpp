@@ -165,6 +165,8 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             if(true==testPass)
             {
                 emit cylinderUpDown(CONTROL_OUT1_OFF);
+                lineSensor1 = false;
+                lineSensor2 = false;
             }
             emit setRunStatus(false);
             robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Sort complete ACK"));
@@ -172,6 +174,12 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             checkPass = false;
             barcode = "";
             testPass = false;
+            return;
+        }
+        if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line state?")))
+        {
+            robotGetLineState = true;
+            infromLineInfoToRobot();
             return;
         }
     }
@@ -303,6 +311,7 @@ void RobotOnThread::init_Robot()
 
     lineSensor1 = false;
     lineSensor2 = false;
+    robotGetLineState = false;
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
@@ -648,44 +657,61 @@ void RobotOnThread::set_light_Red_Green_Yellow_Buzzer(QString msg)
 }
 
 void RobotOnThread::lineSensorStatus(bool sensor1True, bool sensor2True)
-{
-    bool sensorTemp1 = lineSensor1;
-    bool sensorTemp2 = lineSensor2;
-    lineSensor2 = sensor1True;
-    lineSensor1 = sensor2True;
-    if(sensorTemp1!=lineSensor1 || sensorTemp2!=lineSensor2)
-    {
-        if(infoLineReadyTimer->isActive())
-            infoLineReadyTimer->stop();
-        infromLineInfoToRobot();
-    }
+{//靠近阻挡气缸的传感器为1，远离阻挡气缸的传感器为2
+//    bool sensorTemp1 = lineSensor1;
+//    bool sensorTemp2 = lineSensor2;
+//    lineSensor2 = sensor1True;
+//    lineSensor1 = sensor2True;
+//    if(sensorTemp1!=lineSensor1 || sensorTemp2!=lineSensor2)
+//    {
+//        if(infoLineReadyTimer->isActive())
+//            infoLineReadyTimer->stop();
+//        infromLineInfoToRobot();
+//    }
+
+    lineSensor1 = sensor1True;
+    lineSensor2 = sensor2True;
+//    if(infoLineReadyTimer->isActive())
+//        infoLineReadyTimer->stop();
+//    infromLineInfoToRobot();
 }
 
 void RobotOnThread::infromLineInfoToRobot()
 {
     bool timerIsActive = true;
-    if(!initTimer->isActive() && !snReadTimer->isActive()
-            && !snResultTimer->isActive() && !scanErrorTimer->isActive()
-            && !testResultTimer->isActive() && !returnResultTimer->isActive()
-            && !setRunModeTimer->isActive())
+    if(!initTimer->isActive()
+            && !snReadTimer->isActive()
+            && !snResultTimer->isActive()
+            && !scanErrorTimer->isActive()
+            && !testResultTimer->isActive()
+            && !returnResultTimer->isActive()
+            && !setRunModeTimer->isActive()
+            )
     {
         timerIsActive = false;
     }
 
-    if(infoLineReadyTimer->isActive())
-        infoLineReadyTimer->stop();
-    infoLineReadyTimer->start(TIMEOUT_SEC+333);
+    if(!infoLineReadyTimer->isActive())
+        infoLineReadyTimer->start(TIMEOUT_SEC+343);
     if((true==snCheckDoneState || true==scanDoneState) && (false==timerIsActive))
     {
         if(true == lineSensor1 && true == lineSensor2)
         {
-            //告知Robot流水线已准备好
-            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+                //告知Robot流水线已准备好
+//                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+
+            if(true==robotGetLineState)
+            {
+                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+                robotGetLineState = false;
+                if(infoLineReadyTimer->isActive())
+                    infoLineReadyTimer->stop();
+            }
         }
         else
         {
             //告知Robot流水线未准备好
-            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
+//            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
         }
     }
 }
