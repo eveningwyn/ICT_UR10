@@ -13,10 +13,13 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.11 (not No Read)"
+#define PRO_VERSION  "V1.11"
 void ICT_UR10::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n\nBuilt on 2017-05-22.\n")).arg(PRO_VERSION));
+    QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n"
+                                            "\nBuilt on 2017-05-27.\n"
+                                            "\nThis version is not \"No Read\".\n"))
+                       .arg(PRO_VERSION));
 }
 
 ICT_UR10::ICT_UR10(QWidget *parent) :
@@ -783,18 +786,15 @@ void ICT_UR10::on_pushButton_Auto_Debug_clicked()
     }
     else
     {
-//        QMessageBox::StandardButton rb = QMessageBox::warning(this,NULL,tr("请通过手动操作机器人控制面板，使得机器人安全回到初始位!\n"
-//                                                                           "请一定要进行此项操作,否则易出现安全问题!\n"
-//                                                                           "未进行此项操作请选择Yes,已进行此项操作请选择No\n"),QMessageBox::Yes|QMessageBox::No);
-
         QMessageBox msgBox;
-        msgBox.setText(tr("安全警示!"));
+//        msgBox.setText(tr("安全警示!"));
+        msgBox.setText(tr("<h1><font color=red>安全警示!</font></hi>"));
         msgBox.setInformativeText(tr("请通过手动操作机器人控制面板, 使得机器人安全回到初始位!\n"
                                      "请一定要进行此项操作, 否则容易出现安全问题!\n"
                                      "未进行此项操作请选择Yes, 已进行此项操作请选择No\n"));
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setWindowFlags(Qt::FramelessWindowHint);//隐藏关闭按钮
-        msgBox.setStyleSheet("background :rgb(240, 240, 240)");
+        msgBox.setStyleSheet("background-color :rgb(240, 240, 240)");
         int rb = msgBox.exec();
 
         if(QMessageBox::No==rb)

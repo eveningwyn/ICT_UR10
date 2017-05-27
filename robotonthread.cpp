@@ -178,8 +178,8 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         }
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Line state?")))
         {
-            robotGetLineState = true;
-            infromLineInfoToRobot();
+//            robotGetLineState = true;
+//            infromLineInfoToRobot();
             return;
         }
     }
@@ -311,7 +311,7 @@ void RobotOnThread::init_Robot()
 
     lineSensor1 = false;
     lineSensor2 = false;
-    robotGetLineState = false;
+//    robotGetLineState = false;
 
     robotServer = new TcpIpServer(this);
     robotServer->set_prefix_suffix(PREFIX,SUFFIX);
@@ -671,9 +671,9 @@ void RobotOnThread::lineSensorStatus(bool sensor1True, bool sensor2True)
 
     lineSensor1 = sensor1True;
     lineSensor2 = sensor2True;
-//    if(infoLineReadyTimer->isActive())
-//        infoLineReadyTimer->stop();
-//    infromLineInfoToRobot();
+    if(infoLineReadyTimer->isActive())
+        infoLineReadyTimer->stop();
+    infromLineInfoToRobot();
 }
 
 void RobotOnThread::infromLineInfoToRobot()
@@ -697,21 +697,21 @@ void RobotOnThread::infromLineInfoToRobot()
     {
         if(true == lineSensor1 && true == lineSensor2)
         {
-                //告知Robot流水线已准备好
-//                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+            //告知Robot流水线已准备好
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
 
-            if(true==robotGetLineState)
-            {
-                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
-                robotGetLineState = false;
-                if(infoLineReadyTimer->isActive())
-                    infoLineReadyTimer->stop();
-            }
+//            if(true==robotGetLineState)//for Branch1
+//            {
+//                robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line ready"));
+//                robotGetLineState = false;
+//                if(infoLineReadyTimer->isActive())
+//                    infoLineReadyTimer->stop();
+//            }
         }
         else
         {
             //告知Robot流水线未准备好
-//            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
+            robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Line not ready"));
         }
     }
 }
