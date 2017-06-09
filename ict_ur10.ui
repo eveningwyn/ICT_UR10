@@ -1097,6 +1097,13 @@
        <string>流水线控制</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_8">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>延时时间(ms)</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QPushButton" name="pushButton_cylinder_up">
          <property name="minimumSize">
@@ -1122,6 +1129,9 @@
           <string>阻挡气缸下降</string>
          </property>
         </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLineEdit" name="lineEdit_line_wait_time"/>
        </item>
       </layout>
      </widget>

@@ -164,7 +164,17 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         {
             if(true==testPass)
             {
-                emit cylinderUpDown(CONTROL_OUT1_OFF);
+//                emit cylinderUpDown(CONTROL_OUT1_OFF);
+                QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+                QString line_wait_time_Str = configRead->value(SCANNER_LINE_WAIT_TIME).toString();
+                delete configRead;
+                bool ok;
+                int line_wait_time = line_wait_time_Str.toInt(&ok,10);
+                if(!ok)
+                    line_wait_time = 1;
+                if(!cylinderDownTimer->isActive())
+                    cylinderDownTimer->start(line_wait_time);
+
                 lineSensor1 = false;
                 lineSensor2 = false;
             }
@@ -298,6 +308,7 @@ void RobotOnThread::init_Robot()
     setProtTimer = new QTimer(this);
     setRunModeTimer = new QTimer(this);
     infoLineReadyTimer = new QTimer(this);
+    cylinderDownTimer = new QTimer(this);
 
     PC_Is_Ready = false;
     readedSN = false;
@@ -345,6 +356,7 @@ void RobotOnThread::init_Robot()
     connect(robot_start_timer,&QTimer::timeout,this,&RobotOnThread::robot_start);
     connect(robot_pause_timer,&QTimer::timeout,this,&RobotOnThread::robot_pause);
     connect(robot_stop_timer,&QTimer::timeout,this,&RobotOnThread::robot_stop);
+    connect(cylinderDownTimer,&QTimer::timeout,this,&RobotOnThread::cylinderDownTimerTimeout);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Robot
@@ -847,4 +859,11 @@ void RobotOnThread::robot_clientDisConnect(int clientID, QString IP, int Port)
     //Port = 0;
     dashboard_enable = false;
     emit forShow_To_Comm(forShowString(QString(tr("Dashboard Server功能已停止!"))));
+}
+
+void RobotOnThread::cylinderDownTimerTimeout()
+{
+    if(cylinderDownTimer->isActive())
+        cylinderDownTimer->stop();
+    emit cylinderUpDown(CONTROL_OUT1_OFF);
 }

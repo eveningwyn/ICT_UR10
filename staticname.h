@@ -37,6 +37,7 @@
 #define SCANNER_PARITY_BITS_CONTROL   "/ScannerParameter/ParityBitsControl"
 #define SCANNER_STOP_BITS_CONTROL     "/ScannerParameter/StopBitsControl"
 #define SCANNER_SCAN_TIMES            "/ScannerParameter/ScanTimes"
+#define SCANNER_LINE_WAIT_TIME            "/ScannerParameter/LineWaitTime"
 
 //static QString SERVER_IP_ADDRESS   = "/RobotParameter/IPaddress";
 //static QString SERVER_PORT         = "/RobotParameter/Port";

@@ -13,11 +13,11 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.11"
+#define PRO_VERSION  "V1.12"
 void ICT_UR10::on_actionAbout_triggered()
 {
     QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n"
-                                            "\nBuilt on 2017-05-27.\n"
+                                            "\nBuilt on 2017-06-09.\n"
                                             "\nThis version is not \"No Read\".\n"))
                        .arg(PRO_VERSION));
 }
@@ -31,6 +31,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
 
     this->setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);
     this->setFixedSize(QApplication::desktop()->width(),QApplication::desktop()->height()-70);
+    QRegExp regExpInput("[0-9]+$");//[0-9]+$;^[0-9]*[1-9][0-9]*$
+    ui->lineEdit_line_wait_time->setValidator(new QRegExpValidator(regExpInput,this));
 
     totalQty = 0;
     passQty = 0;
@@ -1025,4 +1027,16 @@ void ICT_UR10::on_pushButton_cylinder_up_clicked()
 void ICT_UR10::on_pushButton_cylinder_down_clicked()
 {
     emit manualSendMsg_controlBoard(CONTROL_OUT1_OFF);
+}
+
+void ICT_UR10::on_lineEdit_line_wait_time_returnPressed()
+{
+    QString input = ui->lineEdit_line_wait_time->text();
+    bool ok;
+    int line_wait_time = input.toInt(&ok,10);
+    if(!ok)
+        line_wait_time = 1;
+    QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
+    configWrite->setValue(SCANNER_LINE_WAIT_TIME,QString("%1").arg(line_wait_time));
+    delete configWrite;
 }

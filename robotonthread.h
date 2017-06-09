@@ -55,6 +55,8 @@ private:
     QMutex robot_read_mutex;
     QMutex robot_send_mutex;
 
+    QTimer *cylinderDownTimer;
+
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
     void robot_Error_Msg(QString errorMsg);//更新错误信号
@@ -118,6 +120,7 @@ private slots:
     void setPro_Num_Timeout();//设置产品类型对应的程序号
     void setRunModeTimeout();
     void infromLineInfoToRobot();
+    void cylinderDownTimerTimeout();
 };
 
 #endif // ROBOTONTHREAD_H
