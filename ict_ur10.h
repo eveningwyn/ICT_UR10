@@ -15,6 +15,7 @@
 #include "ict_test_obj.h"
 #include <QDateTime>
 #include <QMutex>
+#include "webuploadobj.h"
 
 namespace Ui {
 class ICT_UR10;
@@ -37,6 +38,7 @@ public:
 
     QThread *thread3;//thread3子线程
     ICT_Test_Obj *ict;
+    WebUploadObj *pWeb;
 
     void disEnableUI();
     void Enable();
@@ -74,6 +76,11 @@ private:
     void newFile();//创建数据文件夹
     void closeEvent(QCloseEvent *event);//重载close事件
     QString forShowString(QString str);//将字符串添加时间戳
+
+    void logToServerWeb(const QString state, const QString startTime, const QString endTime, const QString errorCode);
+    QString snTemp;
+    QString m_sStartTime;
+    QString m_sEndTime;
 
     /*生产看板*/
     uint totalQty;//测试总数量
@@ -133,6 +140,7 @@ public slots:
     void UI_show_error(QString errorStr);
     void UI_sortComplete(bool testResultPass);//Robot分拣完成信号-槽
     void UI_dashboard(int index,QString showStr);
+    void saveTempSn(QString sn);
 
 private slots:
     void on_actionScanner_triggered();

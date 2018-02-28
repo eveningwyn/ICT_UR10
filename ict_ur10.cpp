@@ -13,11 +13,11 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V1.12"
+#define PRO_VERSION  "V2.00Beta"
 void ICT_UR10::on_actionAbout_triggered()
 {
     QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n"
-                                            "\nBuilt on 2017-06-09.\n"
+                                            "\nBuilt on 2018-02-27.\n"
                                             "\nThis version is not \"No Read\".\n"))
                        .arg(PRO_VERSION));
 }
@@ -47,6 +47,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     UPH_Pass = 0;
     UPH_Fail = 0;
     UPH_TimeStr = "";
+    snTemp = "";
     QString UPH_end_TimeStr = "";
     UPH_Update_Infor(true,UPH_TimeStr,UPH_end_TimeStr,UPH_Pass,UPH_Fail,UPH_Qty);
 
@@ -66,6 +67,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     ict = new ICT_Test_Obj;
     ict->moveToThread(thread3);//将ict处理类对象放在线程中
     //ict->moveToThread(thread1);//将ict处理类对象放在线程中
+
+    pWeb = new WebUploadObj(this);
 
     /*状态初始化*/
     robotIsInit = false;
@@ -94,6 +97,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(scan_on_thread,&ScannerOnThread::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
     connect(scan_on_thread,&ScannerOnThread::scanError,robot_on_thread,&RobotOnThread::scanError);
     connect(scan_on_thread,&ScannerOnThread::scanResult,ict,&ICT_Test_Obj::ict_Check_SN);
+    connect(scan_on_thread,&ScannerOnThread::scanResult,this,&ICT_UR10::saveTempSn);
     connect(scan_on_thread,&ScannerOnThread::lineSensorStatus,robot_on_thread,&RobotOnThread::lineSensorStatus);
     connect(scan_on_thread,&ScannerOnThread::readSnDone,robot_on_thread,&RobotOnThread::readSnDone);
 
@@ -127,6 +131,9 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(ict,&ICT_Test_Obj::ict_testTimeout,robot_on_thread,&RobotOnThread::ict_testTimeout);
     connect(ict,&ICT_Test_Obj::forShow_To_Comm,commDlg,&CommunicationDialog::forShowInfo);
 
+    connect(pWeb,&WebUploadObj::web_Error_Msg,this,&ICT_UR10::showErrorMessage);
+    connect(pWeb,&WebUploadObj::web_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
+
     connect(this,&ICT_UR10::manualSendMsg,robot_on_thread,&RobotOnThread::robotSendMsg);
     connect(this,&ICT_UR10::forShow,commDlg,&CommunicationDialog::forShowInfo);
     connect(this,&ICT_UR10::manualScan,scan_on_thread,&ScannerOnThread::scannerScanSN);
@@ -152,6 +159,11 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     thread3->start();//开启thread3的子线程
 
     init_UI();
+
+//for Debug 20180227
+    //pWeb->forTest();
+    QString sTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    pWeb->msgUpload("F",sTime,sTime,"Error PCB Unlevel on Flat");
 }
 
 ICT_UR10::~ICT_UR10()
@@ -576,6 +588,10 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         csvFile.close();
     }
     update_UI_show();
+    m_sEndTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    logToServerWeb(result,m_sStartTime,m_sEndTime,failCode);
+    m_sStartTime = "";
+    m_sEndTime = "";
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString yellow_limit = configRead->value(ICT_YELLOW_LIMIT).toString();
@@ -642,6 +658,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
             update_UI_show();
         }
     }
+    snTemp = "";
 }
 
 void ICT_UR10::newFile()
@@ -712,6 +729,7 @@ void ICT_UR10::runStatus(bool isAuto)
         this->statusBarLabel_Robot->setText(tr("机器人:自动运行中..."));
         //清空通讯log
         //emit forShow("UI clear...\n");
+        m_sStartTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     }
     else
     {
@@ -1039,4 +1057,20 @@ void ICT_UR10::on_lineEdit_line_wait_time_returnPressed()
     QSettings *configWrite = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     configWrite->setValue(SCANNER_LINE_WAIT_TIME,QString("%1").arg(line_wait_time));
     delete configWrite;
+}
+
+void ICT_UR10::saveTempSn(QString sn)
+{
+    snTemp = sn;
+}
+
+void ICT_UR10::logToServerWeb(const QString state, const QString startTime, const QString endTime, const QString errorCode)
+{
+    if("PASS"==state.toUpper())
+    {
+        pWeb->msgUpload("P",startTime,endTime,errorCode);
+    }
+    else {
+        pWeb->msgUpload("F",startTime,endTime,errorCode);
+    }
 }

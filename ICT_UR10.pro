@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     ict_test_obj.cpp \
     ict_mes_dialog.cpp \
     debugdialog.cpp \
-    debuglogindialog.cpp
+    debuglogindialog.cpp \
+    webuploadobj.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -59,7 +60,8 @@ HEADERS  += ict_ur10.h \
     ict_test_obj.h \
     ict_mes_dialog.h \
     debugdialog.h \
-    debuglogindialog.h
+    debuglogindialog.h \
+    webuploadobj.h
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

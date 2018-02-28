@@ -43,7 +43,7 @@ void ICT_Test_Obj::getIctInfo(QString fileName, QString &readMsg)
         {
             setIctInfo(fileName,"");
         }
-        QThread::msleep(100);//-----------------
+        QThread::msleep(100);
         ict_get_mutex.unlock();
         return;
     }
@@ -60,12 +60,10 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
     ict_set_mutex.lock();
     try
     {
-        //qDebug("action 1");//--------------------------
         QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
         QString ict_drive = configRead->value(ICT_LOCAL_DRIVE).toString();
         delete configRead;
         QString ICT_path = QString("%1:\\%2").arg(ict_drive).arg(fileName);
-        //qDebug("action 2");//--------------------------
 
         QFile file(ICT_path);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -75,25 +73,17 @@ void ICT_Test_Obj::setIctInfo(QString fileName, QString writeMsg)
             ict_set_mutex.unlock();
             return ;
         }
-        //qDebug("action 3");//--------------------------
+
         QTextStream out(&file);
-//        QApplication::setOverrideCursor(Qt::WaitCursor);//鼠标指针变为等待状态
-        //qDebug("action 4");//--------------------------
         out << writeMsg;
-        //qDebug("action 5");//--------------------------
-//        QApplication::restoreOverrideCursor();//鼠标指针恢复原来的状态
-        //qDebug("action 6");//--------------------------
 
         if(!file.flush())
         {
             qDebug("setIctInfo_file flush error");
         }
 
-        //qDebug("action 7");//--------------------------
         file.close();
-        //qDebug("action 8");//--------------------------
         QThread::msleep(100);
-        //qDebug("action 9");//--------------------------
         ict_set_mutex.unlock();
         return;
     }
@@ -189,7 +179,9 @@ void ICT_Test_Obj::statusReadTimeout()
         QString receive_path = QString("%1/%2").arg(receive_file_name).arg(receive_name);
         QString result_path = QString("%1/%2").arg(result_file_name).arg(result_name);
 
-        /*获取SN check反馈*/
+    /*
+    ***获取SN check反馈***
+    */
         if(!snTemp.isEmpty() && 0==snCheckCount)
         {
             QString sn_receiveStr = "";
@@ -223,7 +215,9 @@ void ICT_Test_Obj::statusReadTimeout()
                 }
             }
         }
-        /*获取test result反馈*/
+    /*
+    ***获取test result反馈***
+    */
         if(true==testRunning && !snTemp.isEmpty() && 1==snCheckCount)
         {
             QString testResultStr = "";
@@ -231,22 +225,33 @@ void ICT_Test_Obj::statusReadTimeout()
             if(!testResultStr.isEmpty())
             {
                 emit forShow_To_Comm(forShowReceiveString(testResultStr));
-                /*"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"*/
-                /*"C4-L1N,A,ICT,J1741705,3I1101, ,ICT_V04R03,AH12016602,P, , ,0,"*/
+/*
+* Old version
+"N08,B,ICT,J1114586,2I0801, ,ICT_V13,SN1234567890,P, , ,0,"
+"C4-L1N,A,ICT,J1741705,3I1101, ,ICT_V04R03,AH12016602,P, , ,0,"
+
+* New version
+现有发送数据：
+a."N08,B,ICT,J1114586,2I0801, ,ICT_V13,P5282677,P, , ,0, ".txt
+b."N08,B,ICT,J1114586,2I0801, ,ICT_V13,P5282677,F,A02 , ,0, ".txt
+升级成以下格式数据：
+a."E2-L1N,1,ICT,J1741534,09,ICT_V12R01,NY0217460003,TestResult,SF-0-10,NP29J4654001A,JOYTECH,PASS, "
+b."E2-L1N,1,ICT,J1741534,09,ICT_V12R01,NY0217460001,TestResult,SF-0-10,NP29J4654001A,JOYTECH,FAIL,A12"
+*/
                 QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
                 if(0 <= testResultStr.indexOf(resultRE))
                 {
-                    if(resultRE.cap(8)==snTemp)
+                    if(resultRE.cap(10)==snTemp)
                     {
-                        if("P"==resultRE.cap(9))
+                        if("PASS"==resultRE.cap(12))
                         {
                             testResultTemp = "PASS";
                         }
                         else
                         {
-                            if("F"==resultRE.cap(9))
+                            if("FAIL"==resultRE.cap(12))
                             {
-                                testResultTemp = QString("FAIL,%1").arg(resultRE.cap(10));
+                                testResultTemp = QString("FAIL,%1").arg(resultRE.cap(13));
                             }
                         }
                         send_ictTestResult();
@@ -254,7 +259,7 @@ void ICT_Test_Obj::statusReadTimeout()
                     else
                     {
                         emit ict_Error_Msg(QString(tr("Scan条码与ICT测试结果回传条码不一致：\n"
-                                              "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(8)));
+                                              "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(10)));
                     }
                     snCheckCount = 2;
                 }
@@ -380,11 +385,8 @@ void ICT_Test_Obj::catchFail()//Robot抓取失败
     //复位ICT测试
     snCheckCount = -1;
     setIctInfo(run_path,"CATCHFAIL");
-    //qDebug("action catchFail()1");//--------------------------
     setIctInfo(receive_path,"");
-    //qDebug("action catchFail()2");//--------------------------
     setIctInfo(result_path,"");
-    //qDebug("action catchFail()3");//--------------------------
     emit forShow_To_Comm(forShowSendString("CATCHFAIL"));
     return;
 }
