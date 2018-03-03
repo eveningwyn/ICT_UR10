@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += serialport
 QT       += network
-QT       += core xml
+QT       += xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -42,7 +42,10 @@ SOURCES += main.cpp\
     ict_mes_dialog.cpp \
     debugdialog.cpp \
     debuglogindialog.cpp \
-    webuploadobj.cpp
+    webuploadobj.cpp \
+    WCF_WC/soapBasicHttpBinding_USCOREIWSCenterEntranceProxy.cpp \
+    WCF_WC/soapC.cpp \
+    WCF_WC/stdsoap2.cpp
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -61,7 +64,12 @@ HEADERS  += ict_ur10.h \
     ict_mes_dialog.h \
     debugdialog.h \
     debuglogindialog.h \
-    webuploadobj.h
+    webuploadobj.h \
+    WCF_WC/soapBasicHttpBinding_USCOREIWSCenterEntranceProxy.h \
+    WCF_WC/soapH.h \
+    WCF_WC/soapStub.h \
+    WCF_WC/stdsoap2.h \
+    WCF_WC/BasicHttpBinding_USCOREIWSCenterEntrance.nsmap
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

@@ -62,8 +62,6 @@ long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
 //    QMessageBox::critical(NULL,"Crash",QString("Error Code: %1\nError Addr: %2\n")
 //                          .arg(errCode).arg(errAdr),QMessageBox::Ok);
 
-
-
     //Create the dump file
 //    HANDLE hDumpFile = CreateFile((LPCWSTR)QString("..//log/crash.dmp").utf16(),
 //                                  GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -92,9 +90,13 @@ int main(int argc, char *argv[])
     splash.show();
     a.processEvents();
 
+#ifdef QT_NO_DEBUG
     //注册MessageHandler
     qInstallMessageHandler(outputMessage);
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
+#else
+//qDebug() << "debug mode";
+#endif
 
     ICT_UR10 w;
     w.show();

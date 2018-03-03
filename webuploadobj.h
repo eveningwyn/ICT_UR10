@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QtNetwork>
-#include <QLibrary>
 
 class QNetworkAccessManager;
 class QNetworkRequest;
@@ -15,16 +14,18 @@ public:
     explicit WebUploadObj(QObject *parent = 0);
     ~WebUploadObj();
     void msgUpload(const QString state, const QString startTime, const QString endTime, const QString errorCode);
-    void forTest();
+    void callWebService(const QString inputStr);
+    void callWebServiceTest(const QString inputStr);
+    QString getXmlString(const QString state, const QString startTime, const QString endTime, const QString errorCode);
+
+    void forTest();//For Debug
 
 private:
     QNetworkAccessManager *web_manager;
     QNetworkRequest web_request;
 //    QNetworkReply *web_reply;
     QString V_UID;
-    void postWeb(const QString postMsg);
-    void postWebNew(const QString postMsg);
-    void callWebFunc(QString intputMsg);
+    void postWeb(const QString postMsg);//Old Code
 
 signals:
     void web_Error_Msg(QString errorMsg);//更新错误信号
