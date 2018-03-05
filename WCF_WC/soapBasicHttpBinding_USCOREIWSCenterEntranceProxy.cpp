@@ -137,7 +137,7 @@ int BasicHttpBinding_USCOREIWSCenterEntranceProxy::ENTRANCE(const char *endpoint
 	if (endpoint)
 		soap_endpoint = endpoint;
 	if (soap_endpoint == NULL)
-		soap_endpoint = "http://srv-tpmweb.joytechcn.local/WSCenter/WSCenterEntrance.svc";
+		soap_endpoint = "http://ws06-2017.joytechcn.local/WSCenter/WSCenterEntrance.svc";
 	if (soap_action == NULL)
 		soap_action = "http://tempuri.org/IWSCenterEntrance/ENTRANCE";
 	soap_tmp___ns1__ENTRANCE.ns1__ENTRANCE = ns1__ENTRANCE;
@@ -192,7 +192,7 @@ int BasicHttpBinding_USCOREIWSCenterEntranceProxy::ENTRANCE_USCORETEST(const cha
 	if (endpoint)
 		soap_endpoint = endpoint;
 	if (soap_endpoint == NULL)
-		soap_endpoint = "http://srv-tpmweb.joytechcn.local/WSCenter/WSCenterEntrance.svc";
+		soap_endpoint = "http://ws06-2017.joytechcn.local/WSCenter/WSCenterEntrance.svc";
 	if (soap_action == NULL)
 		soap_action = "http://tempuri.org/IWSCenterEntrance/ENTRANCE_TEST";
 	soap_tmp___ns1__ENTRANCE_USCORETEST.ns1__ENTRANCE_USCORETEST = ns1__ENTRANCE_USCORETEST;

@@ -147,13 +147,13 @@ class SOAP_CMAC xsd__base64Binary {
 
 /* servicel.h:160 */
 #ifndef SOAP_TYPE_xsd__ID_
-#define SOAP_TYPE_xsd__ID_ (16)
+#define SOAP_TYPE_xsd__ID_ (17)
 /* Type xsd__ID_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:ID': */
 class SOAP_CMAC xsd__ID_ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'xsd:ID' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_xsd__ID_
         virtual long soap_type(void) const { return SOAP_TYPE_xsd__ID_; }
@@ -182,13 +182,13 @@ class SOAP_CMAC xsd__ID_ : public xsd__anyType {
 
 /* servicel.h:170 */
 #ifndef SOAP_TYPE_xsd__IDREF_
-#define SOAP_TYPE_xsd__IDREF_ (18)
+#define SOAP_TYPE_xsd__IDREF_ (19)
 /* Type xsd__IDREF_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:IDREF': */
 class SOAP_CMAC xsd__IDREF_ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'xsd:IDREF' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_xsd__IDREF_
         virtual long soap_type(void) const { return SOAP_TYPE_xsd__IDREF_; }
@@ -217,7 +217,7 @@ class SOAP_CMAC xsd__IDREF_ : public xsd__anyType {
 
 /* servicel.h:177 */
 #ifndef SOAP_TYPE_xsd__QName
-#define SOAP_TYPE_xsd__QName (19)
+#define SOAP_TYPE_xsd__QName (20)
 /* Type xsd__QName is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:QName': */
 class SOAP_CMAC xsd__QName : public xsd__anyType {
@@ -252,13 +252,13 @@ class SOAP_CMAC xsd__QName : public xsd__anyType {
 
 /* servicel.h:187 */
 #ifndef SOAP_TYPE_xsd__anyURI_
-#define SOAP_TYPE_xsd__anyURI_ (21)
+#define SOAP_TYPE_xsd__anyURI_ (22)
 /* Type xsd__anyURI_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:anyURI': */
 class SOAP_CMAC xsd__anyURI_ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'xsd:anyURI' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_xsd__anyURI_
         virtual long soap_type(void) const { return SOAP_TYPE_xsd__anyURI_; }
@@ -287,7 +287,7 @@ class SOAP_CMAC xsd__anyURI_ : public xsd__anyType {
 
 /* servicel.h:194 */
 #ifndef SOAP_TYPE_xsd__base64Binary_
-#define SOAP_TYPE_xsd__base64Binary_ (22)
+#define SOAP_TYPE_xsd__base64Binary_ (23)
 /* Type xsd__base64Binary_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:base64Binary': */
 class SOAP_CMAC xsd__base64Binary_ : public xsd__anyType {
@@ -322,7 +322,7 @@ class SOAP_CMAC xsd__base64Binary_ : public xsd__anyType {
 
 /* servicel.h:201 */
 #ifndef SOAP_TYPE_xsd__boolean
-#define SOAP_TYPE_xsd__boolean (23)
+#define SOAP_TYPE_xsd__boolean (24)
 /* Type xsd__boolean is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:boolean': */
 class SOAP_CMAC xsd__boolean : public xsd__anyType {
@@ -357,7 +357,7 @@ class SOAP_CMAC xsd__boolean : public xsd__anyType {
 
 /* servicel.h:208 */
 #ifndef SOAP_TYPE_xsd__byte_
-#define SOAP_TYPE_xsd__byte_ (25)
+#define SOAP_TYPE_xsd__byte_ (26)
 /* Type xsd__byte_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:byte': */
 class SOAP_CMAC xsd__byte_ : public xsd__anyType {
@@ -392,7 +392,7 @@ class SOAP_CMAC xsd__byte_ : public xsd__anyType {
 
 /* servicel.h:215 */
 #ifndef SOAP_TYPE_xsd__dateTime
-#define SOAP_TYPE_xsd__dateTime (26)
+#define SOAP_TYPE_xsd__dateTime (27)
 /* Type xsd__dateTime is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:dateTime': */
 class SOAP_CMAC xsd__dateTime : public xsd__anyType {
@@ -427,13 +427,13 @@ class SOAP_CMAC xsd__dateTime : public xsd__anyType {
 
 /* servicel.h:225 */
 #ifndef SOAP_TYPE_xsd__decimal_
-#define SOAP_TYPE_xsd__decimal_ (29)
+#define SOAP_TYPE_xsd__decimal_ (30)
 /* Type xsd__decimal_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:decimal': */
 class SOAP_CMAC xsd__decimal_ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'xsd:decimal' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_xsd__decimal_
         virtual long soap_type(void) const { return SOAP_TYPE_xsd__decimal_; }
@@ -462,7 +462,7 @@ class SOAP_CMAC xsd__decimal_ : public xsd__anyType {
 
 /* servicel.h:232 */
 #ifndef SOAP_TYPE_xsd__double
-#define SOAP_TYPE_xsd__double (30)
+#define SOAP_TYPE_xsd__double (31)
 /* Type xsd__double is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:double': */
 class SOAP_CMAC xsd__double : public xsd__anyType {
@@ -497,13 +497,13 @@ class SOAP_CMAC xsd__double : public xsd__anyType {
 
 /* servicel.h:242 */
 #ifndef SOAP_TYPE_xsd__duration_
-#define SOAP_TYPE_xsd__duration_ (33)
+#define SOAP_TYPE_xsd__duration_ (34)
 /* Type xsd__duration_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:duration': */
 class SOAP_CMAC xsd__duration_ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'xsd:duration' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_xsd__duration_
         virtual long soap_type(void) const { return SOAP_TYPE_xsd__duration_; }
@@ -532,7 +532,7 @@ class SOAP_CMAC xsd__duration_ : public xsd__anyType {
 
 /* servicel.h:249 */
 #ifndef SOAP_TYPE_xsd__float
-#define SOAP_TYPE_xsd__float (34)
+#define SOAP_TYPE_xsd__float (35)
 /* Type xsd__float is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:float': */
 class SOAP_CMAC xsd__float : public xsd__anyType {
@@ -567,7 +567,7 @@ class SOAP_CMAC xsd__float : public xsd__anyType {
 
 /* servicel.h:256 */
 #ifndef SOAP_TYPE_xsd__int
-#define SOAP_TYPE_xsd__int (36)
+#define SOAP_TYPE_xsd__int (37)
 /* Type xsd__int is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:int': */
 class SOAP_CMAC xsd__int : public xsd__anyType {
@@ -602,7 +602,7 @@ class SOAP_CMAC xsd__int : public xsd__anyType {
 
 /* servicel.h:263 */
 #ifndef SOAP_TYPE_xsd__long
-#define SOAP_TYPE_xsd__long (37)
+#define SOAP_TYPE_xsd__long (38)
 /* Type xsd__long is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:long': */
 class SOAP_CMAC xsd__long : public xsd__anyType {
@@ -637,7 +637,7 @@ class SOAP_CMAC xsd__long : public xsd__anyType {
 
 /* servicel.h:270 */
 #ifndef SOAP_TYPE_xsd__short
-#define SOAP_TYPE_xsd__short (39)
+#define SOAP_TYPE_xsd__short (40)
 /* Type xsd__short is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:short': */
 class SOAP_CMAC xsd__short : public xsd__anyType {
@@ -672,13 +672,13 @@ class SOAP_CMAC xsd__short : public xsd__anyType {
 
 /* servicel.h:277 */
 #ifndef SOAP_TYPE_xsd__string
-#define SOAP_TYPE_xsd__string (41)
+#define SOAP_TYPE_xsd__string (42)
 /* Type xsd__string is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:string': */
 class SOAP_CMAC xsd__string : public xsd__anyType {
       public:
         /// Simple content of XSD type 'xsd:string' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_xsd__string
         virtual long soap_type(void) const { return SOAP_TYPE_xsd__string; }
@@ -707,7 +707,7 @@ class SOAP_CMAC xsd__string : public xsd__anyType {
 
 /* servicel.h:284 */
 #ifndef SOAP_TYPE_xsd__unsignedByte_
-#define SOAP_TYPE_xsd__unsignedByte_ (42)
+#define SOAP_TYPE_xsd__unsignedByte_ (43)
 /* Type xsd__unsignedByte_ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:unsignedByte': */
 class SOAP_CMAC xsd__unsignedByte_ : public xsd__anyType {
@@ -742,7 +742,7 @@ class SOAP_CMAC xsd__unsignedByte_ : public xsd__anyType {
 
 /* servicel.h:291 */
 #ifndef SOAP_TYPE_xsd__unsignedInt
-#define SOAP_TYPE_xsd__unsignedInt (43)
+#define SOAP_TYPE_xsd__unsignedInt (44)
 /* Type xsd__unsignedInt is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:unsignedInt': */
 class SOAP_CMAC xsd__unsignedInt : public xsd__anyType {
@@ -777,7 +777,7 @@ class SOAP_CMAC xsd__unsignedInt : public xsd__anyType {
 
 /* servicel.h:298 */
 #ifndef SOAP_TYPE_xsd__unsignedLong
-#define SOAP_TYPE_xsd__unsignedLong (44)
+#define SOAP_TYPE_xsd__unsignedLong (45)
 /* Type xsd__unsignedLong is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:unsignedLong': */
 class SOAP_CMAC xsd__unsignedLong : public xsd__anyType {
@@ -812,7 +812,7 @@ class SOAP_CMAC xsd__unsignedLong : public xsd__anyType {
 
 /* servicel.h:305 */
 #ifndef SOAP_TYPE_xsd__unsignedShort
-#define SOAP_TYPE_xsd__unsignedShort (46)
+#define SOAP_TYPE_xsd__unsignedShort (47)
 /* Type xsd__unsignedShort is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'xsd:unsignedShort': */
 class SOAP_CMAC xsd__unsignedShort : public xsd__anyType {
@@ -847,7 +847,7 @@ class SOAP_CMAC xsd__unsignedShort : public xsd__anyType {
 
 /* servicel.h:360 */
 #ifndef SOAP_TYPE_ns3__char__
-#define SOAP_TYPE_ns3__char__ (53)
+#define SOAP_TYPE_ns3__char__ (54)
 /* Type ns3__char__ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'ns3:char': */
 class SOAP_CMAC ns3__char__ : public xsd__anyType {
@@ -882,13 +882,13 @@ class SOAP_CMAC ns3__char__ : public xsd__anyType {
 
 /* servicel.h:373 */
 #ifndef SOAP_TYPE_ns3__duration__
-#define SOAP_TYPE_ns3__duration__ (55)
+#define SOAP_TYPE_ns3__duration__ (56)
 /* Type ns3__duration__ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'ns3:duration': */
 class SOAP_CMAC ns3__duration__ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'ns3:duration' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_ns3__duration__
         virtual long soap_type(void) const { return SOAP_TYPE_ns3__duration__; }
@@ -917,13 +917,13 @@ class SOAP_CMAC ns3__duration__ : public xsd__anyType {
 
 /* servicel.h:385 */
 #ifndef SOAP_TYPE_ns3__guid__
-#define SOAP_TYPE_ns3__guid__ (57)
+#define SOAP_TYPE_ns3__guid__ (58)
 /* Type ns3__guid__ is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* simple XSD type 'ns3:guid': */
 class SOAP_CMAC ns3__guid__ : public xsd__anyType {
       public:
         /// Simple content of XSD type 'ns3:guid' wrapped by this struct
-        char *__item;
+        std::wstring __item;
       public:
         /// Return unique type id SOAP_TYPE_ns3__guid__
         virtual long soap_type(void) const { return SOAP_TYPE_ns3__guid__; }
@@ -952,12 +952,12 @@ class SOAP_CMAC ns3__guid__ : public xsd__anyType {
 
 /* servicel.h:319 */
 #ifndef SOAP_TYPE__ns1__ENTRANCE
-#define SOAP_TYPE__ns1__ENTRANCE (48)
+#define SOAP_TYPE__ns1__ENTRANCE (49)
 /* complex XSD type 'ns1:ENTRANCE': */
 class SOAP_CMAC _ns1__ENTRANCE {
       public:
         /// Optional element 'ns1:INPUTSTRING' of XSD type 'xsd:string'
-        char *INPUTSTRING;
+        wchar_t *INPUTSTRING;
         /// Context that manages this object
         struct soap *soap;
       public:
@@ -988,12 +988,12 @@ class SOAP_CMAC _ns1__ENTRANCE {
 
 /* servicel.h:322 */
 #ifndef SOAP_TYPE__ns1__ENTRANCEResponse
-#define SOAP_TYPE__ns1__ENTRANCEResponse (49)
+#define SOAP_TYPE__ns1__ENTRANCEResponse (50)
 /* complex XSD type 'ns1:ENTRANCEResponse': */
 class SOAP_CMAC _ns1__ENTRANCEResponse {
       public:
         /// Optional element 'ns1:ENTRANCEResult' of XSD type 'xsd:string'
-        char *ENTRANCEResult;
+        wchar_t *ENTRANCEResult;
         /// Context that manages this object
         struct soap *soap;
       public:
@@ -1024,12 +1024,12 @@ class SOAP_CMAC _ns1__ENTRANCEResponse {
 
 /* servicel.h:325 */
 #ifndef SOAP_TYPE__ns1__ENTRANCE_USCORETEST
-#define SOAP_TYPE__ns1__ENTRANCE_USCORETEST (50)
+#define SOAP_TYPE__ns1__ENTRANCE_USCORETEST (51)
 /* complex XSD type 'ns1:ENTRANCE_TEST': */
 class SOAP_CMAC _ns1__ENTRANCE_USCORETEST {
       public:
         /// Optional element 'ns1:INPUTSTRING' of XSD type 'xsd:string'
-        char *INPUTSTRING;
+        wchar_t *INPUTSTRING;
         /// Context that manages this object
         struct soap *soap;
       public:
@@ -1060,12 +1060,12 @@ class SOAP_CMAC _ns1__ENTRANCE_USCORETEST {
 
 /* servicel.h:328 */
 #ifndef SOAP_TYPE__ns1__ENTRANCE_USCORETESTResponse
-#define SOAP_TYPE__ns1__ENTRANCE_USCORETESTResponse (51)
+#define SOAP_TYPE__ns1__ENTRANCE_USCORETESTResponse (52)
 /* complex XSD type 'ns1:ENTRANCE_TESTResponse': */
 class SOAP_CMAC _ns1__ENTRANCE_USCORETESTResponse {
       public:
         /// Optional element 'ns1:ENTRANCE_TESTResult' of XSD type 'xsd:string'
-        char *ENTRANCE_USCORETESTResult;
+        wchar_t *ENTRANCE_USCORETESTResult;
         /// Context that manages this object
         struct soap *soap;
       public:
@@ -1096,7 +1096,7 @@ class SOAP_CMAC _ns1__ENTRANCE_USCORETESTResponse {
 
 /* servicel.h:744 */
 #ifndef SOAP_TYPE___ns1__ENTRANCE
-#define SOAP_TYPE___ns1__ENTRANCE (61)
+#define SOAP_TYPE___ns1__ENTRANCE (64)
 /* Wrapper: */
 struct SOAP_CMAC __ns1__ENTRANCE {
       public:
@@ -1114,7 +1114,7 @@ struct SOAP_CMAC __ns1__ENTRANCE {
 
 /* servicel.h:814 */
 #ifndef SOAP_TYPE___ns1__ENTRANCE_USCORETEST
-#define SOAP_TYPE___ns1__ENTRANCE_USCORETEST (65)
+#define SOAP_TYPE___ns1__ENTRANCE_USCORETEST (68)
 /* Wrapper: */
 struct SOAP_CMAC __ns1__ENTRANCE_USCORETEST {
       public:
@@ -1133,7 +1133,7 @@ struct SOAP_CMAC __ns1__ENTRANCE_USCORETEST {
 /* servicel.h:981 */
 #ifndef WITH_NOGLOBAL
 #ifndef SOAP_TYPE_SOAP_ENV__Header
-#define SOAP_TYPE_SOAP_ENV__Header (66)
+#define SOAP_TYPE_SOAP_ENV__Header (69)
 /* SOAP_ENV__Header: */
 struct SOAP_CMAC SOAP_ENV__Header {
       public:
@@ -1150,7 +1150,7 @@ struct SOAP_CMAC SOAP_ENV__Header {
 /* servicel.h:981 */
 #ifndef WITH_NOGLOBAL
 #ifndef SOAP_TYPE_SOAP_ENV__Code
-#define SOAP_TYPE_SOAP_ENV__Code (67)
+#define SOAP_TYPE_SOAP_ENV__Code (70)
 /* Type SOAP_ENV__Code is a recursive data type, (in)directly referencing itself through its (base or derived class) members */
 /* SOAP_ENV__Code: */
 struct SOAP_CMAC SOAP_ENV__Code {
@@ -1173,7 +1173,7 @@ struct SOAP_CMAC SOAP_ENV__Code {
 /* servicel.h:981 */
 #ifndef WITH_NOGLOBAL
 #ifndef SOAP_TYPE_SOAP_ENV__Detail
-#define SOAP_TYPE_SOAP_ENV__Detail (69)
+#define SOAP_TYPE_SOAP_ENV__Detail (72)
 /* SOAP_ENV__Detail: */
 struct SOAP_CMAC SOAP_ENV__Detail {
       public:
@@ -1196,7 +1196,7 @@ struct SOAP_CMAC SOAP_ENV__Detail {
 /* servicel.h:981 */
 #ifndef WITH_NOGLOBAL
 #ifndef SOAP_TYPE_SOAP_ENV__Reason
-#define SOAP_TYPE_SOAP_ENV__Reason (72)
+#define SOAP_TYPE_SOAP_ENV__Reason (75)
 /* SOAP_ENV__Reason: */
 struct SOAP_CMAC SOAP_ENV__Reason {
       public:
@@ -1216,7 +1216,7 @@ struct SOAP_CMAC SOAP_ENV__Reason {
 /* servicel.h:981 */
 #ifndef WITH_NOGLOBAL
 #ifndef SOAP_TYPE_SOAP_ENV__Fault
-#define SOAP_TYPE_SOAP_ENV__Fault (73)
+#define SOAP_TYPE_SOAP_ENV__Fault (76)
 /* SOAP_ENV__Fault: */
 struct SOAP_CMAC SOAP_ENV__Fault {
       public:
@@ -1282,50 +1282,50 @@ typedef unsigned char xsd__unsignedByte;
 
 /* servicel.h:156 */
 #ifndef SOAP_TYPE_xsd__ID
-#define SOAP_TYPE_xsd__ID (15)
-typedef char *xsd__ID;
+#define SOAP_TYPE_xsd__ID (16)
+typedef std::wstring xsd__ID;
 #endif
 
 /* servicel.h:166 */
 #ifndef SOAP_TYPE_xsd__IDREF
-#define SOAP_TYPE_xsd__IDREF (17)
-typedef char *xsd__IDREF;
+#define SOAP_TYPE_xsd__IDREF (18)
+typedef std::wstring xsd__IDREF;
 #endif
 
 /* servicel.h:183 */
 #ifndef SOAP_TYPE_xsd__anyURI
-#define SOAP_TYPE_xsd__anyURI (20)
-typedef char *xsd__anyURI;
+#define SOAP_TYPE_xsd__anyURI (21)
+typedef std::wstring xsd__anyURI;
 #endif
 
 /* servicel.h:221 */
 #ifndef SOAP_TYPE_xsd__decimal
-#define SOAP_TYPE_xsd__decimal (28)
-typedef char *xsd__decimal;
+#define SOAP_TYPE_xsd__decimal (29)
+typedef std::wstring xsd__decimal;
 #endif
 
 /* servicel.h:238 */
 #ifndef SOAP_TYPE_xsd__duration
-#define SOAP_TYPE_xsd__duration (32)
-typedef char *xsd__duration;
+#define SOAP_TYPE_xsd__duration (33)
+typedef std::wstring xsd__duration;
 #endif
 
 /* servicel.h:356 */
 #ifndef SOAP_TYPE_ns3__char
-#define SOAP_TYPE_ns3__char (52)
+#define SOAP_TYPE_ns3__char (53)
 typedef int ns3__char;
 #endif
 
 /* servicel.h:369 */
 #ifndef SOAP_TYPE_ns3__duration
-#define SOAP_TYPE_ns3__duration (54)
-typedef char *ns3__duration;
+#define SOAP_TYPE_ns3__duration (55)
+typedef std::wstring ns3__duration;
 #endif
 
 /* servicel.h:381 */
 #ifndef SOAP_TYPE_ns3__guid
-#define SOAP_TYPE_ns3__guid (56)
-typedef char *ns3__guid;
+#define SOAP_TYPE_ns3__guid (57)
+typedef std::wstring ns3__guid;
 #endif
 
 /******************************************************************************\
@@ -1347,12 +1347,12 @@ typedef char *ns3__guid;
 
 /* short has binding name 'short' for type 'xsd:short' */
 #ifndef SOAP_TYPE_short
-#define SOAP_TYPE_short (40)
+#define SOAP_TYPE_short (41)
 #endif
 
 /* ns3__char has binding name 'ns3__char' for type 'ns3:char' */
 #ifndef SOAP_TYPE_ns3__char
-#define SOAP_TYPE_ns3__char (52)
+#define SOAP_TYPE_ns3__char (53)
 #endif
 
 /* int has binding name 'int' for type 'xsd:int' */
@@ -1362,17 +1362,17 @@ typedef char *ns3__guid;
 
 /* LONG64 has binding name 'LONG64' for type 'xsd:long' */
 #ifndef SOAP_TYPE_LONG64
-#define SOAP_TYPE_LONG64 (38)
+#define SOAP_TYPE_LONG64 (39)
 #endif
 
 /* float has binding name 'float' for type 'xsd:float' */
 #ifndef SOAP_TYPE_float
-#define SOAP_TYPE_float (35)
+#define SOAP_TYPE_float (36)
 #endif
 
 /* double has binding name 'double' for type 'xsd:double' */
 #ifndef SOAP_TYPE_double
-#define SOAP_TYPE_double (31)
+#define SOAP_TYPE_double (32)
 #endif
 
 /* xsd__unsignedByte has binding name 'xsd__unsignedByte' for type 'xsd:unsignedByte' */
@@ -1387,7 +1387,7 @@ typedef char *ns3__guid;
 
 /* unsigned short has binding name 'unsignedShort' for type 'xsd:unsignedShort' */
 #ifndef SOAP_TYPE_unsignedShort
-#define SOAP_TYPE_unsignedShort (47)
+#define SOAP_TYPE_unsignedShort (48)
 #endif
 
 /* unsigned int has binding name 'unsignedInt' for type 'xsd:unsignedInt' */
@@ -1397,152 +1397,192 @@ typedef char *ns3__guid;
 
 /* ULONG64 has binding name 'ULONG64' for type 'xsd:unsignedLong' */
 #ifndef SOAP_TYPE_ULONG64
-#define SOAP_TYPE_ULONG64 (45)
+#define SOAP_TYPE_ULONG64 (46)
 #endif
 
 /* time_t has binding name 'dateTime' for type 'xsd:dateTime' */
 #ifndef SOAP_TYPE_dateTime
-#define SOAP_TYPE_dateTime (27)
+#define SOAP_TYPE_dateTime (28)
 #endif
 
 /* bool has binding name 'bool' for type 'xsd:boolean' */
 #ifndef SOAP_TYPE_bool
-#define SOAP_TYPE_bool (24)
+#define SOAP_TYPE_bool (25)
 #endif
 
 /* ns3__guid__ has binding name 'ns3__guid__' for type 'ns3:guid' */
 #ifndef SOAP_TYPE_ns3__guid__
-#define SOAP_TYPE_ns3__guid__ (57)
+#define SOAP_TYPE_ns3__guid__ (58)
+#endif
+
+/* ns3__guid has binding name 'ns3__guid' for type 'ns3:guid' */
+#ifndef SOAP_TYPE_ns3__guid
+#define SOAP_TYPE_ns3__guid (57)
 #endif
 
 /* ns3__duration__ has binding name 'ns3__duration__' for type 'ns3:duration' */
 #ifndef SOAP_TYPE_ns3__duration__
-#define SOAP_TYPE_ns3__duration__ (55)
+#define SOAP_TYPE_ns3__duration__ (56)
+#endif
+
+/* ns3__duration has binding name 'ns3__duration' for type 'ns3:duration' */
+#ifndef SOAP_TYPE_ns3__duration
+#define SOAP_TYPE_ns3__duration (55)
 #endif
 
 /* ns3__char__ has binding name 'ns3__char__' for type 'ns3:char' */
 #ifndef SOAP_TYPE_ns3__char__
-#define SOAP_TYPE_ns3__char__ (53)
+#define SOAP_TYPE_ns3__char__ (54)
 #endif
 
 /* _ns1__ENTRANCE_USCORETESTResponse has binding name '_ns1__ENTRANCE_USCORETESTResponse' for type '' */
 #ifndef SOAP_TYPE__ns1__ENTRANCE_USCORETESTResponse
-#define SOAP_TYPE__ns1__ENTRANCE_USCORETESTResponse (51)
+#define SOAP_TYPE__ns1__ENTRANCE_USCORETESTResponse (52)
 #endif
 
 /* _ns1__ENTRANCE_USCORETEST has binding name '_ns1__ENTRANCE_USCORETEST' for type '' */
 #ifndef SOAP_TYPE__ns1__ENTRANCE_USCORETEST
-#define SOAP_TYPE__ns1__ENTRANCE_USCORETEST (50)
+#define SOAP_TYPE__ns1__ENTRANCE_USCORETEST (51)
 #endif
 
 /* _ns1__ENTRANCEResponse has binding name '_ns1__ENTRANCEResponse' for type '' */
 #ifndef SOAP_TYPE__ns1__ENTRANCEResponse
-#define SOAP_TYPE__ns1__ENTRANCEResponse (49)
+#define SOAP_TYPE__ns1__ENTRANCEResponse (50)
 #endif
 
 /* _ns1__ENTRANCE has binding name '_ns1__ENTRANCE' for type '' */
 #ifndef SOAP_TYPE__ns1__ENTRANCE
-#define SOAP_TYPE__ns1__ENTRANCE (48)
+#define SOAP_TYPE__ns1__ENTRANCE (49)
 #endif
 
 /* xsd__unsignedShort has binding name 'xsd__unsignedShort' for type 'xsd:unsignedShort' */
 #ifndef SOAP_TYPE_xsd__unsignedShort
-#define SOAP_TYPE_xsd__unsignedShort (46)
+#define SOAP_TYPE_xsd__unsignedShort (47)
 #endif
 
 /* xsd__unsignedLong has binding name 'xsd__unsignedLong' for type 'xsd:unsignedLong' */
 #ifndef SOAP_TYPE_xsd__unsignedLong
-#define SOAP_TYPE_xsd__unsignedLong (44)
+#define SOAP_TYPE_xsd__unsignedLong (45)
 #endif
 
 /* xsd__unsignedInt has binding name 'xsd__unsignedInt' for type 'xsd:unsignedInt' */
 #ifndef SOAP_TYPE_xsd__unsignedInt
-#define SOAP_TYPE_xsd__unsignedInt (43)
+#define SOAP_TYPE_xsd__unsignedInt (44)
 #endif
 
 /* xsd__unsignedByte_ has binding name 'xsd__unsignedByte_' for type 'xsd:unsignedByte' */
 #ifndef SOAP_TYPE_xsd__unsignedByte_
-#define SOAP_TYPE_xsd__unsignedByte_ (42)
+#define SOAP_TYPE_xsd__unsignedByte_ (43)
 #endif
 
 /* xsd__string has binding name 'xsd__string' for type 'xsd:string' */
 #ifndef SOAP_TYPE_xsd__string
-#define SOAP_TYPE_xsd__string (41)
+#define SOAP_TYPE_xsd__string (42)
 #endif
 
 /* xsd__short has binding name 'xsd__short' for type 'xsd:short' */
 #ifndef SOAP_TYPE_xsd__short
-#define SOAP_TYPE_xsd__short (39)
+#define SOAP_TYPE_xsd__short (40)
 #endif
 
 /* xsd__long has binding name 'xsd__long' for type 'xsd:long' */
 #ifndef SOAP_TYPE_xsd__long
-#define SOAP_TYPE_xsd__long (37)
+#define SOAP_TYPE_xsd__long (38)
 #endif
 
 /* xsd__int has binding name 'xsd__int' for type 'xsd:int' */
 #ifndef SOAP_TYPE_xsd__int
-#define SOAP_TYPE_xsd__int (36)
+#define SOAP_TYPE_xsd__int (37)
 #endif
 
 /* xsd__float has binding name 'xsd__float' for type 'xsd:float' */
 #ifndef SOAP_TYPE_xsd__float
-#define SOAP_TYPE_xsd__float (34)
+#define SOAP_TYPE_xsd__float (35)
 #endif
 
 /* xsd__duration_ has binding name 'xsd__duration_' for type 'xsd:duration' */
 #ifndef SOAP_TYPE_xsd__duration_
-#define SOAP_TYPE_xsd__duration_ (33)
+#define SOAP_TYPE_xsd__duration_ (34)
+#endif
+
+/* xsd__duration has binding name 'xsd__duration' for type 'xsd:duration' */
+#ifndef SOAP_TYPE_xsd__duration
+#define SOAP_TYPE_xsd__duration (33)
 #endif
 
 /* xsd__double has binding name 'xsd__double' for type 'xsd:double' */
 #ifndef SOAP_TYPE_xsd__double
-#define SOAP_TYPE_xsd__double (30)
+#define SOAP_TYPE_xsd__double (31)
 #endif
 
 /* xsd__decimal_ has binding name 'xsd__decimal_' for type 'xsd:decimal' */
 #ifndef SOAP_TYPE_xsd__decimal_
-#define SOAP_TYPE_xsd__decimal_ (29)
+#define SOAP_TYPE_xsd__decimal_ (30)
+#endif
+
+/* xsd__decimal has binding name 'xsd__decimal' for type 'xsd:decimal' */
+#ifndef SOAP_TYPE_xsd__decimal
+#define SOAP_TYPE_xsd__decimal (29)
 #endif
 
 /* xsd__dateTime has binding name 'xsd__dateTime' for type 'xsd:dateTime' */
 #ifndef SOAP_TYPE_xsd__dateTime
-#define SOAP_TYPE_xsd__dateTime (26)
+#define SOAP_TYPE_xsd__dateTime (27)
 #endif
 
 /* xsd__byte_ has binding name 'xsd__byte_' for type 'xsd:byte' */
 #ifndef SOAP_TYPE_xsd__byte_
-#define SOAP_TYPE_xsd__byte_ (25)
+#define SOAP_TYPE_xsd__byte_ (26)
 #endif
 
 /* xsd__boolean has binding name 'xsd__boolean' for type 'xsd:boolean' */
 #ifndef SOAP_TYPE_xsd__boolean
-#define SOAP_TYPE_xsd__boolean (23)
+#define SOAP_TYPE_xsd__boolean (24)
 #endif
 
 /* xsd__base64Binary_ has binding name 'xsd__base64Binary_' for type 'xsd:base64Binary' */
 #ifndef SOAP_TYPE_xsd__base64Binary_
-#define SOAP_TYPE_xsd__base64Binary_ (22)
+#define SOAP_TYPE_xsd__base64Binary_ (23)
 #endif
 
 /* xsd__anyURI_ has binding name 'xsd__anyURI_' for type 'xsd:anyURI' */
 #ifndef SOAP_TYPE_xsd__anyURI_
-#define SOAP_TYPE_xsd__anyURI_ (21)
+#define SOAP_TYPE_xsd__anyURI_ (22)
+#endif
+
+/* xsd__anyURI has binding name 'xsd__anyURI' for type 'xsd:anyURI' */
+#ifndef SOAP_TYPE_xsd__anyURI
+#define SOAP_TYPE_xsd__anyURI (21)
 #endif
 
 /* xsd__QName has binding name 'xsd__QName' for type 'xsd:QName' */
 #ifndef SOAP_TYPE_xsd__QName
-#define SOAP_TYPE_xsd__QName (19)
+#define SOAP_TYPE_xsd__QName (20)
 #endif
 
 /* xsd__IDREF_ has binding name 'xsd__IDREF_' for type 'xsd:IDREF' */
 #ifndef SOAP_TYPE_xsd__IDREF_
-#define SOAP_TYPE_xsd__IDREF_ (18)
+#define SOAP_TYPE_xsd__IDREF_ (19)
+#endif
+
+/* xsd__IDREF has binding name 'xsd__IDREF' for type 'xsd:IDREF' */
+#ifndef SOAP_TYPE_xsd__IDREF
+#define SOAP_TYPE_xsd__IDREF (18)
 #endif
 
 /* xsd__ID_ has binding name 'xsd__ID_' for type 'xsd:ID' */
 #ifndef SOAP_TYPE_xsd__ID_
-#define SOAP_TYPE_xsd__ID_ (16)
+#define SOAP_TYPE_xsd__ID_ (17)
+#endif
+
+/* xsd__ID has binding name 'xsd__ID' for type 'xsd:ID' */
+#ifndef SOAP_TYPE_xsd__ID
+#define SOAP_TYPE_xsd__ID (16)
+#endif
+
+/* std::wstring has binding name 'std__wstring' for type 'xsd:string' */
+#ifndef SOAP_TYPE_std__wstring
+#define SOAP_TYPE_std__wstring (15)
 #endif
 
 /* xsd__base64Binary has binding name 'xsd__base64Binary' for type 'xsd:base64Binary' */
@@ -1557,87 +1597,57 @@ typedef char *ns3__guid;
 
 /* struct SOAP_ENV__Fault has binding name 'SOAP_ENV__Fault' for type '' */
 #ifndef SOAP_TYPE_SOAP_ENV__Fault
-#define SOAP_TYPE_SOAP_ENV__Fault (73)
+#define SOAP_TYPE_SOAP_ENV__Fault (76)
 #endif
 
 /* struct SOAP_ENV__Reason has binding name 'SOAP_ENV__Reason' for type '' */
 #ifndef SOAP_TYPE_SOAP_ENV__Reason
-#define SOAP_TYPE_SOAP_ENV__Reason (72)
+#define SOAP_TYPE_SOAP_ENV__Reason (75)
 #endif
 
 /* struct SOAP_ENV__Detail has binding name 'SOAP_ENV__Detail' for type '' */
 #ifndef SOAP_TYPE_SOAP_ENV__Detail
-#define SOAP_TYPE_SOAP_ENV__Detail (69)
+#define SOAP_TYPE_SOAP_ENV__Detail (72)
 #endif
 
 /* struct SOAP_ENV__Code has binding name 'SOAP_ENV__Code' for type '' */
 #ifndef SOAP_TYPE_SOAP_ENV__Code
-#define SOAP_TYPE_SOAP_ENV__Code (67)
+#define SOAP_TYPE_SOAP_ENV__Code (70)
 #endif
 
 /* struct SOAP_ENV__Header has binding name 'SOAP_ENV__Header' for type '' */
 #ifndef SOAP_TYPE_SOAP_ENV__Header
-#define SOAP_TYPE_SOAP_ENV__Header (66)
+#define SOAP_TYPE_SOAP_ENV__Header (69)
 #endif
 
 /* struct SOAP_ENV__Reason * has binding name 'PointerToSOAP_ENV__Reason' for type '' */
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Reason
-#define SOAP_TYPE_PointerToSOAP_ENV__Reason (75)
+#define SOAP_TYPE_PointerToSOAP_ENV__Reason (78)
 #endif
 
 /* struct SOAP_ENV__Detail * has binding name 'PointerToSOAP_ENV__Detail' for type '' */
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Detail
-#define SOAP_TYPE_PointerToSOAP_ENV__Detail (74)
+#define SOAP_TYPE_PointerToSOAP_ENV__Detail (77)
 #endif
 
 /* struct SOAP_ENV__Code * has binding name 'PointerToSOAP_ENV__Code' for type '' */
 #ifndef SOAP_TYPE_PointerToSOAP_ENV__Code
-#define SOAP_TYPE_PointerToSOAP_ENV__Code (68)
+#define SOAP_TYPE_PointerToSOAP_ENV__Code (71)
 #endif
 
 /* _ns1__ENTRANCE_USCORETEST * has binding name 'PointerTo_ns1__ENTRANCE_USCORETEST' for type '' */
 #ifndef SOAP_TYPE_PointerTo_ns1__ENTRANCE_USCORETEST
-#define SOAP_TYPE_PointerTo_ns1__ENTRANCE_USCORETEST (62)
+#define SOAP_TYPE_PointerTo_ns1__ENTRANCE_USCORETEST (65)
 #endif
 
 /* _ns1__ENTRANCE * has binding name 'PointerTo_ns1__ENTRANCE' for type '' */
 #ifndef SOAP_TYPE_PointerTo_ns1__ENTRANCE
-#define SOAP_TYPE_PointerTo_ns1__ENTRANCE (58)
+#define SOAP_TYPE_PointerTo_ns1__ENTRANCE (61)
 #endif
 
-/* ns3__guid has binding name 'ns3__guid' for type 'ns3:guid' */
-#ifndef SOAP_TYPE_ns3__guid
-#define SOAP_TYPE_ns3__guid (56)
-#endif
-
-/* ns3__duration has binding name 'ns3__duration' for type 'ns3:duration' */
-#ifndef SOAP_TYPE_ns3__duration
-#define SOAP_TYPE_ns3__duration (54)
-#endif
-
-/* xsd__duration has binding name 'xsd__duration' for type 'xsd:duration' */
-#ifndef SOAP_TYPE_xsd__duration
-#define SOAP_TYPE_xsd__duration (32)
-#endif
-
-/* xsd__decimal has binding name 'xsd__decimal' for type 'xsd:decimal' */
-#ifndef SOAP_TYPE_xsd__decimal
-#define SOAP_TYPE_xsd__decimal (28)
-#endif
-
-/* xsd__anyURI has binding name 'xsd__anyURI' for type 'xsd:anyURI' */
-#ifndef SOAP_TYPE_xsd__anyURI
-#define SOAP_TYPE_xsd__anyURI (20)
-#endif
-
-/* xsd__IDREF has binding name 'xsd__IDREF' for type 'xsd:IDREF' */
-#ifndef SOAP_TYPE_xsd__IDREF
-#define SOAP_TYPE_xsd__IDREF (17)
-#endif
-
-/* xsd__ID has binding name 'xsd__ID' for type 'xsd:ID' */
-#ifndef SOAP_TYPE_xsd__ID
-#define SOAP_TYPE_xsd__ID (15)
+/* wchar_t * has binding name 'wstring' for type 'xsd:string' */
+#ifndef SOAP_TYPE_wstring
+#define SOAP_TYPE_wstring (60)
 #endif
 
 /* unsigned char * has binding name 'PointerTounsignedByte' for type 'xsd:unsignedByte' */

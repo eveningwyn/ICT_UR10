@@ -41,7 +41,7 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
     QString message = QString("%1 %2 %3 %4").arg(text).arg(context_info).arg(msg).arg(current_date);
 
     QFile file("..\\log/crash-log.txt");
-    file.open(QIODevice::WriteOnly | QIODevice::Append);
+    if(file.open(QIODevice::WriteOnly | QIODevice::Append))
     {
         QTextStream text_stream(&file);
         text_stream << message << "\r\n";

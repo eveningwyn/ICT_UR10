@@ -77,7 +77,7 @@ private:
     void closeEvent(QCloseEvent *event);//重载close事件
     QString forShowString(QString str);//将字符串添加时间戳
 
-    void logToServerWeb(const QString state, const QString startTime, const QString endTime, const QString errorCode);
+    void logToServerWeb(const QString state, const QString errorCode);
     QString snTemp;
     QString m_sStartTime;
     QString m_sEndTime;
@@ -125,6 +125,8 @@ signals:
     void ui_robot_start();
     void ui_robot_pause();
     void ui_robot_stop();
+
+    void UI_msgUpload(const QString state, const QString startTime, const QString endTime, const QString errorCode);
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态

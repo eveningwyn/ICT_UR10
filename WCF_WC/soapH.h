@@ -1126,18 +1126,20 @@ inline ns3__guid__ * soap_new_ns3__guid__(struct soap *soap, int n = -1)
 }
 
 inline ns3__guid__ * soap_new_req_ns3__guid__(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	ns3__guid__ *_p = ::soap_new_ns3__guid__(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->ns3__guid__::__item = __item;
 	}
 	return _p;
 }
 
 inline ns3__guid__ * soap_new_set_ns3__guid__(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	ns3__guid__ *_p = ::soap_new_ns3__guid__(soap);
@@ -1199,6 +1201,80 @@ inline int soap_POST_recv_ns3__guid__(struct soap *soap, ns3__guid__ *p)
 }
 #endif
 
+#ifndef SOAP_TYPE_ns3__guid_DEFINED
+#define SOAP_TYPE_ns3__guid_DEFINED
+
+inline void soap_default_ns3__guid(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns3__guid(struct soap*, const std::wstring *);
+
+#define soap_ns3__guid2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns3__guid(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2ns3__guid(soap, s, a) soap_s2stdwchar((soap), (s), (a), 1, 0, -1, "[\\da-fA-F]{8}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{12}")
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_ns3__guid(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_ns3__guid soap_instantiate_std__wstring
+
+
+#define soap_new_ns3__guid soap_new_std__wstring
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_ns3__guid(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_ns3__guid(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_ns3__guid(soap, p, "ns3:guid", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_ns3__guid(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__guid(soap, p, "ns3:guid", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_ns3__guid(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__guid(soap, p, "ns3:guid", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_ns3__guid(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_ns3__guid(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_ns3__guid(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_ns3__guid(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_ns3__guid(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_ns3__guid(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_ns3__guid(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
 #ifndef SOAP_TYPE_ns3__duration___DEFINED
 #define SOAP_TYPE_ns3__duration___DEFINED
 SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns3__duration__(struct soap*, const char*, int, const ns3__duration__ *, const char*);
@@ -1211,18 +1287,20 @@ inline ns3__duration__ * soap_new_ns3__duration__(struct soap *soap, int n = -1)
 }
 
 inline ns3__duration__ * soap_new_req_ns3__duration__(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	ns3__duration__ *_p = ::soap_new_ns3__duration__(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->ns3__duration__::__item = __item;
 	}
 	return _p;
 }
 
 inline ns3__duration__ * soap_new_set_ns3__duration__(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	ns3__duration__ *_p = ::soap_new_ns3__duration__(soap);
@@ -1279,6 +1357,80 @@ inline int soap_GET_ns3__duration__(struct soap *soap, const char *URL, ns3__dur
 inline int soap_POST_recv_ns3__duration__(struct soap *soap, ns3__duration__ *p)
 {
 	if (::soap_read_ns3__duration__(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+/* ns3__duration is a typedef restriction of xsd__duration */
+
+#ifndef SOAP_TYPE_ns3__duration_DEFINED
+#define SOAP_TYPE_ns3__duration_DEFINED
+
+#define soap_default_ns3__duration soap_default_xsd__duration
+
+
+#define soap_serialize_ns3__duration soap_serialize_xsd__duration
+
+
+#define soap_ns3__duration2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns3__duration(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2ns3__duration(soap, s, a) soap_s2stdwchar((soap), (s), (a), 5, 0, -1, "\\-?P(\\d*D)?(T(\\d*H)?(\\d*M)?(\\d*(\\.\\d*)?S)?)?")
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_ns3__duration(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_ns3__duration soap_instantiate_xsd__duration
+
+
+#define soap_new_ns3__duration soap_new_xsd__duration
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_ns3__duration(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_ns3__duration(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_ns3__duration(soap, p, "ns3:duration", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_ns3__duration(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__duration(soap, p, "ns3:duration", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_ns3__duration(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__duration(soap, p, "ns3:duration", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_ns3__duration(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_ns3__duration(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_ns3__duration(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_ns3__duration(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_ns3__duration(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_ns3__duration(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_ns3__duration(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
@@ -1394,7 +1546,7 @@ inline _ns1__ENTRANCE_USCORETESTResponse * soap_new_req__ns1__ENTRANCE_USCORETES
 
 inline _ns1__ENTRANCE_USCORETESTResponse * soap_new_set__ns1__ENTRANCE_USCORETESTResponse(
 	struct soap *soap,
-	char *ENTRANCE_USCORETESTResult)
+	wchar_t *ENTRANCE_USCORETESTResult)
 {
 	_ns1__ENTRANCE_USCORETESTResponse *_p = ::soap_new__ns1__ENTRANCE_USCORETESTResponse(soap);
 	if (_p)
@@ -1477,7 +1629,7 @@ inline _ns1__ENTRANCE_USCORETEST * soap_new_req__ns1__ENTRANCE_USCORETEST(
 
 inline _ns1__ENTRANCE_USCORETEST * soap_new_set__ns1__ENTRANCE_USCORETEST(
 	struct soap *soap,
-	char *INPUTSTRING)
+	wchar_t *INPUTSTRING)
 {
 	_ns1__ENTRANCE_USCORETEST *_p = ::soap_new__ns1__ENTRANCE_USCORETEST(soap);
 	if (_p)
@@ -1560,7 +1712,7 @@ inline _ns1__ENTRANCEResponse * soap_new_req__ns1__ENTRANCEResponse(
 
 inline _ns1__ENTRANCEResponse * soap_new_set__ns1__ENTRANCEResponse(
 	struct soap *soap,
-	char *ENTRANCEResult)
+	wchar_t *ENTRANCEResult)
 {
 	_ns1__ENTRANCEResponse *_p = ::soap_new__ns1__ENTRANCEResponse(soap);
 	if (_p)
@@ -1643,7 +1795,7 @@ inline _ns1__ENTRANCE * soap_new_req__ns1__ENTRANCE(
 
 inline _ns1__ENTRANCE * soap_new_set__ns1__ENTRANCE(
 	struct soap *soap,
-	char *INPUTSTRING)
+	wchar_t *INPUTSTRING)
 {
 	_ns1__ENTRANCE *_p = ::soap_new__ns1__ENTRANCE(soap);
 	if (_p)
@@ -2063,18 +2215,20 @@ inline xsd__string * soap_new_xsd__string(struct soap *soap, int n = -1)
 }
 
 inline xsd__string * soap_new_req_xsd__string(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	xsd__string *_p = ::soap_new_xsd__string(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->xsd__string::__item = __item;
 	}
 	return _p;
 }
 
 inline xsd__string * soap_new_set_xsd__string(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	xsd__string *_p = ::soap_new_xsd__string(soap);
@@ -2496,18 +2650,20 @@ inline xsd__duration_ * soap_new_xsd__duration_(struct soap *soap, int n = -1)
 }
 
 inline xsd__duration_ * soap_new_req_xsd__duration_(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	xsd__duration_ *_p = ::soap_new_xsd__duration_(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->xsd__duration_::__item = __item;
 	}
 	return _p;
 }
 
 inline xsd__duration_ * soap_new_set_xsd__duration_(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	xsd__duration_ *_p = ::soap_new_xsd__duration_(soap);
@@ -2564,6 +2720,80 @@ inline int soap_GET_xsd__duration_(struct soap *soap, const char *URL, xsd__dura
 inline int soap_POST_recv_xsd__duration_(struct soap *soap, xsd__duration_ *p)
 {
 	if (::soap_read_xsd__duration_(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
+#ifndef SOAP_TYPE_xsd__duration_DEFINED
+#define SOAP_TYPE_xsd__duration_DEFINED
+
+inline void soap_default_xsd__duration(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__duration(struct soap*, const std::wstring *);
+
+#define soap_xsd__duration2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__duration(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2xsd__duration(soap, s, a) soap_s2stdwchar((soap), (s), (a), 5, 0, -1, "[-+]?P(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+(\\.\\d*)?S)?)?")
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_xsd__duration(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_xsd__duration soap_instantiate_std__wstring
+
+
+#define soap_new_xsd__duration soap_new_std__wstring
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__duration(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_xsd__duration(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_xsd__duration(soap, p, "xsd:duration", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_xsd__duration(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__duration(soap, p, "xsd:duration", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_xsd__duration(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__duration(soap, p, "xsd:duration", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_xsd__duration(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_xsd__duration(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_xsd__duration(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_xsd__duration(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__duration(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_xsd__duration(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_xsd__duration(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
@@ -2668,18 +2898,20 @@ inline xsd__decimal_ * soap_new_xsd__decimal_(struct soap *soap, int n = -1)
 }
 
 inline xsd__decimal_ * soap_new_req_xsd__decimal_(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	xsd__decimal_ *_p = ::soap_new_xsd__decimal_(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->xsd__decimal_::__item = __item;
 	}
 	return _p;
 }
 
 inline xsd__decimal_ * soap_new_set_xsd__decimal_(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	xsd__decimal_ *_p = ::soap_new_xsd__decimal_(soap);
@@ -2736,6 +2968,80 @@ inline int soap_GET_xsd__decimal_(struct soap *soap, const char *URL, xsd__decim
 inline int soap_POST_recv_xsd__decimal_(struct soap *soap, xsd__decimal_ *p)
 {
 	if (::soap_read_xsd__decimal_(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
+#ifndef SOAP_TYPE_xsd__decimal_DEFINED
+#define SOAP_TYPE_xsd__decimal_DEFINED
+
+inline void soap_default_xsd__decimal(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__decimal(struct soap*, const std::wstring *);
+
+#define soap_xsd__decimal2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__decimal(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2xsd__decimal(soap, s, a) soap_s2stdwchar((soap), (s), (a), 5, 0, -1, "[-+]?(\\d+|\\d*\\.\\d*)")
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_xsd__decimal(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_xsd__decimal soap_instantiate_std__wstring
+
+
+#define soap_new_xsd__decimal soap_new_std__wstring
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__decimal(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_xsd__decimal(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_xsd__decimal(soap, p, "xsd:decimal", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_xsd__decimal(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__decimal(soap, p, "xsd:decimal", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_xsd__decimal(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__decimal(soap, p, "xsd:decimal", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_xsd__decimal(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_xsd__decimal(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_xsd__decimal(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_xsd__decimal(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__decimal(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_xsd__decimal(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_xsd__decimal(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
@@ -3101,18 +3407,20 @@ inline xsd__anyURI_ * soap_new_xsd__anyURI_(struct soap *soap, int n = -1)
 }
 
 inline xsd__anyURI_ * soap_new_req_xsd__anyURI_(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	xsd__anyURI_ *_p = ::soap_new_xsd__anyURI_(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->xsd__anyURI_::__item = __item;
 	}
 	return _p;
 }
 
 inline xsd__anyURI_ * soap_new_set_xsd__anyURI_(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	xsd__anyURI_ *_p = ::soap_new_xsd__anyURI_(soap);
@@ -3169,6 +3477,80 @@ inline int soap_GET_xsd__anyURI_(struct soap *soap, const char *URL, xsd__anyURI
 inline int soap_POST_recv_xsd__anyURI_(struct soap *soap, xsd__anyURI_ *p)
 {
 	if (::soap_read_xsd__anyURI_(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
+#ifndef SOAP_TYPE_xsd__anyURI_DEFINED
+#define SOAP_TYPE_xsd__anyURI_DEFINED
+
+inline void soap_default_xsd__anyURI(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__anyURI(struct soap*, const std::wstring *);
+
+#define soap_xsd__anyURI2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__anyURI(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2xsd__anyURI(soap, s, a) soap_s2stdwchar((soap), (s), (a), 4, 0, -1, NULL)
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_xsd__anyURI(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_xsd__anyURI soap_instantiate_std__wstring
+
+
+#define soap_new_xsd__anyURI soap_new_std__wstring
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__anyURI(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_xsd__anyURI(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_xsd__anyURI(soap, p, "xsd:anyURI", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_xsd__anyURI(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__anyURI(soap, p, "xsd:anyURI", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_xsd__anyURI(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__anyURI(soap, p, "xsd:anyURI", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_xsd__anyURI(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_xsd__anyURI(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_xsd__anyURI(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_xsd__anyURI(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__anyURI(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_xsd__anyURI(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_xsd__anyURI(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
@@ -3271,18 +3653,20 @@ inline xsd__IDREF_ * soap_new_xsd__IDREF_(struct soap *soap, int n = -1)
 }
 
 inline xsd__IDREF_ * soap_new_req_xsd__IDREF_(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	xsd__IDREF_ *_p = ::soap_new_xsd__IDREF_(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->xsd__IDREF_::__item = __item;
 	}
 	return _p;
 }
 
 inline xsd__IDREF_ * soap_new_set_xsd__IDREF_(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	xsd__IDREF_ *_p = ::soap_new_xsd__IDREF_(soap);
@@ -3344,6 +3728,80 @@ inline int soap_POST_recv_xsd__IDREF_(struct soap *soap, xsd__IDREF_ *p)
 }
 #endif
 
+#ifndef SOAP_TYPE_xsd__IDREF_DEFINED
+#define SOAP_TYPE_xsd__IDREF_DEFINED
+
+inline void soap_default_xsd__IDREF(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__IDREF(struct soap*, const std::wstring *);
+
+#define soap_xsd__IDREF2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__IDREF(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2xsd__IDREF(soap, s, a) soap_s2stdwchar((soap), (s), (a), 5, 0, -1, "[\\i-[:]][\\c-[:]]*")
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_xsd__IDREF(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_xsd__IDREF soap_instantiate_std__wstring
+
+
+#define soap_new_xsd__IDREF soap_new_std__wstring
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__IDREF(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_xsd__IDREF(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_xsd__IDREF(soap, p, "xsd:IDREF", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_xsd__IDREF(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__IDREF(soap, p, "xsd:IDREF", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_xsd__IDREF(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__IDREF(soap, p, "xsd:IDREF", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_xsd__IDREF(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_xsd__IDREF(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_xsd__IDREF(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_xsd__IDREF(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__IDREF(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_xsd__IDREF(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_xsd__IDREF(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
 #ifndef SOAP_TYPE_xsd__ID__DEFINED
 #define SOAP_TYPE_xsd__ID__DEFINED
 SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__ID_(struct soap*, const char*, int, const xsd__ID_ *, const char*);
@@ -3356,18 +3814,20 @@ inline xsd__ID_ * soap_new_xsd__ID_(struct soap *soap, int n = -1)
 }
 
 inline xsd__ID_ * soap_new_req_xsd__ID_(
-	struct soap *soap)
+	struct soap *soap,
+	const std::wstring& __item)
 {
 	xsd__ID_ *_p = ::soap_new_xsd__ID_(soap);
 	if (_p)
 	{	_p->soap_default(soap);
+		_p->xsd__ID_::__item = __item;
 	}
 	return _p;
 }
 
 inline xsd__ID_ * soap_new_set_xsd__ID_(
 	struct soap *soap,
-	char *__item,
+	const std::wstring& __item,
 	char *__item__1)
 {
 	xsd__ID_ *_p = ::soap_new_xsd__ID_(soap);
@@ -3424,6 +3884,174 @@ inline int soap_GET_xsd__ID_(struct soap *soap, const char *URL, xsd__ID_ *p)
 inline int soap_POST_recv_xsd__ID_(struct soap *soap, xsd__ID_ *p)
 {
 	if (::soap_read_xsd__ID_(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
+#ifndef SOAP_TYPE_xsd__ID_DEFINED
+#define SOAP_TYPE_xsd__ID_DEFINED
+
+inline void soap_default_xsd__ID(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__ID(struct soap*, const std::wstring *);
+
+#define soap_xsd__ID2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__ID(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2xsd__ID(soap, s, a) soap_s2stdwchar((soap), (s), (a), 5, 0, -1, "[\\i-[:]][\\c-[:]]*")
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_xsd__ID(struct soap*, const char*, std::wstring*, const char*);
+
+#define soap_instantiate_xsd__ID soap_instantiate_std__wstring
+
+
+#define soap_new_xsd__ID soap_new_std__wstring
+
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__ID(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_xsd__ID(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_xsd__ID(soap, p, "xsd:ID", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_xsd__ID(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__ID(soap, p, "xsd:ID", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_xsd__ID(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__ID(soap, p, "xsd:ID", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_xsd__ID(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_xsd__ID(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_xsd__ID(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_xsd__ID(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__ID(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_xsd__ID(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_xsd__ID(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+#endif
+
+#ifndef SOAP_TYPE_std__wstring_DEFINED
+#define SOAP_TYPE_std__wstring_DEFINED
+
+inline void soap_default_std__wstring(struct soap *soap, std::wstring *p)
+{
+	(void)soap; /* appease -Wall -Werror */
+	p->erase();
+}
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_std__wstring(struct soap*, const std::wstring *);
+
+#define soap_std__wstring2s(soap, a) soap_wchar2s((soap), (a).c_str())
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_std__wstring(struct soap*, const char*, int, const std::wstring*, const char*);
+
+#define soap_s2std__wstring(soap, s, a) soap_s2stdwchar((soap), (s), (a), 1, 0, -1, NULL)
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_in_std__wstring(struct soap*, const char*, std::wstring*, const char*);
+SOAP_FMAC1 std::wstring * SOAP_FMAC2 soap_instantiate_std__wstring(struct soap*, int, const char*, const char*, size_t*);
+
+inline std::wstring * soap_new_std__wstring(struct soap *soap, int n = -1)
+{
+	return soap_instantiate_std__wstring(soap, n, NULL, NULL, NULL);
+}
+
+inline std::wstring * soap_new_req_std__wstring(
+	struct soap *soap)
+{
+	std::wstring *_p = ::soap_new_std__wstring(soap);
+	if (_p)
+	{	::soap_default_std__wstring(soap, _p);
+	}
+	return _p;
+}
+
+inline std::wstring * soap_new_set_std__wstring(
+	struct soap *soap)
+{
+	std::wstring *_p = ::soap_new_std__wstring(soap);
+	if (_p)
+	{	::soap_default_std__wstring(soap, _p);
+	}
+	return _p;
+}
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_std__wstring(struct soap*, const std::wstring *, const char*, const char*);
+
+inline int soap_write_std__wstring(struct soap *soap, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (p)
+	{	if (soap_begin_send(soap) || ::soap_put_std__wstring(soap, p, "string", "") || soap_end_send(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_PUT_std__wstring(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_std__wstring(soap, p, "string", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_send_std__wstring(struct soap *soap, const char *URL, std::wstring const*p)
+{
+	soap_free_temp(soap);
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_std__wstring(soap, p, "string", "") || soap_end_send(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+SOAP_FMAC3 std::wstring * SOAP_FMAC4 soap_get_std__wstring(struct soap*, std::wstring *, const char*, const char*);
+
+inline int soap_read_std__wstring(struct soap *soap, std::wstring *p)
+{
+	if (p)
+	{	if (soap_begin_recv(soap) || ::soap_get_std__wstring(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+			return soap->error;
+	}
+	return SOAP_OK;
+}
+
+inline int soap_GET_std__wstring(struct soap *soap, const char *URL, std::wstring *p)
+{
+	if (soap_GET(soap, URL, NULL) || ::soap_read_std__wstring(soap, p) || soap_closesock(soap))
+		return soap_closesock(soap);
+	return SOAP_OK;
+}
+
+inline int soap_POST_recv_std__wstring(struct soap *soap, std::wstring *p)
+{
+	if (::soap_read_std__wstring(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
@@ -4308,543 +4936,75 @@ SOAP_FMAC3 int SOAP_FMAC4 soap_put_PointerTo_ns1__ENTRANCE(struct soap*, _ns1__E
 SOAP_FMAC3 _ns1__ENTRANCE ** SOAP_FMAC4 soap_get_PointerTo_ns1__ENTRANCE(struct soap*, _ns1__ENTRANCE **, const char*, const char*);
 #endif
 
-#ifndef SOAP_TYPE_ns3__guid_DEFINED
-#define SOAP_TYPE_ns3__guid_DEFINED
+#ifndef SOAP_TYPE_wstring_DEFINED
+#define SOAP_TYPE_wstring_DEFINED
 
-inline void soap_default_ns3__guid(struct soap *soap, char **a)
+inline void soap_default_wstring(struct soap *soap, wchar_t **a)
 {
 	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_ns3__guid
-	*a = SOAP_DEFAULT_ns3__guid;
+#ifdef SOAP_DEFAULT_wstring
+	*a = SOAP_DEFAULT_wstring;
 #else
-	*a = (char *)0;
+	*a = (wchar_t *)0;
 #endif
 }
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_ns3__guid(struct soap*, char *const*);
+SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_wstring(struct soap*, wchar_t *const*);
 
-#define soap_ns3__guid2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns3__guid(struct soap*, const char*, int, char*const*, const char*);
+#define soap_wstring2s(soap, a) soap_wchar2s((soap), (a))
+SOAP_FMAC3 int SOAP_FMAC4 soap_out_wstring(struct soap*, const char*, int, wchar_t*const*, const char*);
 
-#define soap_s2ns3__guid(soap, s, a) soap_s2char((soap), (s), (char**)(a), 1, 0, -1, "[\\da-fA-F]{8}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{4}-[\\da-fA-F]{12}")
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_ns3__guid(struct soap*, const char*, char **, const char*);
+#define soap_s2wstring(soap, s, a) soap_s2wchar((soap), (s), (wchar_t**)(a), 1, 0, -1, NULL)
+SOAP_FMAC3 wchar_t * * SOAP_FMAC4 soap_in_wstring(struct soap*, const char*, wchar_t **, const char*);
 
-#define soap_instantiate_ns3__guid soap_instantiate_string
+SOAP_FMAC3 wchar_t * * SOAP_FMAC4 soap_new_wstring(struct soap *soap, int n = -1);
+SOAP_FMAC3 int SOAP_FMAC4 soap_put_wstring(struct soap*, wchar_t *const*, const char*, const char*);
 
-
-#define soap_new_ns3__guid soap_new_string
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_ns3__guid(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_ns3__guid(struct soap *soap, char *const*p)
+inline int soap_write_wstring(struct soap *soap, wchar_t *const*p)
 {
 	soap_free_temp(soap);
 	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_ns3__guid(soap, p, "ns3:guid", "") || soap_end_send(soap))
+	{	if (soap_begin_send(soap) || ::soap_put_wstring(soap, p, "string", "") || soap_end_send(soap))
 			return soap->error;
 	}
 	return SOAP_OK;
 }
 
-inline int soap_PUT_ns3__guid(struct soap *soap, const char *URL, char *const*p)
+inline int soap_PUT_wstring(struct soap *soap, const char *URL, wchar_t *const*p)
 {
 	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__guid(soap, p, "ns3:guid", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
+	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_wstring(soap, p, "string", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
 
-inline int soap_POST_send_ns3__guid(struct soap *soap, const char *URL, char *const*p)
+inline int soap_POST_send_wstring(struct soap *soap, const char *URL, wchar_t *const*p)
 {
 	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__guid(soap, p, "ns3:guid", "") || soap_end_send(soap))
+	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_wstring(soap, p, "string", "") || soap_end_send(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_ns3__guid(struct soap*, char **, const char*, const char*);
+SOAP_FMAC3 wchar_t ** SOAP_FMAC4 soap_get_wstring(struct soap*, wchar_t **, const char*, const char*);
 
-inline int soap_read_ns3__guid(struct soap *soap, char **p)
+inline int soap_read_wstring(struct soap *soap, wchar_t **p)
 {
 	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_ns3__guid(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
+	{	if (soap_begin_recv(soap) || ::soap_get_wstring(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
 			return soap->error;
 	}
 	return SOAP_OK;
 }
 
-inline int soap_GET_ns3__guid(struct soap *soap, const char *URL, char **p)
+inline int soap_GET_wstring(struct soap *soap, const char *URL, wchar_t **p)
 {
-	if (soap_GET(soap, URL, NULL) || ::soap_read_ns3__guid(soap, p) || soap_closesock(soap))
+	if (soap_GET(soap, URL, NULL) || ::soap_read_wstring(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }
 
-inline int soap_POST_recv_ns3__guid(struct soap *soap, char **p)
+inline int soap_POST_recv_wstring(struct soap *soap, wchar_t **p)
 {
-	if (::soap_read_ns3__guid(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-#endif
-/* ns3__duration is a typedef restriction of xsd__duration */
-
-#ifndef SOAP_TYPE_ns3__duration_DEFINED
-#define SOAP_TYPE_ns3__duration_DEFINED
-
-#define soap_default_ns3__duration soap_default_xsd__duration
-
-
-#define soap_serialize_ns3__duration soap_serialize_xsd__duration
-
-
-#define soap_ns3__duration2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_ns3__duration(struct soap*, const char*, int, char*const*, const char*);
-
-#define soap_s2ns3__duration(soap, s, a) soap_s2char((soap), (s), (char**)(a), 5, 0, -1, "\\-?P(\\d*D)?(T(\\d*H)?(\\d*M)?(\\d*(\\.\\d*)?S)?)?")
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_ns3__duration(struct soap*, const char*, char **, const char*);
-
-#define soap_instantiate_ns3__duration soap_instantiate_xsd__duration
-
-
-#define soap_new_ns3__duration soap_new_xsd__duration
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_ns3__duration(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_ns3__duration(struct soap *soap, char *const*p)
-{
-	soap_free_temp(soap);
-	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_ns3__duration(soap, p, "ns3:duration", "") || soap_end_send(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_PUT_ns3__duration(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__duration(soap, p, "ns3:duration", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_send_ns3__duration(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_ns3__duration(soap, p, "ns3:duration", "") || soap_end_send(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_ns3__duration(struct soap*, char **, const char*, const char*);
-
-inline int soap_read_ns3__duration(struct soap *soap, char **p)
-{
-	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_ns3__duration(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_GET_ns3__duration(struct soap *soap, const char *URL, char **p)
-{
-	if (soap_GET(soap, URL, NULL) || ::soap_read_ns3__duration(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_recv_ns3__duration(struct soap *soap, char **p)
-{
-	if (::soap_read_ns3__duration(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-#endif
-
-#ifndef SOAP_TYPE_xsd__duration_DEFINED
-#define SOAP_TYPE_xsd__duration_DEFINED
-
-inline void soap_default_xsd__duration(struct soap *soap, char **a)
-{
-	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_xsd__duration
-	*a = SOAP_DEFAULT_xsd__duration;
-#else
-	*a = (char *)0;
-#endif
-}
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__duration(struct soap*, char *const*);
-
-#define soap_xsd__duration2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__duration(struct soap*, const char*, int, char*const*, const char*);
-
-#define soap_s2xsd__duration(soap, s, a) soap_s2char((soap), (s), (char**)(a), 5, 0, -1, "[-+]?P(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+(\\.\\d*)?S)?)?")
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_xsd__duration(struct soap*, const char*, char **, const char*);
-
-#define soap_instantiate_xsd__duration soap_instantiate_string
-
-
-#define soap_new_xsd__duration soap_new_string
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__duration(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_xsd__duration(struct soap *soap, char *const*p)
-{
-	soap_free_temp(soap);
-	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_xsd__duration(soap, p, "xsd:duration", "") || soap_end_send(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_PUT_xsd__duration(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__duration(soap, p, "xsd:duration", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_send_xsd__duration(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__duration(soap, p, "xsd:duration", "") || soap_end_send(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_xsd__duration(struct soap*, char **, const char*, const char*);
-
-inline int soap_read_xsd__duration(struct soap *soap, char **p)
-{
-	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_xsd__duration(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_GET_xsd__duration(struct soap *soap, const char *URL, char **p)
-{
-	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__duration(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_recv_xsd__duration(struct soap *soap, char **p)
-{
-	if (::soap_read_xsd__duration(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-#endif
-
-#ifndef SOAP_TYPE_xsd__decimal_DEFINED
-#define SOAP_TYPE_xsd__decimal_DEFINED
-
-inline void soap_default_xsd__decimal(struct soap *soap, char **a)
-{
-	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_xsd__decimal
-	*a = SOAP_DEFAULT_xsd__decimal;
-#else
-	*a = (char *)0;
-#endif
-}
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__decimal(struct soap*, char *const*);
-
-#define soap_xsd__decimal2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__decimal(struct soap*, const char*, int, char*const*, const char*);
-
-#define soap_s2xsd__decimal(soap, s, a) soap_s2char((soap), (s), (char**)(a), 5, 0, -1, "[-+]?(\\d+|\\d*\\.\\d*)")
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_xsd__decimal(struct soap*, const char*, char **, const char*);
-
-#define soap_instantiate_xsd__decimal soap_instantiate_string
-
-
-#define soap_new_xsd__decimal soap_new_string
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__decimal(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_xsd__decimal(struct soap *soap, char *const*p)
-{
-	soap_free_temp(soap);
-	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_xsd__decimal(soap, p, "xsd:decimal", "") || soap_end_send(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_PUT_xsd__decimal(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__decimal(soap, p, "xsd:decimal", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_send_xsd__decimal(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__decimal(soap, p, "xsd:decimal", "") || soap_end_send(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_xsd__decimal(struct soap*, char **, const char*, const char*);
-
-inline int soap_read_xsd__decimal(struct soap *soap, char **p)
-{
-	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_xsd__decimal(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_GET_xsd__decimal(struct soap *soap, const char *URL, char **p)
-{
-	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__decimal(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_recv_xsd__decimal(struct soap *soap, char **p)
-{
-	if (::soap_read_xsd__decimal(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-#endif
-
-#ifndef SOAP_TYPE_xsd__anyURI_DEFINED
-#define SOAP_TYPE_xsd__anyURI_DEFINED
-
-inline void soap_default_xsd__anyURI(struct soap *soap, char **a)
-{
-	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_xsd__anyURI
-	*a = SOAP_DEFAULT_xsd__anyURI;
-#else
-	*a = (char *)0;
-#endif
-}
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__anyURI(struct soap*, char *const*);
-
-#define soap_xsd__anyURI2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__anyURI(struct soap*, const char*, int, char*const*, const char*);
-
-#define soap_s2xsd__anyURI(soap, s, a) soap_s2char((soap), (s), (char**)(a), 4, 0, -1, NULL)
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_xsd__anyURI(struct soap*, const char*, char **, const char*);
-
-#define soap_instantiate_xsd__anyURI soap_instantiate_string
-
-
-#define soap_new_xsd__anyURI soap_new_string
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__anyURI(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_xsd__anyURI(struct soap *soap, char *const*p)
-{
-	soap_free_temp(soap);
-	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_xsd__anyURI(soap, p, "xsd:anyURI", "") || soap_end_send(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_PUT_xsd__anyURI(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__anyURI(soap, p, "xsd:anyURI", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_send_xsd__anyURI(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__anyURI(soap, p, "xsd:anyURI", "") || soap_end_send(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_xsd__anyURI(struct soap*, char **, const char*, const char*);
-
-inline int soap_read_xsd__anyURI(struct soap *soap, char **p)
-{
-	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_xsd__anyURI(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_GET_xsd__anyURI(struct soap *soap, const char *URL, char **p)
-{
-	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__anyURI(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_recv_xsd__anyURI(struct soap *soap, char **p)
-{
-	if (::soap_read_xsd__anyURI(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-#endif
-
-#ifndef SOAP_TYPE_xsd__IDREF_DEFINED
-#define SOAP_TYPE_xsd__IDREF_DEFINED
-
-inline void soap_default_xsd__IDREF(struct soap *soap, char **a)
-{
-	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_xsd__IDREF
-	*a = SOAP_DEFAULT_xsd__IDREF;
-#else
-	*a = (char *)0;
-#endif
-}
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__IDREF(struct soap*, char *const*);
-
-#define soap_xsd__IDREF2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__IDREF(struct soap*, const char*, int, char*const*, const char*);
-
-#define soap_s2xsd__IDREF(soap, s, a) soap_s2char((soap), (s), (char**)(a), 5, 0, -1, "[\\i-[:]][\\c-[:]]*")
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_xsd__IDREF(struct soap*, const char*, char **, const char*);
-
-#define soap_instantiate_xsd__IDREF soap_instantiate_string
-
-
-#define soap_new_xsd__IDREF soap_new_string
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__IDREF(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_xsd__IDREF(struct soap *soap, char *const*p)
-{
-	soap_free_temp(soap);
-	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_xsd__IDREF(soap, p, "xsd:IDREF", "") || soap_end_send(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_PUT_xsd__IDREF(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__IDREF(soap, p, "xsd:IDREF", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_send_xsd__IDREF(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__IDREF(soap, p, "xsd:IDREF", "") || soap_end_send(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_xsd__IDREF(struct soap*, char **, const char*, const char*);
-
-inline int soap_read_xsd__IDREF(struct soap *soap, char **p)
-{
-	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_xsd__IDREF(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_GET_xsd__IDREF(struct soap *soap, const char *URL, char **p)
-{
-	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__IDREF(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_recv_xsd__IDREF(struct soap *soap, char **p)
-{
-	if (::soap_read_xsd__IDREF(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-#endif
-
-#ifndef SOAP_TYPE_xsd__ID_DEFINED
-#define SOAP_TYPE_xsd__ID_DEFINED
-
-inline void soap_default_xsd__ID(struct soap *soap, char **a)
-{
-	(void)soap; /* appease -Wall -Werror */
-#ifdef SOAP_DEFAULT_xsd__ID
-	*a = SOAP_DEFAULT_xsd__ID;
-#else
-	*a = (char *)0;
-#endif
-}
-SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__ID(struct soap*, char *const*);
-
-#define soap_xsd__ID2s(soap, a) (a)
-SOAP_FMAC3 int SOAP_FMAC4 soap_out_xsd__ID(struct soap*, const char*, int, char*const*, const char*);
-
-#define soap_s2xsd__ID(soap, s, a) soap_s2char((soap), (s), (char**)(a), 5, 0, -1, "[\\i-[:]][\\c-[:]]*")
-SOAP_FMAC3 char * * SOAP_FMAC4 soap_in_xsd__ID(struct soap*, const char*, char **, const char*);
-
-#define soap_instantiate_xsd__ID soap_instantiate_string
-
-
-#define soap_new_xsd__ID soap_new_string
-
-SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__ID(struct soap*, char *const*, const char*, const char*);
-
-inline int soap_write_xsd__ID(struct soap *soap, char *const*p)
-{
-	soap_free_temp(soap);
-	if (p)
-	{	if (soap_begin_send(soap) || ::soap_put_xsd__ID(soap, p, "xsd:ID", "") || soap_end_send(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_PUT_xsd__ID(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_PUT(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__ID(soap, p, "xsd:ID", "") || soap_end_send(soap) || soap_recv_empty_response(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_send_xsd__ID(struct soap *soap, const char *URL, char *const*p)
-{
-	soap_free_temp(soap);
-	if (soap_POST(soap, URL, NULL, "text/xml; charset=utf-8") || ::soap_put_xsd__ID(soap, p, "xsd:ID", "") || soap_end_send(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-SOAP_FMAC3 char ** SOAP_FMAC4 soap_get_xsd__ID(struct soap*, char **, const char*, const char*);
-
-inline int soap_read_xsd__ID(struct soap *soap, char **p)
-{
-	if (p)
-	{	if (soap_begin_recv(soap) || ::soap_get_xsd__ID(soap, p, NULL, NULL) == NULL || soap_end_recv(soap))
-			return soap->error;
-	}
-	return SOAP_OK;
-}
-
-inline int soap_GET_xsd__ID(struct soap *soap, const char *URL, char **p)
-{
-	if (soap_GET(soap, URL, NULL) || ::soap_read_xsd__ID(soap, p) || soap_closesock(soap))
-		return soap_closesock(soap);
-	return SOAP_OK;
-}
-
-inline int soap_POST_recv_xsd__ID(struct soap *soap, char **p)
-{
-	if (::soap_read_xsd__ID(soap, p) || soap_closesock(soap))
+	if (::soap_read_wstring(soap, p) || soap_closesock(soap))
 		return soap_closesock(soap);
 	return SOAP_OK;
 }

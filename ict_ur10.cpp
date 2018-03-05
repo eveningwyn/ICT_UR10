@@ -13,11 +13,11 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V2.00Beta"
+#define PRO_VERSION  "V2.01Beta"
 void ICT_UR10::on_actionAbout_triggered()
 {
     QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n"
-                                            "\nBuilt on 2018-02-27.\n"
+                                            "\nBuilt on 2018-03-05.\n"
                                             "\nThis version is not \"No Read\".\n"))
                        .arg(PRO_VERSION));
 }
@@ -153,6 +153,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(this,&ICT_UR10::ui_robot_pause,robot_on_thread,&RobotOnThread::robot_pause);
     connect(this,&ICT_UR10::ui_robot_stop,robot_on_thread,&RobotOnThread::robot_stop);
     connect(this,&ICT_UR10::robotPortExist,scan_on_thread,&ScannerOnThread::robot_Connected);
+    connect(this,&ICT_UR10::UI_msgUpload,pWeb,&WebUploadObj::msgUpload);
 
     thread1->start();//开启thread1的子线程
     thread2->start();//开启thread2的子线程
@@ -161,9 +162,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     init_UI();
 
 //for Debug 20180227
-    //pWeb->forTest();
-    QString sTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-    pWeb->msgUpload("F",sTime,sTime,"Error PCB Unlevel on Flat");
+//    QString sTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+//    emit UI_msgUpload("F",sTime,sTime,"Error PCB Unlevel on Flat");
 }
 
 ICT_UR10::~ICT_UR10()
@@ -364,9 +364,13 @@ void ICT_UR10::showErrorMessage(QString errorMsg)
     if(0 <= errorMsg.indexOf(errorRE))
     {
         emit ui_robot_pause();
+
+        logToServerWeb("F",errorMsg);
+
         QString errorStr = errorRE.cap(1);
         errorStr.replace("\r","");
         errorStr.replace("\n","");
+
         uint alarmGrade = 1;//报警级别初始化为1级
         checkErrorMsg(errorStr,alarmGrade);
         QMessageBox::StandardButton rb;
@@ -588,10 +592,6 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         csvFile.close();
     }
     update_UI_show();
-    m_sEndTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-    logToServerWeb(result,m_sStartTime,m_sEndTime,failCode);
-    m_sStartTime = "";
-    m_sEndTime = "";
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString yellow_limit = configRead->value(ICT_YELLOW_LIMIT).toString();
@@ -911,6 +911,8 @@ void ICT_UR10::UI_show_error(QString errorStr)
 
 void ICT_UR10::UI_sortComplete(bool testResultPass)
 {
+    logToServerWeb("P","");
+
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString logIndex = configRead->value(LOG_INDEX).toString();
     configRead->setValue(LOG_INDEX,QString("%1").arg(logIndex.toInt()+1));
@@ -1064,13 +1066,14 @@ void ICT_UR10::saveTempSn(QString sn)
     snTemp = sn;
 }
 
-void ICT_UR10::logToServerWeb(const QString state, const QString startTime, const QString endTime, const QString errorCode)
+void ICT_UR10::logToServerWeb(const QString state, const QString errorCode)
 {
-    if("PASS"==state.toUpper())
-    {
-        pWeb->msgUpload("P",startTime,endTime,errorCode);
-    }
-    else {
-        pWeb->msgUpload("F",startTime,endTime,errorCode);
-    }
+    m_sEndTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    QString sError = errorCode;
+    sError.replace("\r","");
+    sError.replace("\n","");
+
+    emit UI_msgUpload(state,m_sStartTime,m_sEndTime,sError);
+//    m_sStartTime = "";
+//    m_sEndTime = "";
 }

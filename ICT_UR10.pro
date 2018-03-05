@@ -45,7 +45,7 @@ SOURCES += main.cpp\
     webuploadobj.cpp \
     WCF_WC/soapBasicHttpBinding_USCOREIWSCenterEntranceProxy.cpp \
     WCF_WC/soapC.cpp \
-    WCF_WC/stdsoap2.cpp
+    WCF_WC/stdsoap2.cpp \
 
 HEADERS  += ict_ur10.h \
     scannerdialog.h \
@@ -69,7 +69,7 @@ HEADERS  += ict_ur10.h \
     WCF_WC/soapH.h \
     WCF_WC/soapStub.h \
     WCF_WC/stdsoap2.h \
-    WCF_WC/BasicHttpBinding_USCOREIWSCenterEntrance.nsmap
+    WCF_WC/BasicHttpBinding_USCOREIWSCenterEntrance.nsmap \
 
 FORMS    += ict_ur10.ui \
     scannerdialog.ui \

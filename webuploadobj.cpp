@@ -14,7 +14,8 @@
 
 
 #define WEB_SERVEICE         "http://10.10.30.96/WSCenter/WSCenterEntrance.svc"
-#define WEB_SERVEICE_TEST    "http://210.75.11.119/WSCenter/WSCenterEntrance.svc"
+//#define WEB_SERVEICE_TEST    "http://210.75.11.119/WSCenter/WSCenterEntrance.svc"
+#define WEB_SERVEICE_TEST    "http://10.10.30.108/WSCenter/WSCenterEntrance.svc"
 #define WEB_SERVEICE_TEST_NULL    NULL
 
 WebUploadObj::WebUploadObj(QObject *parent) : QObject(parent)
@@ -28,9 +29,9 @@ WebUploadObj::~WebUploadObj()
 
 void WebUploadObj::init_web()
 {
-    V_UID = QUuid::createUuid().toString();//取得唯一的GUID码
-    V_UID.replace("{","");
-    V_UID.replace("}","");
+    sUID = QUuid::createUuid().toString();//取得唯一的GUID码
+    sUID.replace("{","");
+    sUID.replace("}","");
     web_manager = new QNetworkAccessManager(this);
     connect(web_manager,&QNetworkAccessManager::finished,this,&WebUploadObj::replyFinished);
 }
@@ -71,9 +72,8 @@ void WebUploadObj::replyFinished(QNetworkReply *reply)
 void WebUploadObj::postWeb(const QString postMsg)//Old Code
 {
 //    qDebug()<<"postMsg--"<<postMsg;
-//    QUrl url(QString(WEB_SERVEICE));
-    //http://localhost:20376/WebService1.asmx; http://localhost:20376/WebService1.asmx?wsdl
-    QUrl url(QString("http://10.10.30.96/WSCenter/WSCenterEntrance.svc?wsdl"));
+    QUrl url(QString(WEB_SERVEICE));
+//    QUrl url(QString("http://210.75.11.119/WSCenter/WSCenterEntrance.svc"));
     QByteArray bytePostData = "";
     bytePostData = postMsg.toLocal8Bit();
 //    qDebug()<<"bytePostData--"<<bytePostData;
@@ -85,22 +85,17 @@ void WebUploadObj::postWeb(const QString postMsg)//Old Code
 }
 void WebUploadObj::msgUpload(const QString state, const QString startTime, const QString endTime, const QString errorCode)
 {
-    QString xmlStr = getXmlString(state,startTime,endTime,errorCode);
-    callWebService(xmlStr);
-    callWebServiceTest(xmlStr);
-    return;
-
-    QString inputStr = "";
-    inputStr = QString("<DATA>"
-                       "<LINEALSNAME>%1</LINEALSNAME>"
-                       "<ARMNAME>%2</ARMNAME>"
-                       "<STATUS>%3</STATUS>"
-                       "<STARTTIME>%4</STARTTIME>"
-                       "<ENDTIME>%5</ENDTIME>"
-                       "<ERRORCODE>%6</ERRORCODE>"
-                       "</DATA>")
-            .arg("自动化1").arg("1#")
-            .arg(state).arg(startTime).arg(endTime).arg(errorCode);
+    QString sINPUT = "";
+    sINPUT = QString("<DATA>"
+                     "<LINEALSNAME>%1</LINEALSNAME>"
+                     "<ARMNAME>%2</ARMNAME>"
+                     "<STATUS>%3</STATUS>"
+                     "<STARTTIME>%4</STARTTIME>"
+                     "<ENDTIME>%5</ENDTIME>"
+                     "<ERRORCODE>%6</ERRORCODE>"
+                     "</DATA>")
+            .arg("自动化1").arg("1#").arg(state)
+            .arg(startTime).arg(endTime).arg(errorCode);
 
     //DUNS_CODE:连接资料库主机("SF-TEST"/""/"ERP-0-10");
     //ZIP:是否有压缩;
@@ -109,38 +104,45 @@ void WebUploadObj::msgUpload(const QString state, const QString startTime, const
     //IS_ONE_WAY:不接收结果;
     //OUTPUT_FORMAT:输出资料格式(XML);
     //SP_NAME:(留空);
-    //ACTION_CODE:服务(ICT_ManufacturerClassLibrary);
+    //ACTION_CODE:服务(ShopfloorClassLibrary);
     //LIBRARY_ACTION_CODE:方法Function;
     //ROWSET/INPUT:INPUT参数;
-    QString strPostMsg = "";
-    strPostMsg = QString("<INPUTSTRING>"
-                         "<DUNS_CODE>%1</DUNS_CODE>"
-                         "<ZIP>%2</ZIP>"
-                         "<UID>%3</UID>"
-                         "<USER_ID>%4</USER_ID>"
-                         "<IS_ONE_WAY>%5</IS_ONE_WAY>"
-                         "<OUTPUT_FORMAT>%6</OUTPUT_FORMAT>"
-                         "<SP_NAME>%7</SP_NAME>"
-                         "<ACTION_CODE>%8</ACTION_CODE>"
-                         "<LIBRARY_ACTION_CODE>%9</LIBRARY_ACTION_CODE>"
-                         "<ROWSET><INPUT>%10</INPUT></ROWSET>"
-                         "</INPUTSTRING>")
-            .arg("ERP-0-10").arg("FALSE").arg(V_UID)
-            .arg("J1745259").arg("FALSE").arg("XML")
-            .arg("").arg("ICT_ManufacturerClassLibrary").arg("ICT_Board_Select_Add")
-            .arg(inputStr);
+    QString sDUNS_CODE = "";//ERP-0-10
+    QString sUSER_ID = "SF";//SF,J1745259,J1743847
+    QString sACTION_CODE = "ICT_ManufacturerClassLibrary";//ICT_ManufacturerClassLibrary,ShopfloorClassLibrary
+    QString sLIBRARY_ACTION_CODE = "ICT_Board_Select_Add";//ICT_Board_Select_Add,GetConfigSetting
 
-    callWebService(strPostMsg);
-    callWebServiceTest(strPostMsg);//for test
+//    sINPUT = "";//for test-----------------
+
+    QString sPostMsg = "";
+    sPostMsg = QString("<INPUTSTRING>"
+                       "<DUNS_CODE>%1</DUNS_CODE>"
+                       "<ZIP>%2</ZIP>"
+                       "<UID>%3</UID>"
+                       "<USER_ID>%4</USER_ID>"
+                       "<IS_ONE_WAY>%5</IS_ONE_WAY>"
+                       "<OUTPUT_FORMAT>%6</OUTPUT_FORMAT>"
+                       "<SP_NAME>%7</SP_NAME>"
+                       "<ACTION_CODE>%8</ACTION_CODE>"
+                       "<LIBRARY_ACTION_CODE>%9</LIBRARY_ACTION_CODE>"
+                       "<ROWSET><INPUT>%10</INPUT></ROWSET>"
+                       "</INPUTSTRING>")
+            .arg(sDUNS_CODE).arg("FALSE").arg(sUID)
+            .arg(sUSER_ID).arg("FALSE").arg("XML")
+            .arg("").arg(sACTION_CODE).arg(sLIBRARY_ACTION_CODE)
+            .arg(sINPUT);
+
+    callWebService(sPostMsg);
+//    callWebServiceTest(sPostMsg);//for test
+
+//    QString xmlStr = getXmlString(state,startTime,endTime,errorCode);
+//    callWebService(xmlStr);
+//    callWebServiceTest(xmlStr);
 }
 
 QString WebUploadObj::getXmlString(const QString state, const QString startTime, const QString endTime, const QString errorCode)
 {
     QDomDocument doc;
-//    //写入xml头部
-//    QDomProcessingInstruction instruction; //添加处理命令
-//    instruction=doc.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
-//    doc.appendChild(instruction);
 
 //添加 DATA 根节点
     QDomElement rootDATA = doc.createElement("DATA");
@@ -148,7 +150,7 @@ QString WebUploadObj::getXmlString(const QString state, const QString startTime,
     //添加 LINEALSNAME 节点
     QDomElement e_LINEALSNAME = doc.createElement("LINEALSNAME");
     QDomText t_LINEALSNAME;
-    t_LINEALSNAME = doc.createTextNode("自动化1");//自动化1
+    t_LINEALSNAME = doc.createTextNode("123");//自动化1
     e_LINEALSNAME.appendChild(t_LINEALSNAME);
     rootDATA.appendChild(e_LINEALSNAME);
     //添加 ARMNAME 节点
@@ -188,7 +190,7 @@ QString WebUploadObj::getXmlString(const QString state, const QString startTime,
     //添加 DUNS_CODE 节点
     QDomElement e_DUNS_CODE = doc.createElement("DUNS_CODE");
     QDomText t_DUNS_CODE;
-    t_DUNS_CODE = doc.createTextNode("ERP-0-10");
+    t_DUNS_CODE = doc.createTextNode("");//ERP-0-10,SF-TEST
     e_DUNS_CODE.appendChild(t_DUNS_CODE);
     rootINPUTSTRING.appendChild(e_DUNS_CODE);
     //添加 ZIP 节点
@@ -200,13 +202,13 @@ QString WebUploadObj::getXmlString(const QString state, const QString startTime,
     //添加 UID 节点
     QDomElement e_UID = doc.createElement("UID");
     QDomText t_UID;
-    t_UID = doc.createTextNode(V_UID);
+    t_UID = doc.createTextNode(sUID);
     e_UID.appendChild(t_UID);
     rootINPUTSTRING.appendChild(e_UID);
     //添加 USER_ID 节点
     QDomElement e_USER_ID = doc.createElement("USER_ID");
     QDomText t_USER_ID;
-    t_USER_ID = doc.createTextNode("J1745259");
+    t_USER_ID = doc.createTextNode("SF");//J1745259
     e_USER_ID.appendChild(t_USER_ID);
     rootINPUTSTRING.appendChild(e_USER_ID);
     //添加 IS_ONE_WAY 节点
@@ -230,13 +232,13 @@ QString WebUploadObj::getXmlString(const QString state, const QString startTime,
     //添加 ACTION_CODE 节点
     QDomElement e_ACTION_CODE = doc.createElement("ACTION_CODE");
     QDomText t_ACTION_CODE;
-    t_ACTION_CODE = doc.createTextNode("ICT_ManufacturerClassLibrary");
+    t_ACTION_CODE = doc.createTextNode("ShopfloorClassLibrary");//ICT_ManufacturerClassLibrary
     e_ACTION_CODE.appendChild(t_ACTION_CODE);
     rootINPUTSTRING.appendChild(e_ACTION_CODE);
     //添加 LIBRARY_ACTION_CODE 节点
     QDomElement e_LIBRARY_ACTION_CODE = doc.createElement("LIBRARY_ACTION_CODE");
     QDomText t_LIBRARY_ACTION_CODE;
-    t_LIBRARY_ACTION_CODE = doc.createTextNode("ICT_Board_Select_Add");
+    t_LIBRARY_ACTION_CODE = doc.createTextNode("GetConfigSetting");//ICT_Board_Select_Add
     e_LIBRARY_ACTION_CODE.appendChild(t_LIBRARY_ACTION_CODE);
     rootINPUTSTRING.appendChild(e_LIBRARY_ACTION_CODE);
     //添加 ROWSET 节点
@@ -263,99 +265,97 @@ QString WebUploadObj::getXmlString(const QString state, const QString startTime,
 
 void WebUploadObj::callWebService(const QString inputStr)
 {
-    char cInput[1024];
-    strcpy(cInput, inputStr.toLocal8Bit().data());
-
+/********实例化代理类对象********/
     _ns1__ENTRANCE *m_ns1__ENTRANCE = new _ns1__ENTRANCE();
-    m_ns1__ENTRANCE->INPUTSTRING = cInput;
+
+/********转换数据格式********/
+//    char cInput[1024];
+//    strcpy(cInput, inputStr.toLocal8Bit().data());
+//    m_ns1__ENTRANCE->INPUTSTRING = cInput;
+    wchar_t wcInput[1024];
+    wcscpy_s(reinterpret_cast<wchar_t*>(wcInput),
+             sizeof(wcInput) / sizeof(wchar_t),
+             reinterpret_cast<const wchar_t*>(inputStr.utf16()));
+
+/********初始化上传信息********/
+    m_ns1__ENTRANCE->INPUTSTRING = wcInput;
+
+/********调用客户端入口函数,并传递参数和响应对象,获取服务器返回********/
     _ns1__ENTRANCEResponse m_ns1__ENTRANCEResponse;
     BasicHttpBinding_USCOREIWSCenterEntranceProxy m_BasicHttpBinding_USCOREIWSCenterEntranceProxy;
     int iReturn = -100;
-    iReturn = m_BasicHttpBinding_USCOREIWSCenterEntranceProxy.ENTRANCE(WEB_SERVEICE_TEST_NULL,NULL,m_ns1__ENTRANCE,m_ns1__ENTRANCEResponse);
-    QString sReturn = QString::fromLocal8Bit(m_ns1__ENTRANCEResponse.ENTRANCEResult);
-//    qDebug()<<QString(tr("ENTRANCE函数返回值: %1\n"
-//                         "ENTRANCE调用返回字符串:\n%2.\n")
-//                      .arg(iReturn).arg(sReturn));
-    emit web_Error_Msg(QString(tr("ENTRANCE函数返回值: %1\n"
-                                  "ENTRANCE调用返回字符串:\n%2.\n")
-                               .arg(iReturn).arg(sReturn)));
+    iReturn = m_BasicHttpBinding_USCOREIWSCenterEntranceProxy.ENTRANCE(WEB_SERVEICE_TEST,NULL,m_ns1__ENTRANCE,m_ns1__ENTRANCEResponse);
+//    QString sReturn = QString::fromLocal8Bit(m_ns1__ENTRANCEResponse.ENTRANCEResult);
+    QString sReturn = QString::fromWCharArray(m_ns1__ENTRANCEResponse.ENTRANCEResult);
+
+    if(!iReturn)
+    {
+        QFile file("..\\log/web-log.txt");
+        if(file.open(QFile::WriteOnly | QFile::Truncate))
+        {
+            QTextStream text_stream(&file);
+            text_stream << QString(tr("ENTRANCE函数返回值: %1\n"
+                                      "ENTRANCE调用返回字符串:\n%2.\n")
+                                   .arg(iReturn).arg(sReturn));
+            file.flush();
+            file.close();
+        }
+//        qDebug()<<QString(tr("ENTRANCE函数返回值: %1\n"
+//                             "ENTRANCE调用返回字符串:\n%2.\n")
+//                          .arg(iReturn).arg(sReturn));
+//        emit web_Error_Msg(QString(tr("ENTRANCE函数返回值: %1\n"
+//                                      "ENTRANCE调用返回字符串:\n%2.\n")
+//                                   .arg(iReturn).arg(sReturn)));
+    }
+    else
+    {
+        emit web_Error_Msg(QString(tr("ENTRANCE函数返回值: %1\n"
+                                      "ENTRANCE调用返回字符串:\n%2.\n")
+                                   .arg(iReturn).arg(sReturn)));
+    }
     delete m_ns1__ENTRANCE;
 }
 
 void WebUploadObj::callWebServiceTest(const QString inputStr)
 {
-    char cInput[1024];
-    strcpy(cInput, inputStr.toLocal8Bit().data());
-
+/********实例化代理类对象********/
     _ns1__ENTRANCE_USCORETEST *m_ns1__ENTRANCE_USCORETEST = new _ns1__ENTRANCE_USCORETEST();
-    m_ns1__ENTRANCE_USCORETEST->INPUTSTRING = cInput;
+
+/********转换数据格式********/
+//    char cInput[1024];
+//    strcpy(cInput, inputStr.toLocal8Bit().data());
+//    m_ns1__ENTRANCE_USCORETEST->INPUTSTRING = cInput;
+    wchar_t wcInput[1024];
+    wcscpy_s(reinterpret_cast<wchar_t*>(wcInput),
+             sizeof(wcInput) / sizeof(wchar_t),
+             reinterpret_cast<const wchar_t*>(inputStr.utf16()));
+
+/********初始化上传信息********/
+    m_ns1__ENTRANCE_USCORETEST->INPUTSTRING = wcInput;
+
+/********调用客户端入口函数,并传递参数和响应对象,获取服务器返回********/
     _ns1__ENTRANCE_USCORETESTResponse m_ns1__ENTRANCE_USCORETESTResponse;
     BasicHttpBinding_USCOREIWSCenterEntranceProxy m_BasicHttpBinding_USCOREIWSCenterEntranceProxy2;
     int iReturnTest = -100;
-    iReturnTest = m_BasicHttpBinding_USCOREIWSCenterEntranceProxy2.ENTRANCE_USCORETEST(WEB_SERVEICE_TEST_NULL,NULL,m_ns1__ENTRANCE_USCORETEST,m_ns1__ENTRANCE_USCORETESTResponse);
-    QString sReturnTest = QString::fromLocal8Bit(m_ns1__ENTRANCE_USCORETESTResponse.ENTRANCE_USCORETESTResult);
-//    qDebug()<<QString(tr("ENTRANCE_USCORETEST函数返回值: %1\n"
-//                         "ENTRANCE_USCORETEST调用返回字符串:\n%2.\n")
-//                      .arg(iReturnTest).arg(QString(sReturnTest)));
-    emit web_Error_Msg(QString(tr("ENTRANCE_USCORETEST函数返回值: %1\nl1"
-                                  "ENTRANCE_USCORETEST调用返回字符串:\n%2.\n")
-                               .arg(iReturnTest).arg(sReturnTest)));
+    iReturnTest = m_BasicHttpBinding_USCOREIWSCenterEntranceProxy2.ENTRANCE_USCORETEST(WEB_SERVEICE_TEST,NULL,m_ns1__ENTRANCE_USCORETEST,m_ns1__ENTRANCE_USCORETESTResponse);
+//    QString sReturnTest = QString::fromLocal8Bit(m_ns1__ENTRANCE_USCORETESTResponse.ENTRANCE_USCORETESTResult);
+    QString sReturnTest= QString::fromWCharArray(m_ns1__ENTRANCE_USCORETESTResponse.ENTRANCE_USCORETESTResult);
+
+    if(!iReturnTest)
+    {
+        qDebug()<<QString(tr("ENTRANCE_USCORETEST函数返回值: %1\n"
+                             "ENTRANCE_USCORETEST调用返回字符串:\n%2.\n")
+                          .arg(iReturnTest).arg(QString(sReturnTest)));
+        emit web_Error_Msg(QString(tr("ENTRANCE_USCORETEST函数返回值: %1\n"
+                                      "ENTRANCE_USCORETEST调用返回字符串:\n%2.\n")
+                                   .arg(iReturnTest).arg(sReturnTest)));
+    }
+    else
+    {
+        emit web_Error_Msg(QString(tr("ENTRANCE_USCORETEST函数返回值: %1\n"
+                                      "ENTRANCE_USCORETEST调用返回字符串:\n%2.\n")
+                                   .arg(iReturnTest).arg(sReturnTest)));
+    }
     delete m_ns1__ENTRANCE_USCORETEST;
 }
 
-
-/*************For Debug**************/
-void WebUploadObj::forTest()//for debug
-{
-
-    QString V_duns_code = "ERP-0-10";
-    QString V_library_action_code = "ICT_Board_Select_Add";
-    QString V_action_code = "ICT_ManufacturerClassLibrary";
-    QString V_input = QString("<DATA>"
-                                 "<LINEALSNAME>%1</LINEALSNAME>"
-                                 "<ARMNAME>%2</ARMNAME>"
-                                 "<STATUS>%3</STATUS>"
-                                 "<STARTTIME>%4</STARTTIME>"
-                                 "<ENDTIME>%5</ENDTIME>"
-                                 "<ERRORCODE>%6</ERRORCODE>"
-                                 "</DATA>")
-            .arg("自动化1").arg("1#").arg("F").arg("C").arg("2018-03-01 09:42:30").arg("Error PCB Unlevel on Flat");
-
-    QString sDllFileName;
-    //sDllFileName = "ACCMVC.dll";
-    sDllFileName = "ClassLibrary6.dll";
-    QLibrary webLib(sDllFileName);
-    if(webLib.load())
-    {
-        qDebug()<<QString(tr("服务器DLL调用成功, 路径: %1.\n").arg(sDllFileName));
-        emit web_Error_Msg(QString(tr("服务器DLL调用成功, 路径: %1.\n").arg(sDllFileName)));
-//        DllFunc Call_Wscenter = (DllFunc)webLib.resolve("Call_Wscenter");
-//        if(Call_Wscenter)
-//        {
-//            QString V_duns_code = "ERP-0-10";
-//            QString V_library_action_code = "ICT_Board_Select_Add";
-//            QString V_action_code = "ICT_ManufacturerClassLibrary";
-//            QString V_input = QString("<DATA>"
-//                                         "<LINEALSNAME>%1</LINEALSNAME>"
-//                                         "<ARMNAME>%2</ARMNAME>"
-//                                         "<STATUS>%3</STATUS>"
-//                                         "<STARTTIME>%4</STARTTIME>"
-//                                         "<ENDTIME>%5</ENDTIME>"
-//                                         "<ERRORCODE>%6</ERRORCODE>"
-//                                         "</DATA>")
-//                    .arg("自动化1").arg("1#").arg("F").arg("2018-03-01 09:42:00").arg("2018-03-01 09:42:30").arg("Error PCB Unlevel on Flat");
-
-//            Call_Wscenter(V_duns_code.toStdString(),V_library_action_code.toStdString(),V_action_code.toStdString(),V_input.toStdString());
-//            qDebug()<<QString(tr("服务器DLL函数调用成功, 路径: %1.\n").arg(sDllFileName));
-//            emit web_Error_Msg(QString(tr("服务器DLL函数调用成功, 路径: %1.\n").arg(sDllFileName)));
-//        }
-//        else {
-//            qDebug()<<QString(tr("服务器DLL函数调用失败, 路径: %1.\n").arg(sDllFileName));
-//            emit web_Error_Msg(QString(tr("服务器DLL函数调用失败, 路径: %1.\n").arg(sDllFileName)));
-//        }
-    }
-    else {
-        qDebug()<<QString(tr("服务器DLL调用失败, 路径: %1.\n").arg(sDllFileName));
-        emit web_Error_Msg(QString(tr("服务器DLL调用失败, 路径: %1.\n").arg(sDllFileName)));
-    }
-}
