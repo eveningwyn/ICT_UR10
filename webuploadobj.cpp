@@ -14,7 +14,7 @@
 
 
 #define WEB_SERVEICE         "http://10.10.30.96/WSCenter/WSCenterEntrance.svc"
-//#define WEB_SERVEICE_TEST    "http://210.75.11.119/WSCenter/WSCenterEntrance.svc"
+
 #define WEB_SERVEICE_TEST    "http://10.10.30.108/WSCenter/WSCenterEntrance.svc"
 #define WEB_SERVEICE_TEST_NULL    NULL
 
