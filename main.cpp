@@ -40,7 +40,7 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
     QString current_date = QString("(%1)").arg(current_date_time);
     QString message = QString("%1 %2 %3 %4").arg(text).arg(context_info).arg(msg).arg(current_date);
 
-    QFile file("..\\log/crash-log.txt");
+    QFile file("../log/crash-log.txt");
     if(file.open(QIODevice::WriteOnly | QIODevice::Append))
     {
         QTextStream text_stream(&file);
@@ -65,7 +65,7 @@ long ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
     //Create the dump file
 //    HANDLE hDumpFile = CreateFile((LPCWSTR)QString("..//log/crash.dmp").utf16(),
 //                                  GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    HANDLE hDumpFile = CreateFile((LPCWSTR)QString("..//log/crash.dmp").utf16(),
+    HANDLE hDumpFile = CreateFile((LPCWSTR)QString("../log/crash.dmp").utf16(),
                                   GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if(hDumpFile != INVALID_HANDLE_VALUE)
     {
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(outputMessage);
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
 #else
-//qDebug() << "debug mode";
+qDebug() << "debug mode";
 #endif
 
     ICT_UR10 w;

@@ -13,11 +13,11 @@
 #include <QRegExp>
 #include <QDesktopWidget>
 
-#define PRO_VERSION  "V2.01Beta"
+#define PRO_VERSION  "V2.01Beta5"
 void ICT_UR10::on_actionAbout_triggered()
 {
     QMessageBox::about(this,NULL,QString(tr("\nICT_UR10 version is %1.\n"
-                                            "\nBuilt on 2018-03-05.\n"
+                                            "\nBuilt on 2018-04-14.\n"
                                             "\nThis version is not \"No Read\".\n"))
                        .arg(PRO_VERSION));
 }
@@ -47,7 +47,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     UPH_Pass = 0;
     UPH_Fail = 0;
     UPH_TimeStr = "";
-    snTemp = "";
+    m_sn = "";
     QString UPH_end_TimeStr = "";
     UPH_Update_Infor(true,UPH_TimeStr,UPH_end_TimeStr,UPH_Pass,UPH_Fail,UPH_Qty);
 
@@ -69,6 +69,7 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     //ict->moveToThread(thread1);//将ict处理类对象放在线程中
 
     pWeb = new WebUploadObj(this);
+    m_sStartTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 
     /*状态初始化*/
     robotIsInit = false;
@@ -117,6 +118,8 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     connect(robot_on_thread,&RobotOnThread::change_auto_debug_label,this,&ICT_UR10::change_auto_debug_label);
     connect(robot_on_thread,&RobotOnThread::sortComplete,this,&ICT_UR10::UI_sortComplete);
     connect(robot_on_thread,&RobotOnThread::dashboard,this,&ICT_UR10::UI_dashboard);
+    connect(robot_on_thread,&RobotOnThread::upRobotIdleTime,this,&ICT_UR10::robotIdleTime);
+    connect(robot_on_thread,&RobotOnThread::showRobotIdleTime,this,&ICT_UR10::UI_showRobotIdleTime);
 
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,this,&ICT_UR10::showErrorMessage);
     connect(ict,&ICT_Test_Obj::ict_Error_Msg,errorDlg,&ErrorListDialog::recordErrorMessage);
@@ -160,10 +163,6 @@ ICT_UR10::ICT_UR10(QWidget *parent) :
     thread3->start();//开启thread3的子线程
 
     init_UI();
-
-//for Debug 20180227
-//    QString sTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-//    emit UI_msgUpload("F",sTime,sTime,"Error PCB Unlevel on Flat");
 }
 
 ICT_UR10::~ICT_UR10()
@@ -365,7 +364,9 @@ void ICT_UR10::showErrorMessage(QString errorMsg)
     {
         emit ui_robot_pause();
 
-        logToServerWeb("F",errorMsg);
+        QStringList paraList;
+        paraList << errorMsg << "" << m_sn;
+        logToServerWeb(F, paraList);
 
         QString errorStr = errorRE.cap(1);
         errorStr.replace("\r","");
@@ -603,6 +604,9 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
     {
         if((uint) yellow_limit.toInt()<=failCount && (uint) red_limit.toInt()>failCount)
         {
+            QStringList paraList;
+            paraList << QString("Continuous test failed 2 times") << "" << m_sn;
+            logToServerWeb(F, paraList);
             //打开三色灯_黄灯
             emit light_Red_Green_Yellow_Buzzer("Yellow light open");
             lightCount = 3;
@@ -611,6 +615,9 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
         {
             if((uint) red_limit.toInt()<=failCount)
             {
+                QStringList paraList;
+                paraList << QString("Continuous test failed 3 times") << "" << m_sn;
+                logToServerWeb(F, paraList);
                 //打开三色灯_红灯
                 emit light_Red_Green_Yellow_Buzzer("Red light open");
                 lightCount = 1;
@@ -658,7 +665,7 @@ void ICT_UR10::updateTestResult(QString sn, QString result)
             update_UI_show();
         }
     }
-    snTemp = "";
+    m_sn = "";
 }
 
 void ICT_UR10::newFile()
@@ -719,6 +726,12 @@ void ICT_UR10::setIctReady(bool isReady)
 {
     ictIsReady = isReady;
     PC_Status();
+    if(!isReady)
+    {
+        QStringList paraList;
+        paraList << QString("ICT disconnected") << "" << m_sn;
+        logToServerWeb(F, paraList);
+    }
 }
 
 void ICT_UR10::runStatus(bool isAuto)
@@ -833,6 +846,12 @@ void ICT_UR10::on_pushButton_Auto_Debug_clicked()
     if(modeTemp!=mainAutoMode||false==mainAutoMode)
     {
         emit robotSetAutoMode(mainAutoMode);
+        if(!mainAutoMode)
+        {
+            QStringList paraList;
+            paraList << QString("Main control interrupt") << "" << m_sn;
+            logToServerWeb(F, paraList);
+        }
     }
 }
 
@@ -911,7 +930,9 @@ void ICT_UR10::UI_show_error(QString errorStr)
 
 void ICT_UR10::UI_sortComplete(bool testResultPass)
 {
-    logToServerWeb("P","");
+    QStringList paraList;
+    paraList << "" << "" << m_sn;
+    logToServerWeb(P, paraList);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     QString logIndex = configRead->value(LOG_INDEX).toString();
@@ -1017,10 +1038,6 @@ void ICT_UR10::UPH_Update_Infor(bool read_True, QString &timeStr, QString &end_t
                 failQ = uphRE.cap(4).toInt();
                 tempQty = uphRE.cap(5).toInt();
             }
-//            if(!uph_file.flush())
-//            {
-//                qDebug("UPH_Update_Infor_file flush error");
-//            }
             uph_file.close();
         }
     }
@@ -1063,17 +1080,61 @@ void ICT_UR10::on_lineEdit_line_wait_time_returnPressed()
 
 void ICT_UR10::saveTempSn(QString sn)
 {
-    snTemp = sn;
+    m_sn = sn;
 }
 
-void ICT_UR10::logToServerWeb(const QString state, const QString errorCode)
+void ICT_UR10::UI_showRobotIdleTime(const QString idleTime)
 {
-    m_sEndTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-    QString sError = errorCode;
-    sError.replace("\r","");
-    sError.replace("\n","");
+    ui->label_IdleTime->setText(idleTime);
+}
 
-    emit UI_msgUpload(state,m_sStartTime,m_sEndTime,sError);
+void ICT_UR10::robotIdleTime(const QString idleTime)
+{
+    QStringList paraList;
+    paraList << "" << idleTime << "";
+    logToServerWeb(L, paraList);
+}
+
+//void ICT_UR10::logToServerWeb(const QString state, const QString errorCode)
+void ICT_UR10::logToServerWeb(const WebState webState, const QStringList paraList)
+{//paraList: errorCode/idleTime/SN number
+
+    if(m_sStartTime.isEmpty())
+    {
+        m_sStartTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    }
+    m_sEndTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+    QString state;
+    QString startTime = m_sStartTime;
+    QString endTime = m_sEndTime;
+    QString sError = paraList.at(0);
+    QString idleTime = paraList.at(1);
+    QString number = paraList.at(2);
+
+    switch (webState) {
+    case P:
+        state = "P";
+        break;
+    case F:
+        state = "F";
+        sError.replace("\r","");
+        sError.replace("\n","");
+        sError.replace("@","");
+        break;
+    case L:
+        state = "L";
+        startTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+        endTime = "";
+        break;
+    default:
+        return;
+        break;
+    }
+
+    QStringList parametersList; // state/startTime/endTime/errorCode/idleTime/SN number
+    parametersList << state << startTime << endTime << sError << idleTime << number;
+    emit UI_msgUpload(parametersList);
 //    m_sStartTime = "";
 //    m_sEndTime = "";
 }

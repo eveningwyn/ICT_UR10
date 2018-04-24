@@ -14,8 +14,6 @@ public:
     explicit WebUploadObj(QObject *parent = 0);
     ~WebUploadObj();
 
-    void forTest();//For Debug
-
 private:
     QNetworkAccessManager *web_manager;
     QNetworkRequest web_request;
@@ -24,14 +22,15 @@ private:
     void postWeb(const QString postMsg);//Old Code
     void callWebService(const QString inputStr);
     void callWebServiceTest(const QString inputStr);
-    QString getXmlString(const QString state, const QString startTime, const QString endTime, const QString errorCode);
+    QString getXmlString(const QString state, const QString startTime, const QString endTime, const QString errorCode
+                         , const QString idleTime, const QString number);
 
 signals:
     void web_Error_Msg(QString errorMsg);//更新错误信号
 
 public slots:
     void init_web();
-    void msgUpload(const QString state, const QString startTime, const QString endTime, const QString errorCode);
+    void msgUpload(const QStringList parametersList);
 
 private slots:
     void replyFinished(QNetworkReply *reply);

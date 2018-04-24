@@ -83,3 +83,4 @@ FORMS    += ict_ur10.ui \
 
 RESOURCES += \
     resource.qrc
+

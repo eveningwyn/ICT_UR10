@@ -21,6 +21,12 @@ namespace Ui {
 class ICT_UR10;
 }
 
+enum WebState{
+  P = 1,//测试PASS
+  F = 2,//有error
+  L = 3,//空闲状态
+};
+
 class ICT_UR10 : public QMainWindow
 {
     Q_OBJECT
@@ -77,8 +83,8 @@ private:
     void closeEvent(QCloseEvent *event);//重载close事件
     QString forShowString(QString str);//将字符串添加时间戳
 
-    void logToServerWeb(const QString state, const QString errorCode);
-    QString snTemp;
+    void logToServerWeb(const WebState webState, const QStringList paraList);
+    QString m_sn;
     QString m_sStartTime;
     QString m_sEndTime;
 
@@ -126,7 +132,7 @@ signals:
     void ui_robot_pause();
     void ui_robot_stop();
 
-    void UI_msgUpload(const QString state, const QString startTime, const QString endTime, const QString errorCode);
+    void UI_msgUpload(const QStringList parametersList);
 
 public slots:
     void update_Scanner_Status(QString status);//更新串口连接状态
@@ -143,6 +149,8 @@ public slots:
     void UI_sortComplete(bool testResultPass);//Robot分拣完成信号-槽
     void UI_dashboard(int index,QString showStr);
     void saveTempSn(QString sn);
+    void robotIdleTime(const QString idleTime);
+    void UI_showRobotIdleTime(const QString idleTime);
 
 private slots:
     void on_actionScanner_triggered();

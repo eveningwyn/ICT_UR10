@@ -1,0 +1,8 @@
+2,@Error Claw_HP,夹爪气缸打开异常！
+2,@Error Claw_WP,夹爪气缸关闭异常！
+1,@Error PCB Unlevel on Flat,取板时测高异常，请排除问题后选择Yes(继续运行)，或者选择No(停止运行)！
+1,@Error ICT_HP,ICT治具开箱异常，请排除问题后选择Yes(继续运行)，或者选择No(停止运行)！
+1,@Error ICT_WP,ICT治具关箱异常，请排除问题后选择Yes(继续运行)，或者选择No(停止运行)！
+1,@Error PCB Unlevel in ICT,放板时测高异常，请排除问题后选择Yes(继续运行)，或者选择No(停止运行)！
+1,@Error NG position Full,NG存放位置已经放满，请排除问题后选择Yes(继续运行)，或者选择No(停止运行)！
+1,@Error NG Label position Full,条码存放位置已经放满，请排除问题后选择Yes(继续运行)，或者选择No(停止运行)！

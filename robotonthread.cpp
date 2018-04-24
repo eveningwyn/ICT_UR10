@@ -94,7 +94,10 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
         robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("Robot init done ACK"));
         return;
     }
-    if(true == robotAutoMode)//自动模式
+    if(true == robotAutoMode)
+        //********************//
+        //自动模式
+        //********************//
     {
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("PC status?")))
         {
@@ -103,7 +106,7 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             {
                 emit setRunStatus(true);
                 robotSendMsg(QString(PREFIX_COMMAND_SUFFIX).arg("PC ready"));
-                emit robot_catchFail();
+//                emit robot_catchFail();//20180406 disable
                 return;
             }
             else
@@ -193,7 +196,10 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             return;
         }
     }
-    else//手动模式
+    else
+        //********************//
+        //手动模式
+        //********************//
     {
         if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Move to Scan done")))
         {
@@ -250,7 +256,9 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             return;
         }
     }
+    //********************//
     //手动/自动模式共用通讯协议部分
+    //********************//
     if(0 <= msg.indexOf(QString(PREFIX_COMMAND).arg("Error")))
     {
         msg.replace(SUFFIX,"");
@@ -295,6 +303,26 @@ void RobotOnThread::informationCheck(QString msg)//根据协议处理接收的�
             infoLineReadyTimer->stop();
         return;
     }
+
+    int index = msg.indexOf(QString("%1").arg("time="));
+    if(0 <= index)
+    {
+        int le = index+5+1;
+        if(msg.length()>=le)
+        {
+            QString msgMid = msg.mid(index+5);
+            bool ok;
+            int idleTime = -1;
+            idleTime = msgMid.toUInt(&ok,10);
+            if(ok)
+                if(idleTime >= 0)
+                {
+                    m_iIdleTime += idleTime;
+                    emit showRobotIdleTime(QString("%1").arg(m_iIdleTime));
+                }
+        }
+        return;
+    }
 }
 
 void RobotOnThread::init_Robot()
@@ -335,6 +363,9 @@ void RobotOnThread::init_Robot()
     robot_stop_timer = new QTimer(this);
     dashboard_enable = false;
 
+    m_pIdleTimeTimer = new QTimer(this);
+    m_iIdleTime = 0;
+
     connect(robotClient,&TcpIpClient::readData,this,&RobotOnThread::robot_readData);
     connect(robotClient,&TcpIpClient::cliendErrorMsg,this,&RobotOnThread::robot_Error_Msg);
     connect(robotClient,&TcpIpClient::clientDisConnect,this,&RobotOnThread::robot_clientDisConnect);
@@ -357,6 +388,7 @@ void RobotOnThread::init_Robot()
     connect(robot_pause_timer,&QTimer::timeout,this,&RobotOnThread::robot_pause);
     connect(robot_stop_timer,&QTimer::timeout,this,&RobotOnThread::robot_stop);
     connect(cylinderDownTimer,&QTimer::timeout,this,&RobotOnThread::cylinderDownTimerTimeout);
+    connect(m_pIdleTimeTimer,&QTimer::timeout,this,&RobotOnThread::idleTimeTimeout);
 
     QSettings *configRead = new QSettings(CONFIG_FILE_NAME, QSettings::IniFormat);
     //Robot
@@ -389,6 +421,8 @@ void RobotOnThread::init_Robot()
         emit forShow_To_Comm(forShowString(QString(tr("PC服务器 %1 %2 Listening..."))
                                            .arg(ipAddress).arg(port)));
     }
+
+    m_pIdleTimeTimer->start(1*60*60);
 }
 
 /*通讯协议处理部分-主动发送*/
@@ -866,4 +900,10 @@ void RobotOnThread::cylinderDownTimerTimeout()
     if(cylinderDownTimer->isActive())
         cylinderDownTimer->stop();
     emit cylinderUpDown(CONTROL_OUT1_OFF);
+}
+
+void RobotOnThread::idleTimeTimeout()
+{
+    emit upRobotIdleTime(QString("%1").arg(m_iIdleTime));
+    m_iIdleTime = 0;
 }

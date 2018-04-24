@@ -57,6 +57,9 @@ private:
 
     QTimer *cylinderDownTimer;
 
+    uint m_iIdleTime;
+    QTimer *m_pIdleTimeTimer;
+
 signals:
     void robot_Status(QString status);//更新连接状态给主界面
     void robot_Error_Msg(QString errorMsg);//更新错误信号
@@ -75,6 +78,8 @@ signals:
     void debugRunDone();
     void change_auto_debug_label(QString labelStr);
     void dashboard(int index,QString showStr);
+    void upRobotIdleTime(const QString idleTime);
+    void showRobotIdleTime(const QString idleTime);
 
 public slots:
     void init_Robot();//初始化服务器连接
@@ -121,6 +126,7 @@ private slots:
     void setRunModeTimeout();
     void infromLineInfoToRobot();
     void cylinderDownTimerTimeout();
+    void idleTimeTimeout();
 };
 
 #endif // ROBOTONTHREAD_H

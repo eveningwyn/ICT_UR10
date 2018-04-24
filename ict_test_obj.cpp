@@ -241,7 +241,7 @@ b."E2-L1N,1,ICT,J1741534,09,ICT_V12R01,NY0217460001,TestResult,SF-0-10,NP29J4654
                 QRegExp resultRE("(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*)");
                 if(0 <= testResultStr.indexOf(resultRE))
                 {
-                    if(resultRE.cap(10)==snTemp)
+                    if(resultRE.cap(7)==snTemp)
                     {
                         if("PASS"==resultRE.cap(12))
                         {
@@ -259,7 +259,7 @@ b."E2-L1N,1,ICT,J1741534,09,ICT_V12R01,NY0217460001,TestResult,SF-0-10,NP29J4654
                     else
                     {
                         emit ict_Error_Msg(QString(tr("Scan条码与ICT测试结果回传条码不一致：\n"
-                                              "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(10)));
+                                              "Scan：%1; ICT：%2\n")).arg(snTemp).arg(resultRE.cap(7)));
                     }
                     snCheckCount = 2;
                 }
